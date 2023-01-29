@@ -16,6 +16,9 @@
 		0A1B52CA298662DC00FB548D /* ManageStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52C9298662DC00FB548D /* ManageStructs.swift */; };
 		0A1B52D4298663F300FB548D /* PlaceEntityStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52D3298663F200FB548D /* PlaceEntityStack.swift */; };
 		0A1B52D62986642100FB548D /* SearchHistoryStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52D52986642100FB548D /* SearchHistoryStack.swift */; };
+		0A1B52D8298664BE00FB548D /* FavouriteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52D7298664BE00FB548D /* FavouriteTableViewCell.swift */; };
+		0A1B52DA298664CE00FB548D /* ResultCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52D9298664CE00FB548D /* ResultCollectionViewCell.swift */; };
+		0A1B52DC298664E000FB548D /* SearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52DB298664E000FB548D /* SearchResultTableViewCell.swift */; };
 		4F96613ADD4C578851915A65 /* Pods_Map_Search_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +34,9 @@
 		0A1B52C9298662DC00FB548D /* ManageStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageStructs.swift; sourceTree = "<group>"; };
 		0A1B52D3298663F200FB548D /* PlaceEntityStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceEntityStack.swift; sourceTree = "<group>"; };
 		0A1B52D52986642100FB548D /* SearchHistoryStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryStack.swift; sourceTree = "<group>"; };
+		0A1B52D7298664BE00FB548D /* FavouriteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouriteTableViewCell.swift; sourceTree = "<group>"; };
+		0A1B52D9298664CE00FB548D /* ResultCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultCollectionViewCell.swift; sourceTree = "<group>"; };
+		0A1B52DB298664E000FB548D /* SearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Map_Search_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B61FC16511157D3CC42CC77 /* Pods-Map Search App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.debug.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.debug.xcconfig"; sourceTree = "<group>"; };
 		CA51D5CB2C5289EBACB64F69 /* Pods-Map Search App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.release.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.release.xcconfig"; sourceTree = "<group>"; };
@@ -127,6 +133,9 @@
 		0A1B52C8298662B900FB548D /* Custom Cells */ = {
 			isa = PBXGroup;
 			children = (
+				0A1B52D7298664BE00FB548D /* FavouriteTableViewCell.swift */,
+				0A1B52D9298664CE00FB548D /* ResultCollectionViewCell.swift */,
+				0A1B52DB298664E000FB548D /* SearchResultTableViewCell.swift */,
 			);
 			path = "Custom Cells";
 			sourceTree = "<group>";
@@ -267,8 +276,11 @@
 				0A1B52B729865E5E00FB548D /* Map_Search_App.xcdatamodeld in Sources */,
 				0A1B52D4298663F300FB548D /* PlaceEntityStack.swift in Sources */,
 				0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */,
+				0A1B52D8298664BE00FB548D /* FavouriteTableViewCell.swift in Sources */,
 				0A1B52CA298662DC00FB548D /* ManageStructs.swift in Sources */,
 				0A1B52D62986642100FB548D /* SearchHistoryStack.swift in Sources */,
+				0A1B52DA298664CE00FB548D /* ResultCollectionViewCell.swift in Sources */,
+				0A1B52DC298664E000FB548D /* SearchResultTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
