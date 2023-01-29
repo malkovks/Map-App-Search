@@ -14,6 +14,7 @@
 		0A1B52B729865E5E00FB548D /* Map_Search_App.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52B529865E5E00FB548D /* Map_Search_App.xcdatamodeld */; };
 		0A1B52B929865E6000FB548D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B52B829865E6000FB548D /* Assets.xcassets */; };
 		0A1B52BC29865E6000FB548D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B52BA29865E6000FB548D /* LaunchScreen.storyboard */; };
+		4F96613ADD4C578851915A65 /* Pods_Map_Search_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,9 @@
 		0A1B52B829865E6000FB548D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A1B52BB29865E6000FB548D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0A1B52BD29865E6000FB548D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Map_Search_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B61FC16511157D3CC42CC77 /* Pods-Map Search App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.debug.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.debug.xcconfig"; sourceTree = "<group>"; };
+		CA51D5CB2C5289EBACB64F69 /* Pods-Map Search App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.release.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F96613ADD4C578851915A65 /* Pods_Map_Search_App.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +49,8 @@
 			children = (
 				0A1B52AB29865E5E00FB548D /* Map Search App */,
 				0A1B52AA29865E5E00FB548D /* Products */,
+				4EF4495F76D906FBC41374F8 /* Pods */,
+				EE9E6F0566BB8E2625288C7F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -70,6 +77,24 @@
 			path = "Map Search App";
 			sourceTree = "<group>";
 		};
+		4EF4495F76D906FBC41374F8 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8B61FC16511157D3CC42CC77 /* Pods-Map Search App.debug.xcconfig */,
+				CA51D5CB2C5289EBACB64F69 /* Pods-Map Search App.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		EE9E6F0566BB8E2625288C7F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -77,9 +102,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0A1B52C029865E6000FB548D /* Build configuration list for PBXNativeTarget "Map Search App" */;
 			buildPhases = (
+				D49C6D086AC4755646DDFA68 /* [CP] Check Pods Manifest.lock */,
 				0A1B52A529865E5E00FB548D /* Sources */,
 				0A1B52A629865E5E00FB548D /* Frameworks */,
 				0A1B52A729865E5E00FB548D /* Resources */,
+				997640A1FDE694A83AD8DE68 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -135,6 +162,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		997640A1FDE694A83AD8DE68 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Map Search App/Pods-Map Search App-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Map Search App/Pods-Map Search App-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Map Search App/Pods-Map Search App-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D49C6D086AC4755646DDFA68 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Map Search App-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0A1B52A529865E5E00FB548D /* Sources */ = {
@@ -286,6 +355,7 @@
 		};
 		0A1B52C129865E6000FB548D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B61FC16511157D3CC42CC77 /* Pods-Map Search App.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -314,6 +384,7 @@
 		};
 		0A1B52C229865E6000FB548D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CA51D5CB2C5289EBACB64F69 /* Pods-Map Search App.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
