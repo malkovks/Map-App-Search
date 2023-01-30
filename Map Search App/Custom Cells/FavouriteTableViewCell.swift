@@ -14,7 +14,7 @@ class FavouriteTableViewCell: UITableViewCell {
     private let geocoder = CLGeocoder()
     
     private let titleLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.numberOfLines = 0
         label.textAlignment = .left
         label.contentMode = .topLeft
@@ -24,7 +24,7 @@ class FavouriteTableViewCell: UITableViewCell {
     }()
     
     private let subtitleLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.numberOfLines = 2
         label.textAlignment = .left
         label.contentMode = .topLeft
@@ -33,10 +33,38 @@ class FavouriteTableViewCell: UITableViewCell {
         return label
     }()
     
+    private let detailButton : UIButton = {
+       let button = UIButton()
+        button.contentMode = .scaleAspectFit
+        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        button.tintColor = .systemGray4
+        return button
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(titleLabel)
         contentView.addSubview(subtitleLabel)
+        contentView.addSubview(detailButton)
+//        detailButton.addTarget(self, action: #selector(didTapDetail), for: .touchUpInside)
+    }
+    
+    @objc private func didTapDetail(sender: AnyObject){
+        let menu = UIMenu(title: "Settings",options: .displayInline,children: [
+            UIAction(title: "Delete", handler: { _ in
+                print("Deleted")
+            }),
+            UIAction(title: "Edit",attributes: .destructive, handler: { _ in
+                print("Edited")
+            }),
+
+            UIAction(title: "Show on map", handler: { _ in
+                print("Showed on map")
+            }),
+            UIAction(title: "Set Direction", handler: { _ in
+                print("Set Direction")
+            })
+        ])
     }
     
     required init?(coder: NSCoder) {
@@ -49,8 +77,9 @@ class FavouriteTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        titleLabel.frame = CGRect(x: 5, y: 5, width: contentView.frame.size.width-5, height: 20)
-        subtitleLabel.frame = CGRect(x: 5, y: 25, width: contentView.frame.size.width, height: 45)
+        titleLabel.frame = CGRect(x: 5, y: 5, width: contentView.frame.size.width-30, height: 20)
+        subtitleLabel.frame = CGRect(x: 5, y: 25, width: contentView.frame.size.width-30, height: 45)
+//        detailButton.frame = CGRect(x: contentView.frame.size.width, y: 0, width: 30, height: 70)
     }
     
     func configureCell(with model: PlaceEntity){

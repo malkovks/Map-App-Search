@@ -35,3 +35,16 @@ struct CollectionImages{
                           "Fitness":UIImage(systemName: "dumbbell")
     ]
 }
+
+class DateClass {
+    static func dateConverter() -> String{
+        let date = Date()
+        let format = DateFormatter()
+        format.dateFormat = "HH:mm:ss"
+        format.timeStyle = .medium
+        format.dateStyle = .long
+        format.timeZone = TimeZone(abbreviation: "UTC")
+        let stringFormat = format.string(from: date)
+        return stringFormat
+    }
+}

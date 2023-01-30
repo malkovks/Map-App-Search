@@ -191,7 +191,7 @@ class DetailViewController: UIViewController {
     }
     
     @objc private func didTapAddToFavourite(){
-        let date = self.dateConverter()
+        let date = DateClass.dateConverter()
         if let coordinate = self.coordinatesForPlotInfo {
             self.coreData.saveData(lat: coordinate.latitude, lon: coordinate.longitude, date: date)
         }
@@ -223,7 +223,7 @@ class DetailViewController: UIViewController {
                                 }
                              }),
                              UIAction(title: "Add to Favourite",image: UIImage(systemName: "star"), handler: { _ in
-                                let date = self.dateConverter()
+                                let date = DateClass.dateConverter()
                                 if let coordinate = self.coordinatesForPlotInfo {
                                     self.coreData.saveData(lat: coordinate.latitude, lon: coordinate.longitude, date: date)
                                 }
@@ -245,16 +245,16 @@ class DetailViewController: UIViewController {
         }
     }
     //MARK: - convert and setting view methods
-    private func dateConverter() -> String{
-        let date = Date()
-        let format = DateFormatter()
-        format.dateFormat = "HH:mm:ss"
-        format.timeStyle = .medium
-        format.dateStyle = .long
-        format.timeZone = TimeZone(abbreviation: "UTC")
-        let stringFormat = format.string(from: date)
-        return stringFormat
-    }
+//    private func dateConverter() -> String{
+//        let date = Date()
+//        let format = DateFormatter()
+//        format.dateFormat = "HH:mm:ss"
+//        format.timeStyle = .medium
+//        format.dateStyle = .long
+//        format.timeZone = TimeZone(abbreviation: "UTC")
+//        let stringFormat = format.string(from: date)
+//        return stringFormat
+//    }
     
     private func convertDistance(distance: Double) -> String {
         var km = 0.0

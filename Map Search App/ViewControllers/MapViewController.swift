@@ -31,8 +31,10 @@ class MapViewController: UIViewController {
     var previousMainName: String?
     var coordinateSpanValue = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     var currentLocation = CLLocationCoordinate2D()
+    private let coredata = PlaceEntityStack.instance
     
-    let favouriteButton: UIButton = {
+    
+    private let favouriteButton: UIButton = {
         let button = UIButton()
          button.layer.cornerRadius = 8
          button.backgroundColor = .secondarySystemFill
@@ -45,7 +47,7 @@ class MapViewController: UIViewController {
          return button
      }()
     
-    let locationButton: CLLocationButton = {
+    private let locationButton: CLLocationButton = {
         let locationButton = CLLocationButton()
         locationButton.icon = .arrowOutline
         locationButton.isHighlighted = true
@@ -54,7 +56,7 @@ class MapViewController: UIViewController {
         return locationButton
     }()
     
-    let clearMapButton: UIButton = {
+    private let clearMapButton: UIButton = {
        let button = UIButton()
         button.setImage(UIImage(systemName: "xmark.circle.fill",
                                 withConfiguration: UIImage.SymbolConfiguration(
@@ -67,15 +69,23 @@ class MapViewController: UIViewController {
         return button
     }()
     
-    let stepper: UIStepper = {
+    private let stepper: UIStepper = {
        let stepper = UIStepper()
         stepper.minimumValue = 0.005
         stepper.maximumValue = 2
         stepper.stepValue = 0.05
-        
         stepper.value = 0.02
-        stepper.addTarget(self, action: #selector(updateStepper), for: .valueChanged)
         return stepper
+    }()
+    
+    private let menuButton: UIButton = {
+       let button = UIButton()
+        button.setImage(UIImage(systemName: "list.dash"), for: .normal)
+        button.contentMode = .scaleAspectFit
+        button.backgroundColor = .systemFill
+        button.tintColor = .black
+        button.subtitleLabel?.text = "Menu"
+        return button
     }()
     
     var searchController: UISearchController = {
@@ -122,12 +132,77 @@ class MapViewController: UIViewController {
         locationButton.frame = CGRect(x: view.frame.size.width-40, y:view.safeAreaInsets.top+navVC+locationButton.frame.size.height+40 , width: 40, height: 40)
         clearMapButton.frame = CGRect(x: view.frame.size.width-40, y: view.safeAreaInsets.top+navVC+40+locationButton.frame.size.height+40, width: 40, height: 40)
         clearMapButton.layer.cornerRadius = 0.5 * clearMapButton.bounds.size.width
-        stepper.frame = CGRect(x: view.frame.size.width-120, y: view.frame.size.height-150, width: 100, height: 50)
+        stepper.frame = CGRect(x: view.frame.size.width-120, y: view.frame.size.height-view.safeAreaInsets.top, width: 100, height: 100)
+        menuButton.frame = CGRect(x: 15, y: view.frame.size.height-view.safeAreaInsets.top, width: 40, height: 40)
+        menuButton.layer.cornerRadius = 0.5 * menuButton.bounds.size.width
     }
     //MARK: - Objc methods
     //func for getting user location when user press on location button
     @objc private func didTapLocation(){
         setupLocationManager()
+    }
+    //method for menu Button and displaying UIMenu
+    //сделать меню для отображения части данных, редактирование окна, показа избранного и пр.
+    @objc private func didTapMenu(){
+        let menu = UIMenu(title: "",options: .displayInline,children:
+                            
+                            [
+                                UIAction(title: "Clear map",image: UIImage(systemName: "xmark.circle.fill"),attributes: .destructive, handler: { _ in
+                                    self.didTapClearDirection()
+                                }),
+                                UIAction(title: "Тип карты",image: UIImage(systemName: "map.fill"), handler: { _ in
+                                switch self.mapView.mapType {
+                                case .standard:
+                                    self.mapView.mapType = .satellite
+                                case .satellite:
+                                    self.mapView.mapType = .hybrid
+                                default:
+                                    self.mapView.mapType = .standard
+                                    }
+                                }),
+                                UIAction(title: "Трафик",image: UIImage(systemName: "car.fill"), handler: { _ in
+                                switch self.mapView.showsTraffic {
+                                case false:
+                                    self.mapView.showsTraffic = true
+                                default:
+                                    self.mapView.showsTraffic = false
+                                    }
+                                }),
+                                UIAction(title: "Поделиться геопозицией",image: UIImage(systemName: "square.and.arrow.up.fill"), handler: { _ in
+                                   if let lat = self.locationManager.location?.coordinate.latitude,
+                                      let long = self.locationManager.location?.coordinate.longitude {
+                                       if let url = URL(string: "https://maps.apple.com?ll=\(lat),\(long)") {
+                                           let activity = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                                           activity.popoverPresentationController?.permittedArrowDirections = .up
+                                           self.present(activity,animated: true)
+                                       }
+                                   }
+                                }),
+                                UIAction(title: "Добавить геопозицию в избранное",image: UIImage(systemName: "suit.heart.fill"), handler: { _ in
+                                   let dateC = DateClass.dateConverter()
+                                   let location = self.locationManager.location?.coordinate
+                                   if let location = location {
+                                       self.coredata.saveData(lat: location.latitude, lon: location.longitude, date: dateC)
+                                   }
+                                }),
+                                UIAction(title: "Избранное",image: UIImage(systemName: "bookmark.fill"), handler: { _ in
+                                   self.didTapToFavourite()
+                                }),
+                                UIAction(title: "Информация о приложении",image: UIImage(systemName: "info.circle.fill"), handler: { _ in
+                                    let vc = DeveloperViewController()
+                                    let nav = UINavigationController(rootViewController: vc)
+                                    nav.modalPresentationStyle = .pageSheet
+                                    nav.sheetPresentationController?.detents = [.custom(resolver: { _ in
+                                        650
+                                    })]
+                                    nav.sheetPresentationController?.preferredCornerRadius = 8
+                                    nav.isNavigationBarHidden = false
+                                    nav.sheetPresentationController?.prefersGrabberVisible = true
+                                    self.present(nav,animated: true)
+                                })
+                        ])
+        self.menuButton.menu = menu
+        self.menuButton.showsMenuAsPrimaryAction = true
     }
     //method for stepper
     @objc private func updateStepper(_ sender: UIStepper){
@@ -150,7 +225,7 @@ class MapViewController: UIViewController {
     }
     //segue to Favourite View Contr
     @objc private func didTapToFavourite(){
-        let vc = FavoriteTableViewController()
+        let vc = FavouriteTableViewController()
         vc.delegate = self
         let secVC = DetailViewController()
         secVC.delegate = self
@@ -164,13 +239,12 @@ class MapViewController: UIViewController {
         vc.mapView = mapView
         vc.handleMapSearchDelegate = self
         vc.userLocation = locationManager.location
-        vc.modalPresentationStyle = .pageSheet
-        vc.sheetPresentationController?.detents = [.large(),.custom(resolver: { context in
-            return 500.0
-            
-        })]
-        vc.sheetPresentationController?.prefersGrabberVisible = true
-        present(vc, animated: true)
+        let nav = UINavigationController(rootViewController: vc)
+        nav.modalPresentationStyle = .pageSheet
+        nav.sheetPresentationController?.detents = [.large(),.custom(resolver: { context in return 500.0 })]
+        nav.sheetPresentationController?.prefersGrabberVisible = false
+        nav.isNavigationBarHidden = false
+        present(nav, animated: true)
     }
     //created new branch
     
@@ -235,6 +309,7 @@ class MapViewController: UIViewController {
         view.addSubview(locationButton)
         view.addSubview(clearMapButton)
         view.addSubview(stepper)
+        view.addSubview(menuButton)
     }
     //add views in subview,targets and delegates
     func setupViewsTargetsAndDelegates(){
@@ -242,13 +317,15 @@ class MapViewController: UIViewController {
         let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(addAnnotationOnLongPress(gesture:)))
         locationButton.addTarget(self, action: #selector(didTapLocation), for: .touchUpInside)
         clearMapButton.addTarget(self, action: #selector(didTapClearDirection), for: .touchUpInside)
+        stepper.addTarget(self, action: #selector(updateStepper), for: .valueChanged)
+        menuButton.addTarget(self, action: #selector(didTapMenu), for: .touchUpInside)
         //below two funcs which setup showing and hiding keyboard
 //        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         //nav item set up
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark.fill"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(didTapToFavourite))
         navigationItem.rightBarButtonItem?.tintColor = .black
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .done, target: self, action: #selector(didTapSearch))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .heavy)), style: .done, target: self, action: #selector(didTapSearch))
         navigationItem.leftBarButtonItem?.tintColor = .black
         
         //delegates and secondary setups
@@ -298,7 +375,7 @@ class MapViewController: UIViewController {
     private func setupDelegates(){
         let vc = DetailViewController()
         vc.delegate = self
-        let sec = FavoriteTableViewController()
+        let sec = FavouriteTableViewController()
         sec.delegate = self
         locationManager.delegate = self
         mapView.delegate = self

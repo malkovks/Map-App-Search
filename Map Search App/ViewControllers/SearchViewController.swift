@@ -14,8 +14,6 @@ class SearchViewController: UIViewController {
     static let identifier = "SearchViewController"
     var matchingItems: [MKMapItem] = []
     var mapView: MKMapView?
-    var testValueForSecondTable: [String] = []
-    var lastRequest: [LastChoosenRequest] = []
     var userLocation: CLLocation?
     private let geocoder = CLGeocoder()
     private let coreData = SearchHistoryStack.instance
@@ -43,14 +41,11 @@ class SearchViewController: UIViewController {
     let table: UITableView = {
        let table = UITableView()
         table.backgroundColor = .secondarySystemBackground
+        table.layer.cornerRadius = 8
         return table
     }()
     
     private var categoryCollectionView: UICollectionView!
-    
-    
-    
-    private let previosRequests = UITableView(frame: .zero, style: .plain)
     
     private var resultSearchController: UISearchController = {
         var search = UISearchController()
@@ -63,7 +58,7 @@ class SearchViewController: UIViewController {
         search.scopeBarActivation = .onTextEntry
         search.showsSearchResultsController = true
         search.automaticallyShowsCancelButton = true
-        search.hidesNavigationBarDuringPresentation = true
+        search.hidesNavigationBarDuringPresentation = false
         return search
     }()
     
@@ -94,16 +89,16 @@ class SearchViewController: UIViewController {
     }()
     
     private let clearHistoryButton: UIButton = {
-       let button = UIButton()
-        button.setImage(UIImage(systemName: "trash"), for: .normal)
-        button.tintColor = .systemRed
-        button.isHidden = true
-        button.backgroundColor = .systemBackground
-        
+        let button = UIButton()
+        button.configuration = .tinted()
+        button.configuration?.title = "Очистить историю поиска"
+        button.configuration?.image = UIImage(systemName: "trash")
+        button.configuration?.imagePlacement = .leading
+        button.configuration?.imagePadding = 8
+        button.configuration?.baseBackgroundColor = .systemRed
+        button.configuration?.baseForegroundColor = .systemRed
         return button
     }()
-    
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,21 +106,14 @@ class SearchViewController: UIViewController {
         setupNavigationAndView()
         newSetupSearchController()
         setupTable()
-        setupSearchBarConstraints()
     }
 
     
     override func viewDidLayoutSubviews(){
-        let safeArea = view.safeAreaInsets.top
-        closeButton.frame = CGRect(x: view.frame.size.width-40, y: safeArea+10, width: 30, height: 30)
-        closeButton.layer.cornerRadius = 0.5 * closeButton.bounds.width
-        searchImage.frame = CGRect(x: 10, y: safeArea+10, width: 30, height: 30)
-        searchImage.layer.cornerRadius = 0.5 * searchImage.bounds.width
-        clearHistoryButton.frame = CGRect(x: view.frame.size.width-50, y: safeArea+65, width: 30, height: 40)
-        segmentalButtons.frame = CGRect(x: 55, y: safeArea+65, width: view.frame.size.width-110, height: 40)
-        table.frame = CGRect(x: 0, y: safeArea+110, width: view.frame.size.width, height: view.frame.size.height-90)
-        table.layer.cornerRadius = 8
-        categoryCollectionView.frame = CGRect(x: 0, y: safeArea+110, width: view.frame.size.width, height: view.frame.size.height-100)
+        guard let safeArea = navigationController?.navigationBar.frame.size.height else { return }
+        segmentalButtons.frame = CGRect(x: 10, y: safeArea, width: view.frame.size.width-20, height: 40)
+        table.frame = CGRect(x: 0, y: 100, width: view.frame.size.width, height: view.frame.size.height-50)
+        categoryCollectionView.frame = CGRect(x: 0, y: 100, width: view.frame.size.width, height: view.frame.size.height-50)
     }
     
     @objc private func didTapDismiss(){
@@ -136,16 +124,18 @@ class SearchViewController: UIViewController {
     }
     
     @objc private func didTapClearHistory(){
-        let alert = UIAlertController(title: "Warning!", message: "Do you want to clear your history of request?", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Delete", style: .destructive,handler: { _ in
-            let data = self.coreData.historyVault
-            self.coreData.deleteHistoryData(data: data)
-            self.coreData.historyVault.removeAll()
-            self.table.reloadData()
-            self.clearHistoryButton.isEnabled = false
-        }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        present(alert,animated: true)
+        if !coreData.historyVault.isEmpty {
+            let alert = UIAlertController(title: "Warning!", message: "Do you want to clear your history of request?", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Delete", style: .destructive,handler: { _ in
+                let data = self.coreData.historyVault
+                self.coreData.deleteHistoryData(data: data)
+                self.coreData.historyVault.removeAll()
+                self.table.reloadData()
+                self.clearHistoryButton.isEnabled = false
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            present(alert,animated: true)
+        }
     }
     
     @objc private func didTapDetailButton(sender: AnyObject){
@@ -156,33 +146,23 @@ class SearchViewController: UIViewController {
         //для перехода от одного вью к другому
         switch segmentalButtons.selectedSegmentIndex {
         case 0:
+            navigationItem.titleView = resultSearchController.searchBar
             resultSearchController.searchBar.isHidden = false
             clearHistoryButton.isHidden = true
             categoryCollectionView.isHidden = false
-            segmentalButtons.frame = CGRect(x: 55, y: view.safeAreaInsets.top+65, width: view.frame.size.width-110, height: 40)
             table.reloadData()
             matchingItems = []
+            navigationItem.centerItemGroups = []
         default:
+            self.navigationItem.titleView = clearHistoryButton
+            clearHistoryButton.isHidden = false
             table.reloadData()
             coreData.loadHistoryData()
             resultSearchController.searchBar.text = ""
             matchingItems = []
             resultSearchController.searchBar.isHidden = true
-            clearHistoryButton.isHidden = false
             categoryCollectionView.isHidden = true
-            segmentalButtons.frame = CGRect(x: 55, y: view.safeAreaInsets.top+15, width: view.frame.size.width-110, height: 40)
         }
-    }
-    
-    private func setupSearchBarConstraints(){
-        let bar = resultSearchController.searchBar
-        bar.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            bar.topAnchor.constraint(equalTo: view.topAnchor,constant: 10),
-            bar.trailingAnchor.constraint(equalTo: view.trailingAnchor,constant: -50),
-            bar.heightAnchor.constraint(equalToConstant: 55),
-            bar.widthAnchor.constraint(equalToConstant: view.frame.size.width-100)
-        ])
     }
     
     private func setupCollectionView(){
@@ -216,31 +196,33 @@ class SearchViewController: UIViewController {
         table.contentInsetAdjustmentBehavior = .always
         table.reloadData()
         table.register(SearchResultTableViewCell.self, forCellReuseIdentifier: SearchResultTableViewCell.identifier)
-        if coreData.historyVault.count != 0 {
-            clearHistoryButton.isEnabled = true
-            clearHistoryButton.tintColor = .systemRed
+        if !coreData.historyVault.isEmpty {
+            clearHistoryButton.configuration?.baseBackgroundColor = .systemRed
+            clearHistoryButton.configuration?.baseForegroundColor = .systemRed
         } else {
-            clearHistoryButton.isEnabled = false
-            clearHistoryButton.tintColor = .black
+            clearHistoryButton.configuration?.baseBackgroundColor = .systemGray3
+            clearHistoryButton.configuration?.baseForegroundColor = .systemGray3
         }
-        
     }
     
     private func setupNavigationAndView(){
         view.addSubview(table)
-        view.addSubview(resultSearchController.searchBar)
-        view.addSubview(closeButton)
-        view.addSubview(searchImage)
         view.addSubview(segmentalButtons)
         view.addSubview(categoryCollectionView)
         view.addSubview(clearHistoryButton)
         view.backgroundColor = .systemBackground
-        navigationController?.navigationItem.largeTitleDisplayMode = .never
-        view.inputViewController?.edgesForExtendedLayout = .all
         
         segmentalButtons.addTarget(self, action: #selector(didTapToChangeSegment), for: .valueChanged)
         clearHistoryButton.addTarget(self, action: #selector(didTapClearHistory), for: .touchUpInside)
-        closeButton.addTarget(self, action: #selector(didTapDismiss), for: .touchUpInside)
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark.circle.fill"), landscapeImagePhone: nil, style: .done, target: self, action: #selector(didTapDismiss))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), landscapeImagePhone: nil, style: .done, target: self, action: nil)
+        navigationItem.titleView = resultSearchController.searchBar
+        navigationItem.rightBarButtonItem?.tintColor = .darkGray
+        navigationItem.leftBarButtonItem?.tintColor = .darkGray
+        navigationItem.leftBarButtonItem?.isSelected = false
+        navigationItem.leftBarButtonItem?.isEnabled = false
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     private func convertDistance(user: CLLocation,annotation: CLLocationCoordinate2D) -> String? {
@@ -259,15 +241,15 @@ class SearchViewController: UIViewController {
     
     //не работает тк неудачно конвертирует координаты в placemark
     //необходимо отредактировать функцию!!!
-    private func convertLocInPlacemark(location:CLLocationCoordinate2D) -> CLPlacemark? {
-        let coordinate = CLLocation(latitude: location.latitude, longitude: location.longitude)
-        var returnPlacemark: CLPlacemark?
-        geocoder.reverseGeocodeLocation(coordinate) { placemark, error in
-        
-            returnPlacemark = placemark?.first
-        }
-        return returnPlacemark
-    }
+//    private func convertLocInPlacemark(location:CLLocationCoordinate2D) -> CLPlacemark? {
+//        let coordinate = CLLocation(latitude: location.latitude, longitude: location.longitude)
+//        var returnPlacemark: CLPlacemark?
+//        geocoder.reverseGeocodeLocation(coordinate) { placemark, error in
+//
+//            returnPlacemark = placemark?.first
+//        }
+//        return returnPlacemark
+//    }
     
     private func alternativeParseData(customMark: MKPlacemark) -> String {
         

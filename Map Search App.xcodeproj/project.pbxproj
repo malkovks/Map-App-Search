@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A05E9BC2988416400B87C5E /* DeveloperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */; };
 		0A1B52AD29865E5E00FB548D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AC29865E5E00FB548D /* AppDelegate.swift */; };
 		0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */; };
 		0A1B52B429865E5E00FB548D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B52B229865E5E00FB548D /* Main.storyboard */; };
@@ -28,6 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewController.swift; sourceTree = "<group>"; };
 		0A1B52A929865E5E00FB548D /* Map Search App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Map Search App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A1B52AC29865E5E00FB548D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 				0A1B52E1298665BE00FB548D /* DetailViewController.swift */,
 				0A1B52E3298665CF00FB548D /* SearchViewController.swift */,
 				0A1B52E6298665E200FB548D /* WeatherViewController.swift */,
+				0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -287,6 +290,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A05E9BC2988416400B87C5E /* DeveloperViewController.swift in Sources */,
 				0A1B52AD29865E5E00FB548D /* AppDelegate.swift in Sources */,
 				0A1B52E02986659C00FB548D /* FavouriteTableView.swift in Sources */,
 				0A1B52B729865E5E00FB548D /* Map_Search_App.xcdatamodeld in Sources */,
@@ -451,6 +455,7 @@
 				DEVELOPMENT_TEAM = 8UABHSLKYJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Map Search App/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Maps;
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Location tracking need for showing current user's location in real time";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Location tracking need for showing current user's location in real time";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Location tracking need for showing current user's location in real time";
@@ -483,6 +488,7 @@
 				DEVELOPMENT_TEAM = 8UABHSLKYJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Map Search App/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Maps;
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Location tracking need for showing current user's location in real time";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Location tracking need for showing current user's location in real time";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Location tracking need for showing current user's location in real time";

@@ -14,7 +14,7 @@ protocol FavouritePlaceDelegate: AnyObject{
     func passCoordinates(coordinates: CLLocationCoordinate2D)
 }
 
-class FavoriteTableViewController: UIViewController, UIGestureRecognizerDelegate{
+class FavouriteTableViewController: UIViewController, UIGestureRecognizerDelegate{
 
     private let coredata = PlaceEntityStack.instance
     
@@ -43,6 +43,10 @@ class FavoriteTableViewController: UIViewController, UIGestureRecognizerDelegate
     
     @objc func didTapCancel(){
         dismiss(animated: true)
+    }
+    
+    @objc private func didTapEditCell(sender: AnyObject){
+        let cellIndex = sender
     }
     
     @objc private func didTapLongGesture(gesture: UILongPressGestureRecognizer){
@@ -84,7 +88,7 @@ class FavoriteTableViewController: UIViewController, UIGestureRecognizerDelegate
     }
     // MARK: - Table view data source
 }
-extension FavoriteTableViewController: UITableViewDelegate, UITableViewDataSource {
+extension FavouriteTableViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return coredata.vaultData.count
     }
@@ -97,6 +101,13 @@ extension FavoriteTableViewController: UITableViewDelegate, UITableViewDataSourc
         let cell = tableView.dequeueReusableCell(withIdentifier: FavouriteTableViewCell.identifier, for: indexPath) as! FavouriteTableViewCell
         let place = coredata.vaultData[indexPath.row]
         cell.configureCell(with: place)
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        button.tintColor = .systemRed
+        button.addTarget(self, action: #selector(didTapEditCell), for: .touchUpInside)
+        button.tag = indexPath.row
+        button.contentMode = .scaleAspectFit
+        cell.accessoryView = button as UIView
         return cell
     }
     
