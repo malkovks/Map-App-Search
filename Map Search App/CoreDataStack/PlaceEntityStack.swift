@@ -26,11 +26,12 @@ public class PlaceEntityStack {
         }
     }
     
-    func saveData(lat: Double,lon: Double, date: String?){
-        let place = PlaceEntity(context: context)
-        place.date = date
-        place.latitude = lat
-        place.longitude = lon
+    func saveData(lat: Double,lon: Double, date: String?,name place: String){
+        let placeValue = PlaceEntity(context: context)
+        placeValue.date = date
+        placeValue.latitude = lat
+        placeValue.longitude = lon
+        placeValue.place = place
         do {
             try context.save()
             SPAlert.present(title: "Success",message: "This place was added to Favourite Page", preset: .heart, haptic: .success)

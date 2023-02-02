@@ -193,7 +193,7 @@ class DetailViewController: UIViewController {
     @objc private func didTapAddToFavourite(){
         let date = DateClass.dateConverter()
         if let coordinate = self.coordinatesForPlotInfo {
-            self.coreData.saveData(lat: coordinate.latitude, lon: coordinate.longitude, date: date)
+            self.coreData.saveData(lat: coordinate.latitude, lon: coordinate.longitude, date: date,name: pointOfInterest ?? "No Name")
         }
     }
     
@@ -214,19 +214,10 @@ class DetailViewController: UIViewController {
                                 }
                              }),
                              UIAction(title: "Share location",image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in
-                                if let lat = self.coordinatesForPlotInfo?.latitude, let long = self.coordinatesForPlotInfo?.longitude {
-                                    if let url = URL(string: "https://maps.apple.com?ll=\(lat),\(long)") {
-                                        let activity = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-                                        activity.popoverPresentationController?.permittedArrowDirections = .up
-                                        self.present(activity,animated: true)
-                                    }
-                                }
+                                self.didTapToShare()
                              }),
                              UIAction(title: "Add to Favourite",image: UIImage(systemName: "star"), handler: { _ in
-                                let date = DateClass.dateConverter()
-                                if let coordinate = self.coordinatesForPlotInfo {
-                                    self.coreData.saveData(lat: coordinate.latitude, lon: coordinate.longitude, date: date)
-                                }
+                                self.didTapAddToFavourite()
                              })
                         ])
         moreInfoButtonPlotView.showsMenuAsPrimaryAction = true
@@ -284,8 +275,7 @@ class DetailViewController: UIViewController {
             let meter = self.distanceBetweenUserAndAnnotation
             let distance = self.convertDistance(distance: meter)
             DispatchQueue.main.async {
-                if let point = pointOfInterest, point != "" {
-                    
+                if let point = pointOfInterest {
                     self.mainTitlePlotView.text = point
                     self.distanceLabelPlotView.text = distance
                     self.cellData = "\(streetName), \(streetSubname)\n\(city)\n\(country)\n\(postIndex)"

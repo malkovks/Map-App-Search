@@ -112,7 +112,7 @@ class SearchViewController: UIViewController {
     override func viewDidLayoutSubviews(){
         guard let safeArea = navigationController?.navigationBar.frame.size.height else { return }
         segmentalButtons.frame = CGRect(x: 10, y: safeArea, width: view.frame.size.width-20, height: 40)
-        table.frame = CGRect(x: 0, y: 100, width: view.frame.size.width, height: view.frame.size.height-50)
+        table.frame = CGRect(x: 0, y: 100, width: view.frame.size.width, height: view.frame.size.height-100)
         categoryCollectionView.frame = CGRect(x: 0, y: 100, width: view.frame.size.width, height: view.frame.size.height-50)
     }
     
@@ -165,6 +165,22 @@ class SearchViewController: UIViewController {
         }
     }
     
+    @objc private func didTapCellDetailButton(){
+        let menu = UIMenu(title: "Title",options: .displayInline,children: [
+            UIAction(title: "Delete", handler: { _ in
+                print("delete ")
+            }),
+            UIAction(title: "Add To Favourite", handler: { _ in
+                print("add to favourite ")
+            }),
+            UIAction(title: "Show on map", handler: { _ in
+                print("show on map")
+            })
+        ])
+        let vc = SearchResultTableViewCell()
+        vc.detailButtonOnCell.menu = menu
+    }
+    
     private func setupCollectionView(){
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -203,6 +219,17 @@ class SearchViewController: UIViewController {
             clearHistoryButton.configuration?.baseBackgroundColor = .systemGray3
             clearHistoryButton.configuration?.baseForegroundColor = .systemGray3
         }
+        
+        if coreData.historyVault.count > 10 {
+            let countOfData = coreData.historyVault.count
+            var lastCount = countOfData - 30
+            if lastCount != 0 {
+                coreData.historyVault.remove(at: lastCount-1)
+                let data = coreData.historyVault[lastCount-1]
+                coreData.deleteLastElement(data: data)
+                lastCount -= 1
+            }
+        }
     }
     
     private func setupNavigationAndView(){
@@ -238,18 +265,6 @@ class SearchViewController: UIViewController {
         }
         return output
     }
-    
-    //не работает тк неудачно конвертирует координаты в placemark
-    //необходимо отредактировать функцию!!!
-//    private func convertLocInPlacemark(location:CLLocationCoordinate2D) -> CLPlacemark? {
-//        let coordinate = CLLocation(latitude: location.latitude, longitude: location.longitude)
-//        var returnPlacemark: CLPlacemark?
-//        geocoder.reverseGeocodeLocation(coordinate) { placemark, error in
-//
-//            returnPlacemark = placemark?.first
-//        }
-//        return returnPlacemark
-//    }
     
     private func alternativeParseData(customMark: MKPlacemark) -> String {
         
@@ -347,17 +362,21 @@ extension SearchViewController:  UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: SearchResultTableViewCell.identifier, for: indexPath) as! SearchResultTableViewCell
+        cell.detailButtonOnCell.tag = indexPath.row
         if segmentalButtons.selectedSegmentIndex == 0 {
             let selectedItems = matchingItems[indexPath.row].placemark
             cell.configureCell(placemark: selectedItems)
+            cell.detailButtonOnCell.isHidden = true
             if let location = self.userLocation {
                 let placeDistance = convertDistance(user: location, annotation: selectedItems.coordinate)
                 cell.configureDistanceForCell(distance: placeDistance)
             }
         } else {
-            //доделать placemark
             let convertData = coreData.historyVault.reversed()[indexPath.row]
+            let location = CLLocationCoordinate2D(latitude: convertData.langitude, longitude: convertData.longitude)
+            cell.detailButtonOnCell.isHidden = false
             cell.configureCell(with: convertData)
+            cell.coordinatesForSaving = location
         }
         return cell
     }

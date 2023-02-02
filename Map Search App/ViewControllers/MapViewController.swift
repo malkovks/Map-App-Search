@@ -28,6 +28,7 @@ class MapViewController: UIViewController {
     var previosLocation: CLLocation?
     var directionsArray: [MKDirections] = []
     var savedLocationToShowDirection: CLLocationCoordinate2D?
+    var savedNameLocation: String?
     var previousMainName: String?
     var coordinateSpanValue = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     var currentLocation = CLLocationCoordinate2D()
@@ -103,8 +104,8 @@ class MapViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         setupDelegates()
         super.viewDidAppear(animated)
-        if let location = savedLocationToShowDirection {
-            setChoosenLocation(coordinates: location, requestName: "")
+        if let location = savedLocationToShowDirection,let name = savedNameLocation {
+            setChoosenLocation(coordinates: location, requestName: name)
             savedLocationToShowDirection = nil
         }
     }
@@ -182,7 +183,7 @@ class MapViewController: UIViewController {
                                    let dateC = DateClass.dateConverter()
                                    let location = self.locationManager.location?.coordinate
                                    if let location = location {
-                                       self.coredata.saveData(lat: location.latitude, lon: location.longitude, date: dateC)
+                                       self.coredata.saveData(lat: location.latitude, lon: location.longitude, date: dateC, name: "Test")
                                    }
                                 }),
                                 UIAction(title: "Избранное",image: UIImage(systemName: "bookmark.fill"), handler: { _ in
@@ -533,10 +534,11 @@ class MapViewController: UIViewController {
 }
 //MARK: - Extensions for Delegates
 extension MapViewController: FavouritePlaceDelegate{
-    func passCoordinates(coordinates: CLLocationCoordinate2D) {
+    func passCoordinates(coordinates: CLLocationCoordinate2D,name: String?) {
         mapView.removeAnnotations(mapView.annotations)
         mapView.removeAnnotation(annotationCustom)
         savedLocationToShowDirection = coordinates
+        savedNameLocation = name
     }
 }
 

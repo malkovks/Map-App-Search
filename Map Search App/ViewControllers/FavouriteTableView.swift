@@ -11,7 +11,7 @@ import MapKit
 import SPAlert
 
 protocol FavouritePlaceDelegate: AnyObject{
-    func passCoordinates(coordinates: CLLocationCoordinate2D)
+    func passCoordinates(coordinates: CLLocationCoordinate2D,name: String?)
 }
 
 class FavouriteTableViewController: UIViewController, UIGestureRecognizerDelegate{
@@ -116,7 +116,7 @@ extension FavouriteTableViewController: UITableViewDelegate, UITableViewDataSour
         let place = coredata.vaultData[indexPath.row]
         let coordinate = CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude)
         
-        delegate?.passCoordinates(coordinates: coordinate)
+        delegate?.passCoordinates(coordinates: coordinate,name: place.place)
         dismiss(animated: true)
     }
 

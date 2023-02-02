@@ -30,10 +30,19 @@ class SearchHistoryStack {
         vault.longitude = lon
         do {
             try context.save()
+            loadHistoryData()
         } catch {
             SPAlert.present(message: "Error saving", haptic: .error)
         }
-        
+    }
+    
+    func deleteLastElement(data: SearchHistory){
+        context.delete(data)
+        do {
+            try context.save()
+        } catch {
+            SPAlert.present(title: "Error", preset: .error)
+        }
     }
     
     func deleteHistoryData(data: [SearchHistory]){
@@ -41,6 +50,7 @@ class SearchHistoryStack {
         do {
             try context.save()
             SPAlert.present(message: "History was cleared", haptic: .success)
+            loadHistoryData()
         } catch {
             SPAlert.present(message: "Error Deleting", haptic: .error)
         }
