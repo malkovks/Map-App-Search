@@ -45,10 +45,6 @@ class FavouriteTableViewController: UIViewController, UIGestureRecognizerDelegat
         dismiss(animated: true)
     }
     
-    @objc private func didTapEditCell(sender: AnyObject){
-        let cellIndex = sender
-    }
-    
     @objc private func didTapLongGesture(gesture: UILongPressGestureRecognizer){
         if gesture.state == .ended {
             let p = gesture.location(in: tableview)
@@ -101,13 +97,6 @@ extension FavouriteTableViewController: UITableViewDelegate, UITableViewDataSour
         let cell = tableView.dequeueReusableCell(withIdentifier: FavouriteTableViewCell.identifier, for: indexPath) as! FavouriteTableViewCell
         let place = coredata.vaultData[indexPath.row]
         cell.configureCell(with: place)
-        let button = UIButton(type: .custom)
-        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-        button.tintColor = .systemRed
-        button.addTarget(self, action: #selector(didTapEditCell), for: .touchUpInside)
-        button.tag = indexPath.row
-        button.contentMode = .scaleAspectFit
-        cell.accessoryView = button as UIView
         return cell
     }
     
@@ -115,7 +104,6 @@ extension FavouriteTableViewController: UITableViewDelegate, UITableViewDataSour
         tableView.deselectRow(at: indexPath, animated: true)
         let place = coredata.vaultData[indexPath.row]
         let coordinate = CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude)
-        
         delegate?.passCoordinates(coordinates: coordinate,name: place.place)
         dismiss(animated: true)
     }

@@ -48,22 +48,11 @@ class SearchResultTableViewCell: UITableViewCell {
         return label
     }()
     
-    let detailButtonOnCell: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-        button.tintColor = .black
-        button.showsMenuAsPrimaryAction = true
-        button.contentMode = .scaleAspectFit
-        return button
-    }()
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(titleLabel)
         contentView.addSubview(subtitleLabel)
         contentView.addSubview(distanceLabel)
-        contentView.addSubview(detailButtonOnCell)
-        detailButtonOnCell.addTarget(self, action: #selector(didTapCellDetailButtonTest), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -79,31 +68,7 @@ class SearchResultTableViewCell: UITableViewCell {
         titleLabel.frame = CGRect(x: 5, y: 5, width: contentView.frame.size.width-75, height: 20)
         subtitleLabel.frame = CGRect(x: 5, y: 25, width: contentView.frame.size.width-45, height: 45)
         distanceLabel.frame = CGRect(x: contentView.frame.size.width-50, y: 5, width: 45, height: 20)
-        detailButtonOnCell.frame = CGRect(x: contentView.frame.size.width-40, y: 5, width: 40, height: 60)
     }
-    
-    @objc private func didTapCellDetailButtonTest(){
-        let tag = detailButtonOnCell.tag
-        let menu = UIMenu(title: "",options: .displayInline,children: [
-            UIAction(title: "Delete",image: UIImage(systemName: "trash"),attributes: .destructive, handler: { _ in
-                
-            }),
-            UIAction(title: "Add To Favourite",image: UIImage(systemName: "star.fill"), handler: { _ in
-                let date = DateClass.dateConverter()
-                if let location = self.coordinatesForSaving {
-                    self.coredata.saveData(lat: location.latitude, lon: location.longitude, date: date, name: "Second Test")
-                }
-                
-            }),
-            UIAction(title: "Show on map",image: UIImage(systemName: "mappin.square.fill"), handler: { _ in
-                
-            })
-        ])
-        detailButtonOnCell.menu = menu
-        print(tag)
-    }
-    
-
     
     private func alternativeParseData(customMark: MKPlacemark) -> String {
         

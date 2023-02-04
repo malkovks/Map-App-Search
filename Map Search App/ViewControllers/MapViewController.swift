@@ -58,7 +58,7 @@ class MapViewController: UIViewController {
     }()
     
     private let clearMapButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "xmark.circle.fill",
                                 withConfiguration: UIImage.SymbolConfiguration(
                                     pointSize: 32,
@@ -80,7 +80,7 @@ class MapViewController: UIViewController {
     }()
     
     private let menuButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton(type: .contactAdd)
         button.setImage(UIImage(systemName: "list.dash"), for: .normal)
         button.contentMode = .scaleAspectFit
         button.backgroundColor = .systemFill
@@ -253,10 +253,20 @@ class MapViewController: UIViewController {
     @objc func addAnnotationOnLongPress(gesture: UILongPressGestureRecognizer){
         print("pressed")
         if gesture.state == .ended{
+            guard let destination = gestureLocation(for: gesture), let userCoord = locationManager.location?.coordinate else { return }
             mapView.removeAnnotation(annotationCustom)
             mapView.removeAnnotations(mapView.annotations)
-            if streetName(location: gesture) != nil{
-            }
+            let vc = SetDirectionViewController()
+            vc.delegate = self
+            vc.directionData = SetDirectionData(userCoordinate: userCoord, userAddress: "", userPlacemark: nil, destinationCoordinate: destination, destinationAddress: "", destinationPlacemark: nil)
+            let nav = UINavigationController(rootViewController: vc)
+            nav.modalPresentationStyle = .pageSheet
+            nav.sheetPresentationController?.detents = [.custom(resolver: { context in return 500 }),.large()]
+            nav.sheetPresentationController?.prefersGrabberVisible = true
+            nav.isNavigationBarHidden = false
+            present(nav,animated: true)
+//            if streetName(location: gesture) != nil{
+//            }
         }
     }
     //func of cleaning view from directions and pins
@@ -354,17 +364,6 @@ class MapViewController: UIViewController {
             self.mapView.setRegion(region, animated: true)
         }
     }
-    //date converter and returnin last current time
-    private func dateConverter() -> String{
-        let date = Date()
-        let format = DateFormatter()
-        format.dateFormat = "HH:mm:ss"
-        format.timeStyle = .medium
-        format.dateStyle = .long
-        format.timeZone = TimeZone(abbreviation: "UTC")
-        let stringFormat = format.string(from: date)
-        return stringFormat
-    }
     
     func distanceFunction(coordinate: CLLocationCoordinate2D) -> Double {
         let user = locationManager.location
@@ -381,12 +380,15 @@ class MapViewController: UIViewController {
         locationManager.delegate = self
         mapView.delegate = self
         searchController.delegate = self
+        let destVC = SetDirectionViewController()
+        destVC.delegate = self
     }
     //MARK: - Setups for displaying direction, converter methods and getters of address
     public func setChoosenLocation(coordinates: CLLocationCoordinate2D,requestName: String?) {
         let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
         mapView.removeAnnotation(annotationCustom)
         mapView.removeAnnotations(mapView.annotations)
+//        let geocoderStart = GeocoderReturn
         geocoder.reverseGeocodeLocation(location) { placemark, error in
             guard let placemark = placemark?.first else { return }
             let streetName = placemark.thoroughfare ?? ""
@@ -485,6 +487,16 @@ class MapViewController: UIViewController {
             }
         }
     }
+    //функция для отображения ДЛИННЫ МАРШРУТА
+//    private func getRouteDistance(coordinate: CLLocationCoordinate2D){
+//        let request = MKDirections.Request()
+//        let user = locationManager.location?.coordinate
+//        let destination = MKPlacemark(coordinate: coordinate)
+//        let userMark = MKPlacemark(coordinate: user)
+//        request.source = MKMapItem(placemark: userMark)
+//        request.destination = MKMapItem(placemark: destination)
+//    }
+    
     //main setups for direction display. Input user location and output result of request by start and end location
     func createDirectionRequest(from coordinate: CLLocationCoordinate2D) -> MKDirections.Request {
         let destinationCoordinate = coordinate //endpoint coordinates
@@ -588,6 +600,13 @@ extension MapViewController:  PlotInfoDelegate {
         }
     }
 }
+extension MapViewController: SetDirectionProtocol {
+    func getDataForDirection(user coordinate: CLLocationCoordinate2D, _ destination: CLLocationCoordinate2D, direction type: String) {
+        
+    }
+    
+    
+}
 
 
 extension MapViewController: HandleMapSearch {
@@ -679,8 +698,10 @@ extension MapViewController: MKMapViewDelegate {
 //        if view.annotation != nil {
 //            mapView.removeAnnotation(annotationCustom)
 //        }
-        let annotation = (view.annotation?.coordinate)
-        let dist = distanceFunction(coordinate: annotation!)
+        mapView.removeAnnotation(annotationCustom)
+        guard let annotation = (view.annotation?.coordinate) else { return }
+        
+        let dist = distanceFunction(coordinate: annotation)
         let vc = DetailViewController()
         vc.pointOfInterest = view.annotation?.title ?? "No title"
         vc.coordinatesForPlotInfo = view.annotation?.coordinate

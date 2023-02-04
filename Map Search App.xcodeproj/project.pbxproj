@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		0A05E9BC2988416400B87C5E /* DeveloperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */; };
+		0A05E9BE298D539C00B87C5E /* SetDirectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9BD298D539C00B87C5E /* SetDirectionViewController.swift */; };
+		0A05E9C0298D9AF800B87C5E /* GeocoderReturn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9BF298D9AF800B87C5E /* GeocoderReturn.swift */; };
+		0A05E9C2298DA11D00B87C5E /* DateClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9C1298DA11D00B87C5E /* DateClass.swift */; };
+		0A05E9C8298DB70000B87C5E /* SetDirectionCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9C7298DB70000B87C5E /* SetDirectionCollectionViewCell.swift */; };
+		0A05E9CA298DCCDC00B87C5E /* SetDirectionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9C9298DCCDC00B87C5E /* SetDirectionData.swift */; };
 		0A1B52AD29865E5E00FB548D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AC29865E5E00FB548D /* AppDelegate.swift */; };
 		0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */; };
 		0A1B52B429865E5E00FB548D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B52B229865E5E00FB548D /* Main.storyboard */; };
@@ -30,6 +35,11 @@
 
 /* Begin PBXFileReference section */
 		0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewController.swift; sourceTree = "<group>"; };
+		0A05E9BD298D539C00B87C5E /* SetDirectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDirectionViewController.swift; sourceTree = "<group>"; };
+		0A05E9BF298D9AF800B87C5E /* GeocoderReturn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocoderReturn.swift; sourceTree = "<group>"; };
+		0A05E9C1298DA11D00B87C5E /* DateClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateClass.swift; sourceTree = "<group>"; };
+		0A05E9C7298DB70000B87C5E /* SetDirectionCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDirectionCollectionViewCell.swift; sourceTree = "<group>"; };
+		0A05E9C9298DCCDC00B87C5E /* SetDirectionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDirectionData.swift; sourceTree = "<group>"; };
 		0A1B52A929865E5E00FB548D /* Map Search App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Map Search App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A1B52AC29865E5E00FB548D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -92,18 +102,21 @@
 				0A1B52C62986626D00FB548D /* Managers */,
 				0A1B52C52986624B00FB548D /* Storyboard and assets */,
 				0A1B52C42986623A00FB548D /* ViewControllers */,
-				0A1B52C32986623100FB548D /* Stores */,
+				0A1B52C32986623100FB548D /* Stores and Managers */,
 				0A1B52BD29865E6000FB548D /* Info.plist */,
 			);
 			path = "Map Search App";
 			sourceTree = "<group>";
 		};
-		0A1B52C32986623100FB548D /* Stores */ = {
+		0A1B52C32986623100FB548D /* Stores and Managers */ = {
 			isa = PBXGroup;
 			children = (
 				0A1B52C9298662DC00FB548D /* ManageStructs.swift */,
+				0A05E9BF298D9AF800B87C5E /* GeocoderReturn.swift */,
+				0A05E9C1298DA11D00B87C5E /* DateClass.swift */,
+				0A05E9C9298DCCDC00B87C5E /* SetDirectionData.swift */,
 			);
-			path = Stores;
+			path = "Stores and Managers";
 			sourceTree = "<group>";
 		};
 		0A1B52C42986623A00FB548D /* ViewControllers */ = {
@@ -115,6 +128,7 @@
 				0A1B52E3298665CF00FB548D /* SearchViewController.swift */,
 				0A1B52E6298665E200FB548D /* WeatherViewController.swift */,
 				0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */,
+				0A05E9BD298D539C00B87C5E /* SetDirectionViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -152,8 +166,9 @@
 			isa = PBXGroup;
 			children = (
 				0A1B52D7298664BE00FB548D /* FavouriteTableViewCell.swift */,
-				0A1B52D9298664CE00FB548D /* ResultCollectionViewCell.swift */,
 				0A1B52DB298664E000FB548D /* SearchResultTableViewCell.swift */,
+				0A1B52D9298664CE00FB548D /* ResultCollectionViewCell.swift */,
+				0A05E9C7298DB70000B87C5E /* SetDirectionCollectionViewCell.swift */,
 			);
 			path = "Custom Cells";
 			sourceTree = "<group>";
@@ -294,16 +309,21 @@
 				0A1B52AD29865E5E00FB548D /* AppDelegate.swift in Sources */,
 				0A1B52E02986659C00FB548D /* FavouriteTableView.swift in Sources */,
 				0A1B52B729865E5E00FB548D /* Map_Search_App.xcdatamodeld in Sources */,
+				0A05E9CA298DCCDC00B87C5E /* SetDirectionData.swift in Sources */,
 				0A1B52E2298665BE00FB548D /* DetailViewController.swift in Sources */,
 				0A1B52D4298663F300FB548D /* PlaceEntityStack.swift in Sources */,
 				0A1B52DE2986658A00FB548D /* MapViewController.swift in Sources */,
 				0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */,
+				0A05E9C0298D9AF800B87C5E /* GeocoderReturn.swift in Sources */,
 				0A1B52D8298664BE00FB548D /* FavouriteTableViewCell.swift in Sources */,
+				0A05E9C8298DB70000B87C5E /* SetDirectionCollectionViewCell.swift in Sources */,
 				0A1B52E4298665CF00FB548D /* SearchViewController.swift in Sources */,
 				0A1B52CA298662DC00FB548D /* ManageStructs.swift in Sources */,
+				0A05E9C2298DA11D00B87C5E /* DateClass.swift in Sources */,
 				0A1B52D62986642100FB548D /* SearchHistoryStack.swift in Sources */,
 				0A1B52E7298665E200FB548D /* WeatherViewController.swift in Sources */,
 				0A1B52DA298664CE00FB548D /* ResultCollectionViewCell.swift in Sources */,
+				0A05E9BE298D539C00B87C5E /* SetDirectionViewController.swift in Sources */,
 				0A1B52DC298664E000FB548D /* SearchResultTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
