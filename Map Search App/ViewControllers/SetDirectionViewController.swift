@@ -15,11 +15,11 @@ protocol SetDirectionProtocol: AnyObject{
 
 class SetDirectionViewController: UIViewController {
     
-    var destinationPoint: CLLocationCoordinate2D?
-    
     var directionData: SetDirectionData? //сюда сохраняются данные из map view для делегирования их на карту обратно
     
     weak var delegate: SetDirectionProtocol?
+    
+    private let geocoder = CLGeocoder()
     
     let dictionaryOfType: [String:UIImage] = ["Автомобиль":UIImage(systemName: "car")!
                                               ,"Пешком":UIImage(systemName: "figure.walk")!
@@ -36,6 +36,7 @@ class SetDirectionViewController: UIViewController {
         field.backgroundColor = .systemBackground
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 50))
         field.leftViewMode = .always
+        field.tag = 0
         return field
     }()
     
@@ -49,20 +50,22 @@ class SetDirectionViewController: UIViewController {
         field.backgroundColor = .systemBackground
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 50))
         field.leftViewMode = .always
+        field.tag = 1
         return field
     }()
     
     private var directionCollectionView: UICollectionView!
     
     override func viewDidLoad() {
-        
-        guard let location = directionData?.destinationCoordinate else { return }
-        guard let user = directionData?.userCoordinate else { return }
-        setupTextFields(first: user, second: location)
         super.viewDidLoad()
         setupCollectionView()
         setupNavigationBar()
         setupView()
+        guard let location = directionData?.destinationCoordinate else { return }
+        guard let user = directionData?.userCoordinate else { return }
+        setupTextFields(first: user, second: location)
+        
+        
         
     }
     
@@ -85,6 +88,8 @@ class SetDirectionViewController: UIViewController {
         view.backgroundColor = .secondarySystemBackground
         firstTextField.delegate = self
         secondTextField.delegate = self
+        let vc = SearchViewController()
+        vc.delegate = self
 
 //        GeocoderReturn.shared.convertFromGeocode(coordinate: location) { place in
 //            self.firstTextField.text = place.streetName+" "+place.appNumber
@@ -103,16 +108,11 @@ class SetDirectionViewController: UIViewController {
     private func parseGeolocation(location: CLLocation) -> CLPlacemark?{
         var returnPlacemark: CLPlacemark?
 //        let location = CLLocation(latitude: location.latitude, longitude: location.longitude)
-        let geo = CLGeocoder()
-        geo.reverseGeocodeLocation(location) { placemark, error in
+        
+        geocoder.reverseGeocodeLocation(location) { placemark, error in
             guard let placemark = placemark?.first, error != nil else { return }
-            let name = placemark.thoroughfare ?? ""
-            let appName = placemark.subThoroughfare ?? ""
-            returnPlacemark = placemark
-//            let areaOfInterest = placemark.areasOfInterest?.compactMap({ interest in
-//                <#code#>
-//            })
         }
+        print(returnPlacemark?.thoroughfare)
         return returnPlacemark
     }
     
@@ -140,6 +140,23 @@ class SetDirectionViewController: UIViewController {
     }
 }
 
+extension SetDirectionViewController: SearchControllerDelegate {
+    func passSearchResult(coordinates: CLLocationCoordinate2D, placemark: MKPlacemark,tagView: Int) {
+        
+        if !placemark.name!.isEmpty {
+            print("Delegate work fine")
+            if tagView == 0 {
+                firstTextField.text = placemark.name
+            } else if tagView == 1 {
+                secondTextField.text = placemark.name
+            }
+        }
+        
+        
+        
+    }
+}
+
 extension SetDirectionViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         secondTextField.resignFirstResponder()
@@ -148,7 +165,42 @@ extension SetDirectionViewController: UITextFieldDelegate {
         }
         return true
     }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        let vc = SearchViewController()
+        if textField.tag == 0 {
+            guard let data = directionData?.userCoordinate else { return }
+            let location = CLLocation(latitude: data.latitude, longitude: data.longitude)
+            vc.searchValue = SearchData(someLocation: location, indicatorOfView: true,mapView: directionData!.mapViewDirection,tagView: textField.tag)
+            vc.delegate = self
+            let nav = UINavigationController(rootViewController: vc)
+            nav.modalPresentationStyle = .automatic
+            nav.sheetPresentationController?.detents = [.custom(resolver: { context in
+                return 400
+            })]
+            nav.sheetPresentationController?.prefersGrabberVisible = false
+            nav.isNavigationBarHidden = false
+            present(nav, animated: true)
+        } else {
+            guard let data = directionData?.destinationCoordinate else { return }
+            let location = CLLocation(latitude: data.latitude, longitude: data.longitude)
+            vc.searchValue = SearchData(someLocation: location, indicatorOfView: true,mapView: directionData!.mapViewDirection,tagView: textField.tag)
+            vc.delegate = self
+            let nav = UINavigationController(rootViewController: vc)
+            nav.modalPresentationStyle = .pageSheet
+            nav.sheetPresentationController?.detents = [.custom(resolver: { context in
+                return 400
+            })]
+            nav.sheetPresentationController?.prefersGrabberVisible = false
+            nav.isNavigationBarHidden = false
+            present(nav, animated: true)
+        }
+    }
+    
+    
 }
+
+
 
 extension SetDirectionViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

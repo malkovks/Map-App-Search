@@ -9,33 +9,47 @@
 import UIKit
 import MapKit
 
+protocol SearchControllerDelegate: AnyObject {
+    func passSearchResult(coordinates: CLLocationCoordinate2D,placemark: MKPlacemark,tagView: Int)
+}
+
+struct SearchData {
+    let someLocation: CLLocation
+    let indicatorOfView: Bool
+    let mapView: MKMapView
+    let tagView: Int
+}
+
 class SearchViewController: UIViewController {
     
     static let identifier = "SearchViewController"
     var matchingItems: [MKMapItem] = []
     var mapView: MKMapView?
-    var userLocation: CLLocation?
+    var someLocation: CLLocation?
     private let geocoder = CLGeocoder()
     private let coreData = SearchHistoryStack.instance
+    var searchValue: SearchData?
     
     var handleMapSearchDelegate: HandleMapSearch? = nil
+    
+    var delegate: SearchControllerDelegate?
 
-    let imageDictionary = ["Аэропорт": UIImage(systemName: "airplane.arrival"),
-                           "Рестораны":UIImage(systemName: "fork.knife"),
-                           "Магазины":UIImage(systemName: "basket"),
-                           "Аптеки":UIImage(systemName: "cross.case"),
-                           "Отели":UIImage(systemName: "bed.double"),
-                           "АЗС":UIImage(systemName: "fuelpump"),
-                           "Кинотеатры":UIImage(systemName: "popcorn"),
-                           "Фитнес":UIImage(systemName: "dumbbell"),
-                           "ТЦ":UIImage(systemName: "handbag"),
-                           "Салоны красоты": UIImage(systemName: "scissors"),
-                           "Банкоматы":UIImage(systemName: "banknote"),
-                           "Бары": UIImage(systemName: "wineglass"),
+    let imageDictionary = ["Аэропорт"       :UIImage(systemName: "airplane.arrival"),
+                           "Рестораны"      :UIImage(systemName: "fork.knife"),
+                           "Магазины"       :UIImage(systemName: "basket"),
+                           "Аптеки"         :UIImage(systemName: "cross.case"),
+                           "Отели"          :UIImage(systemName: "bed.double"),
+                           "АЗС"            :UIImage(systemName: "fuelpump"),
+                           "Кинотеатры"     :UIImage(systemName: "popcorn"),
+                           "Фитнес"         :UIImage(systemName: "dumbbell"),
+                           "ТЦ"             :UIImage(systemName: "handbag"),
+                           "Салоны красоты" :UIImage(systemName: "scissors"),
+                           "Банкоматы"      :UIImage(systemName: "banknote"),
+                           "Бары"           :UIImage(systemName: "wineglass"),
                            "Интересные места":UIImage(systemName: "star"),
-                           "Пункты выдачи":UIImage(systemName: "shippingbox"),
-                           "Кофейни": UIImage(systemName: "mug"),
-                           "Больницы":UIImage(systemName: "cross.circle")
+                           "Пункты выдачи"  :UIImage(systemName: "shippingbox"),
+                           "Кофейни"        : UIImage(systemName: "mug"),
+                           "Больницы"       :UIImage(systemName: "cross.circle")
                         ]
     
     let table: UITableView = {
@@ -59,7 +73,6 @@ class SearchViewController: UIViewController {
         search.showsSearchResultsController = true
         search.automaticallyShowsCancelButton = true
         search.hidesNavigationBarDuringPresentation = false
-        
         return search
     }()
     
@@ -101,6 +114,18 @@ class SearchViewController: UIViewController {
         return button
     }()
     
+    private let setPinOnMapButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.configuration = .tinted()
+        button.configuration?.title = "Указать точку на карте"
+        button.configuration?.image = UIImage(systemName: "pin")
+        button.configuration?.imagePlacement = .trailing
+        button.configuration?.imagePadding = 8
+        button.configuration?.baseBackgroundColor = .systemBlue
+        button.configuration?.baseForegroundColor = .systemBlue
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionView()
@@ -113,8 +138,15 @@ class SearchViewController: UIViewController {
     override func viewDidLayoutSubviews(){
         guard let safeArea = navigationController?.navigationBar.frame.size.height else { return }
         segmentalButtons.frame = CGRect(x: 10, y: safeArea, width: view.frame.size.width-20, height: 40)
-        table.frame = CGRect(x: 0, y: 100, width: view.frame.size.width, height: view.frame.size.height-60)
-        categoryCollectionView.frame = CGRect(x: 0, y: 100, width: view.frame.size.width, height: view.frame.size.height-50)
+        categoryCollectionView.frame = CGRect(x: 0, y: 100, width: view.frame.size.width, height: view.frame.size.height)
+        setPinOnMapButton.frame = CGRect(x: 10, y: safeArea, width: view.frame.size.width-20, height: 55)
+        if searchValue?.indicatorOfView == false {
+            table.frame = CGRect(x: 0, y: 100, width: view.frame.size.width, height: view.frame.size.height)
+        } else {
+            table.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.height-60)
+            table.layer.cornerRadius = 0
+        }
+        
     }
     
     @objc private func didTapDismiss(){
@@ -220,11 +252,12 @@ class SearchViewController: UIViewController {
     }
     
     private func setupNavigationAndView(){
-        view.addSubview(table)
-        view.addSubview(segmentalButtons)
-        view.addSubview(categoryCollectionView)
-        view.addSubview(clearHistoryButton)
-        view.backgroundColor = .systemBackground
+        
+//        view.addSubview(table)
+//        view.addSubview(segmentalButtons)
+//        view.addSubview(categoryCollectionView)
+//        view.addSubview(clearHistoryButton)
+//        view.backgroundColor = .systemBackground
         
         segmentalButtons.addTarget(self, action: #selector(didTapToChangeSegment), for: .valueChanged)
         clearHistoryButton.addTarget(self, action: #selector(didTapClearHistory), for: .touchUpInside)
@@ -237,6 +270,19 @@ class SearchViewController: UIViewController {
         navigationItem.leftBarButtonItem?.isSelected = false
         navigationItem.leftBarButtonItem?.isEnabled = false
         navigationItem.largeTitleDisplayMode = .never
+        if searchValue?.indicatorOfView == true {
+            view.addSubview(table)
+            view.backgroundColor = .secondarySystemBackground
+            table.backgroundColor = .secondarySystemBackground
+            navigationController?.navigationBar.backgroundColor = .secondarySystemBackground
+            view.addSubview(setPinOnMapButton)
+        } else {
+            view.addSubview(table)
+            view.addSubview(segmentalButtons)
+            view.addSubview(categoryCollectionView)
+            view.addSubview(clearHistoryButton)
+            view.backgroundColor = .systemBackground
+        }
     }
     
     private func convertDistance(user: CLLocation,annotation: CLLocationCoordinate2D) -> String? {
@@ -263,24 +309,38 @@ class SearchViewController: UIViewController {
 extension SearchViewController: UISearchResultsUpdating, UISearchBarDelegate {
     func updateSearchResults(for searchController: UISearchController) {
         
-        guard let mapView = mapView, let text = searchController.searchBar.text else {
-            return
-        }
-        if text != "" {
-            categoryCollectionView.isHidden = true
-            self.table.isHidden = false
-            let request = MKLocalSearch.Request()
-            request.naturalLanguageQuery = text
-            request.region = mapView.region
-            let search = MKLocalSearch(request: request)
-            search.start { response, _ in
-                guard let response = response else {
-                    return
+        guard let mapView = searchValue?.mapView, let text = searchController.searchBar.text else { return }
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = text
+        request.region = mapView.region
+        let search = MKLocalSearch(request: request)
+        
+        if searchValue?.indicatorOfView == false {
+            if !text.isEmpty {
+                categoryCollectionView.isHidden = true
+                self.table.isHidden = false
+                search.start { response, _ in
+                    guard let response = response else {
+                        return
+                    }
+                    self.matchingItems = response.mapItems
+                    self.table.reloadData()
                 }
-                self.matchingItems = response.mapItems
-                self.table.reloadData()
+            }
+        } else {
+            if !text.isEmpty {
+                setPinOnMapButton.isHidden = true
+                self.table.isHidden = false
+                search.start { response, _ in
+                    guard let response = response else {
+                        return
+                    }
+                    self.matchingItems = response.mapItems
+                    self.table.reloadData()
+                }
             }
         }
+        
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -293,24 +353,42 @@ extension SearchViewController: UISearchResultsUpdating, UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text == "" {
-            DispatchQueue.main.asyncAfter(deadline: .now()+2){
-                self.matchingItems = []
-                self.table.reloadData()
-                self.resultSearchController.dismiss(animated: true)
-                self.categoryCollectionView.isHidden = false
-                self.table.isHidden = true
+        if searchBar.text == ""{
+            if searchValue?.indicatorOfView == false {
+             DispatchQueue.main.asyncAfter(deadline: .now()+2){
+                 self.matchingItems = []
+                 self.table.reloadData()
+                 self.resultSearchController.dismiss(animated: true)
+                 self.categoryCollectionView.isHidden = false
+                 self.table.isHidden = true
+             }
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now()+2){
+                    self.matchingItems = []
+                    self.table.reloadData()
+                    self.resultSearchController.dismiss(animated: true)
+                    self.setPinOnMapButton.isHidden = false
+                    self.table.isHidden = true
+                }
             }
         }
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         if let text = searchBar.text ,!text.isEmpty {
-            searchBar.text = ""
-            matchingItems = []
-            table.reloadData()
-            categoryCollectionView.isHidden = false
-            table.isHidden = true
+            if searchValue?.indicatorOfView == false {
+                searchBar.text = ""
+                matchingItems = []
+                table.reloadData()
+                categoryCollectionView.isHidden = false
+                table.isHidden = true
+            } else {
+                searchBar.text = ""
+                matchingItems = []
+                table.reloadData()
+                setPinOnMapButton.isHidden = false
+                table.isHidden = true
+            }
         }
     }
 }
@@ -352,7 +430,7 @@ extension SearchViewController:  UITableViewDelegate, UITableViewDataSource {
         if segmentalButtons.selectedSegmentIndex == 0 {
             let selectedItems = matchingItems[indexPath.row].placemark
             cell.configureCell(placemark: selectedItems)
-            if let location = self.userLocation {
+            if let location = self.searchValue?.someLocation {
                 let placeDistance = convertDistance(user: location, annotation: selectedItems.coordinate)
                 cell.configureDistanceForCell(distance: placeDistance)
             }
@@ -367,12 +445,13 @@ extension SearchViewController:  UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if segmentalButtons.selectedSegmentIndex == 0 {
-            let selectedItem = matchingItems[indexPath.row].placemark
-            handleMapSearchDelegate?.dropCoordinate(coordinate: selectedItem.coordinate, requestName: selectedItem.name!)
+        
+        if searchValue?.indicatorOfView == false, segmentalButtons.selectedSegmentIndex == 0 {
+            let placemark = matchingItems[indexPath.row].placemark
+            handleMapSearchDelegate?.dropCoordinate(coordinate: placemark.coordinate, requestName: placemark.name!)
             self.matchingItems = []
-            if let name = selectedItem.name{
-                let coordinate = selectedItem.coordinate
+            if let name = placemark.name{
+                let coordinate = placemark.coordinate
                 coreData.saveHistoryDataElement(name: name, lan: coordinate.latitude, lon: coordinate.longitude)
                 self.resultSearchController.searchBar.endEditing(true)
                 self.resultSearchController.searchBar.text = ""
@@ -380,11 +459,17 @@ extension SearchViewController:  UITableViewDelegate, UITableViewDataSource {
                 self.table.reloadData()
             }
             self.dismiss(animated: true)
-        } else {
+            
+        } else if segmentalButtons.selectedSegmentIndex == 1{
             let data = coreData.historyVault.reversed()[indexPath.row]
             guard let name = data.nameCategory else { return }
             let location = CLLocationCoordinate2D(latitude: data.langitude, longitude: data.longitude)
             handleMapSearchDelegate?.dropCoordinate(coordinate: location, requestName: name)
+            self.dismiss(animated: true)
+        } else if searchValue?.indicatorOfView == true {
+            let placemark = matchingItems[indexPath.row].placemark
+            guard let value = searchValue?.tagView else { return }
+            delegate?.passSearchResult(coordinates: placemark.coordinate, placemark: placemark,tagView: value)
             self.dismiss(animated: true)
         }
     }

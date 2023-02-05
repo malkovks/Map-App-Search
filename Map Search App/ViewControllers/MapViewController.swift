@@ -237,9 +237,9 @@ class MapViewController: UIViewController {
     
     @objc private func didTapSearch(){
         let vc = SearchViewController()
-        vc.mapView = mapView
+        guard let loc = locationManager.location else { return displayError() }
         vc.handleMapSearchDelegate = self
-        vc.userLocation = locationManager.location
+        vc.searchValue = SearchData(someLocation: loc, indicatorOfView: false,mapView: mapView,tagView: 10)
         let nav = UINavigationController(rootViewController: vc)
         nav.modalPresentationStyle = .pageSheet
         nav.sheetPresentationController?.detents = [.large(),.custom(resolver: { context in return 500.0 })]
@@ -253,12 +253,14 @@ class MapViewController: UIViewController {
     @objc func addAnnotationOnLongPress(gesture: UILongPressGestureRecognizer){
         print("pressed")
         if gesture.state == .ended{
-            guard let destination = gestureLocation(for: gesture), let userCoord = locationManager.location?.coordinate else { return }
+            guard let destination = gestureLocation(for: gesture), let userCoord = locationManager.location?.coordinate else {
+                return displayError()
+            }
             mapView.removeAnnotation(annotationCustom)
             mapView.removeAnnotations(mapView.annotations)
             let vc = SetDirectionViewController()
             vc.delegate = self
-            vc.directionData = SetDirectionData(userCoordinate: userCoord, userAddress: "", userPlacemark: nil, destinationCoordinate: destination, destinationAddress: "", destinationPlacemark: nil)
+            vc.directionData = SetDirectionData(userCoordinate: userCoord, userAddress: "", userPlacemark: nil, mapViewDirection: mapView, destinationCoordinate: destination, destinationAddress: "", destinationPlacemark: nil)
             let nav = UINavigationController(rootViewController: vc)
             nav.modalPresentationStyle = .pageSheet
             nav.sheetPresentationController?.detents = [.custom(resolver: { context in return 500 }),.large()]
@@ -302,6 +304,9 @@ class MapViewController: UIViewController {
     //weather test
     func setupWeather(){
         //импортировать кит с погодой
+    }
+    func displayError(){
+        SPAlert.present(title: "Turn on your location in settings", preset: .error, haptic: .error)
     }
     //проверить нужна ли эта функция ???
     func setupSearchAndTable(){

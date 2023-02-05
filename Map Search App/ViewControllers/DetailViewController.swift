@@ -148,10 +148,6 @@ class DetailViewController: UIViewController {
         }
         super.viewDidLoad()
         
-        
-//        addressTableViewPlotView.delegate = self
-//        addressTableViewPlotView.dataSource = self
-        
         setupPlotSubview()
         setupFirstTableView()
         buttonTargets()

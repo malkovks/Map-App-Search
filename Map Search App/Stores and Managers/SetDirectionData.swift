@@ -12,6 +12,7 @@ struct SetDirectionData {
     let userCoordinate: CLLocationCoordinate2D
     let userAddress: String?
     let userPlacemark: MKPlacemark?
+    let mapViewDirection: MKMapView
     let destinationCoordinate: CLLocationCoordinate2D
     let destinationAddress: String?
     let destinationPlacemark: MKPlacemark?
