@@ -19,12 +19,21 @@ class SetDirectionViewController: UIViewController {
     
     weak var delegate: SetDirectionProtocol?
     
+    private var coreData = PlaceEntityStack.instance
+    
     private let geocoder = CLGeocoder()
     
     let dictionaryOfType: [String:UIImage] = ["Автомобиль":UIImage(systemName: "car")!
                                               ,"Пешком":UIImage(systemName: "figure.walk")!
                                               ,"Велосипед":UIImage(systemName: "bicycle")!
                                               ,"Транспорт":UIImage(systemName: "bus")!]
+    
+    private let table: UITableView = {
+       let table = UITableView()
+        table.backgroundColor = .systemBackground
+        table.layer.cornerRadius = 8
+        return table
+    }()
     
     private let firstTextField: UITextField = {
         let field = UITextField()
@@ -61,9 +70,10 @@ class SetDirectionViewController: UIViewController {
         setupCollectionView()
         setupNavigationBar()
         setupView()
+        setupTableView()
         guard let location = directionData?.destinationCoordinate else { return }
         guard let user = directionData?.userCoordinate else { return }
-        setupTextFields(first: user, second: location)
+//        setupTextFields(first: user, second: location)
         
         
         
@@ -74,16 +84,24 @@ class SetDirectionViewController: UIViewController {
         let sArea = view.safeAreaInsets.top
         firstTextField.frame = CGRect(x: 10, y: 10+sArea, width: view.frame.size.width-20, height: 55)
         secondTextField.frame = CGRect(x: 10, y: 20+sArea+firstTextField.frame.size.height, width: view.frame.size.width-20, height: 55)
-        directionCollectionView.frame = CGRect(x: 10, y: 30+sArea+firstTextField.frame.size.height+secondTextField.frame.size.height, width: view.frame.size.width-20, height: 100)
+        table.frame = CGRect(x: 10, y: 30+sArea+firstTextField.frame.size.height+secondTextField.frame.size.height, width: view.frame.size.width-20, height: 240)
+        directionCollectionView.frame = CGRect(x: 10, y: 40+sArea+firstTextField.frame.size.height+secondTextField.frame.size.height+table.frame.size.height, width: view.frame.size.width-20, height: 100)
     }
     
     @objc private func didTapDismiss(){
         self.dismiss(animated: true)
     }
+    private func setupTableView(){
+        table.delegate = self
+        table.dataSource = self
+        table.register(UITableViewCell.self, forCellReuseIdentifier: "directionTable")
+        coreData.loadData()
+    }
     
     private func setupView(){
         view.addSubview(firstTextField)
         view.addSubview(secondTextField)
+        view.addSubview(table)
         view.addSubview(directionCollectionView)
         view.backgroundColor = .secondarySystemBackground
         firstTextField.delegate = self
@@ -96,25 +114,25 @@ class SetDirectionViewController: UIViewController {
 //        }
     }
     
-    private func setupTextFields(first: CLLocationCoordinate2D,second: CLLocationCoordinate2D){
-        let firstLoc = CLLocation(latitude: first.latitude, longitude: first.longitude)
-        let secLod = CLLocation(latitude: second.latitude, longitude: second.longitude)
-        guard let firstMark = parseGeolocation(location: firstLoc) else { return }
-        guard let secondMark = parseGeolocation(location: secLod) else { return }
-        firstTextField.text = firstMark.thoroughfare ?? "" + " " + (firstMark.subThoroughfare ?? "")
-        secondTextField.text = secondMark.thoroughfare ?? "" + " " + (secondMark.subThoroughfare ?? "")
-    }
-    
-    private func parseGeolocation(location: CLLocation) -> CLPlacemark?{
-        var returnPlacemark: CLPlacemark?
-//        let location = CLLocation(latitude: location.latitude, longitude: location.longitude)
-        
-        geocoder.reverseGeocodeLocation(location) { placemark, error in
-            guard let placemark = placemark?.first, error != nil else { return }
-        }
-        print(returnPlacemark?.thoroughfare)
-        return returnPlacemark
-    }
+//    private func setupTextFields(first: CLLocationCoordinate2D,second: CLLocationCoordinate2D){
+//        let firstLoc = CLLocation(latitude: first.latitude, longitude: first.longitude)
+//        let secLod = CLLocation(latitude: second.latitude, longitude: second.longitude)
+//        guard let firstMark = parseGeolocation(location: firstLoc) else { return }
+//        guard let secondMark = parseGeolocation(location: secLod) else { return }
+//        firstTextField.text = firstMark.thoroughfare ?? "" + " " + (firstMark.subThoroughfare ?? "")
+//        secondTextField.text = secondMark.thoroughfare ?? "" + " " + (secondMark.subThoroughfare ?? "")
+//    }
+//
+//    private func parseGeolocation(location: CLLocation) -> CLPlacemark?{
+//        var returnPlacemark: CLPlacemark?
+////        let location = CLLocation(latitude: location.latitude, longitude: location.longitude)
+//
+//        geocoder.reverseGeocodeLocation(location) { placemark, error in
+//            guard let placemark = placemark?.first, error != nil else { return }
+//        }
+//        print(returnPlacemark?.thoroughfare)
+//        return returnPlacemark
+//    }
     
     private func setupNavigationBar(){
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.down")!, landscapeImagePhone: nil, style: .done, target: self, action: #selector(didTapDismiss))
@@ -141,15 +159,20 @@ class SetDirectionViewController: UIViewController {
 }
 
 extension SetDirectionViewController: SearchControllerDelegate {
-    func passSearchResult(coordinates: CLLocationCoordinate2D, placemark: MKPlacemark,tagView: Int) {
+    func passSearchResult(coordinates: CLLocationCoordinate2D, placemark: MKPlacemark?,tagView: Int) {
         
-        if !placemark.name!.isEmpty {
+        if let placemark = placemark?.name, !placemark.isEmpty {
             print("Delegate work fine")
             if tagView == 0 {
-                firstTextField.text = placemark.name
+                firstTextField.text = placemark
+                firstTextField.inputViewController?.dismissKeyboard()
             } else if tagView == 1 {
-                secondTextField.text = placemark.name
+                
+                secondTextField.text = placemark
+                secondTextField.inputViewController?.dismissKeyboard()
             }
+        } else if tagView == 0{
+                firstTextField.text = "📍Пользовательская локация "
         }
         
         
@@ -201,7 +224,7 @@ extension SetDirectionViewController: UITextFieldDelegate {
 }
 
 
-
+//коллекции с выбором варианта маршрута
 extension SetDirectionViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return dictionaryOfType.count
@@ -235,6 +258,39 @@ extension SetDirectionViewController: UICollectionViewDelegate, UICollectionView
 //            print("walking")
 //        }
     }
+}
+
+extension SetDirectionViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        coreData.vaultData.count
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        30
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        "Избранные места 🔖"
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell = tableView.dequeueReusableCell(withIdentifier: "directionTable",for: indexPath)
+        cell = UITableViewCell(style: .subtitle, reuseIdentifier: "directionTable")
+        let data = coreData.vaultData[indexPath.row]
+        cell.textLabel?.text = data.place
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let cell = coreData.vaultData[indexPath.row]
+        let location = CLLocationCoordinate2D(latitude: cell.latitude, longitude: cell.longitude)
+        secondTextField.text = cell.place
+        directionData?.destinationCoordinate = location
+        directionData?.destinationAddress = cell.place
+    }
+    
+    
 }
 
 enum TypeOfDirection {

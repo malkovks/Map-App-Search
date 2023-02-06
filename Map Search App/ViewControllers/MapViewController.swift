@@ -252,6 +252,7 @@ class MapViewController: UIViewController {
     //add annotation on map and open detail view
     @objc func addAnnotationOnLongPress(gesture: UILongPressGestureRecognizer){
         print("pressed")
+        
         if gesture.state == .ended{
             guard let destination = gestureLocation(for: gesture), let userCoord = locationManager.location?.coordinate else {
                 return displayError()
@@ -260,6 +261,8 @@ class MapViewController: UIViewController {
             mapView.removeAnnotations(mapView.annotations)
             let vc = SetDirectionViewController()
             vc.delegate = self
+            let vcSec = SearchViewController()
+            vcSec.secondDelegate = self
             vc.directionData = SetDirectionData(userCoordinate: userCoord, userAddress: "", userPlacemark: nil, mapViewDirection: mapView, destinationCoordinate: destination, destinationAddress: "", destinationPlacemark: nil)
             let nav = UINavigationController(rootViewController: vc)
             nav.modalPresentationStyle = .pageSheet
@@ -387,6 +390,8 @@ class MapViewController: UIViewController {
         searchController.delegate = self
         let destVC = SetDirectionViewController()
         destVC.delegate = self
+        let searchVC = SearchViewController()
+        searchVC.secondDelegate = self
     }
     //MARK: - Setups for displaying direction, converter methods and getters of address
     public func setChoosenLocation(coordinates: CLLocationCoordinate2D,requestName: String?) {
@@ -550,6 +555,16 @@ class MapViewController: UIViewController {
     }
 }
 //MARK: - Extensions for Delegates
+extension MapViewController: SetPinSearchDelegate {
+    func isFuncAvailable(boolean: Bool) {
+        if boolean == true {
+            print("Boolean true")
+        }
+    }
+    
+    
+}
+
 extension MapViewController: FavouritePlaceDelegate{
     func passCoordinates(coordinates: CLLocationCoordinate2D,name: String?) {
         mapView.removeAnnotations(mapView.annotations)

@@ -9,11 +9,11 @@ import Foundation
 import MapKit
 
 struct SetDirectionData {
-    let userCoordinate: CLLocationCoordinate2D
-    let userAddress: String?
-    let userPlacemark: MKPlacemark?
-    let mapViewDirection: MKMapView
-    let destinationCoordinate: CLLocationCoordinate2D
-    let destinationAddress: String?
-    let destinationPlacemark: MKPlacemark?
+   var userCoordinate: CLLocationCoordinate2D
+   var userAddress: String?
+   var userPlacemark: MKPlacemark?
+   var mapViewDirection: MKMapView
+   var destinationCoordinate: CLLocationCoordinate2D
+   var destinationAddress: String?
+   var destinationPlacemark: MKPlacemark?
 }

@@ -10,7 +10,17 @@ import UIKit
 import MapKit
 
 protocol SearchControllerDelegate: AnyObject {
-    func passSearchResult(coordinates: CLLocationCoordinate2D,placemark: MKPlacemark,tagView: Int)
+    func passSearchResult(coordinates: CLLocationCoordinate2D,placemark: MKPlacemark?,tagView: Int)
+}
+
+protocol SetPinSearchDelegate: AnyObject {
+    func isFuncAvailable(boolean: Bool)
+}
+
+enum SearchControllerEnum {
+    case firstTextField
+    case secondTextField
+    case basic
 }
 
 struct SearchData {
@@ -28,12 +38,14 @@ class SearchViewController: UIViewController {
     var someLocation: CLLocation?
     private let geocoder = CLGeocoder()
     private let coreData = SearchHistoryStack.instance
+    private let favouriteCoreData = PlaceEntityStack.instance
     var searchValue: SearchData?
     
     var handleMapSearchDelegate: HandleMapSearch? = nil
     
-    var delegate: SearchControllerDelegate?
-
+    weak var delegate: SearchControllerDelegate?
+    weak var secondDelegate: SetPinSearchDelegate?
+    
     let imageDictionary = ["Аэропорт"       :UIImage(systemName: "airplane.arrival"),
                            "Рестораны"      :UIImage(systemName: "fork.knife"),
                            "Магазины"       :UIImage(systemName: "basket"),
@@ -48,13 +60,13 @@ class SearchViewController: UIViewController {
                            "Бары"           :UIImage(systemName: "wineglass"),
                            "Интересные места":UIImage(systemName: "star"),
                            "Пункты выдачи"  :UIImage(systemName: "shippingbox"),
-                           "Кофейни"        : UIImage(systemName: "mug"),
+                           "Кофейни"        :UIImage(systemName: "mug"),
                            "Больницы"       :UIImage(systemName: "cross.circle")
                         ]
     
     let table: UITableView = {
        let table = UITableView()
-        table.backgroundColor = .secondarySystemBackground
+        table.backgroundColor = .systemBackground
         table.layer.cornerRadius = 8
         return table
     }()
@@ -126,6 +138,18 @@ class SearchViewController: UIViewController {
         return button
     }()
     
+    private let getUserLocationButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.configuration = .tinted()
+        button.configuration?.title = "Мое местоположение"
+        button.configuration?.image = UIImage(systemName: "location")
+        button.configuration?.imagePlacement = .trailing
+        button.configuration?.imagePadding = 8
+        button.configuration?.baseBackgroundColor = .black
+        button.configuration?.baseForegroundColor = .black
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionView()
@@ -140,6 +164,7 @@ class SearchViewController: UIViewController {
         segmentalButtons.frame = CGRect(x: 10, y: safeArea, width: view.frame.size.width-20, height: 40)
         categoryCollectionView.frame = CGRect(x: 0, y: 100, width: view.frame.size.width, height: view.frame.size.height)
         setPinOnMapButton.frame = CGRect(x: 10, y: safeArea, width: view.frame.size.width-20, height: 55)
+        getUserLocationButton.frame = CGRect(x: 10, y: safeArea+10+setPinOnMapButton.frame.size.height, width: view.frame.size.width-20, height: 55)
         if searchValue?.indicatorOfView == false {
             table.frame = CGRect(x: 0, y: 100, width: view.frame.size.width, height: view.frame.size.height)
         } else {
@@ -198,7 +223,17 @@ class SearchViewController: UIViewController {
         }
     }
     
-
+    @objc private func setPinOnMap(){
+        secondDelegate?.isFuncAvailable(boolean: true)
+        self.view.window?.rootViewController?.dismiss(animated: true)
+    }
+    
+    @objc private func didDelegateUserLocation(){
+        guard let loc = searchValue?.someLocation else { return }
+        let location = CLLocationCoordinate2D(latitude: loc.coordinate.latitude, longitude: loc.coordinate.longitude)
+        delegate?.passSearchResult(coordinates: location, placemark: nil, tagView: 0)
+        self.dismiss(animated: true)
+    }
     
     private func setupCollectionView(){
         let layout = UICollectionViewFlowLayout()
@@ -252,15 +287,10 @@ class SearchViewController: UIViewController {
     }
     
     private func setupNavigationAndView(){
-        
-//        view.addSubview(table)
-//        view.addSubview(segmentalButtons)
-//        view.addSubview(categoryCollectionView)
-//        view.addSubview(clearHistoryButton)
-//        view.backgroundColor = .systemBackground
-        
         segmentalButtons.addTarget(self, action: #selector(didTapToChangeSegment), for: .valueChanged)
         clearHistoryButton.addTarget(self, action: #selector(didTapClearHistory), for: .touchUpInside)
+        setPinOnMapButton.addTarget(self, action: #selector(setPinOnMap), for: .touchUpInside)
+        getUserLocationButton.addTarget(self, action: #selector(didDelegateUserLocation), for: .touchUpInside)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark.circle.fill"), landscapeImagePhone: nil, style: .done, target: self, action: #selector(didTapDismiss))
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), landscapeImagePhone: nil, style: .done, target: self, action: nil)
@@ -272,10 +302,17 @@ class SearchViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .never
         if searchValue?.indicatorOfView == true {
             view.addSubview(table)
-            view.backgroundColor = .secondarySystemBackground
-            table.backgroundColor = .secondarySystemBackground
-            navigationController?.navigationBar.backgroundColor = .secondarySystemBackground
+            view.backgroundColor = .systemBackground
             view.addSubview(setPinOnMapButton)
+            view.addSubview(getUserLocationButton)
+            table.backgroundColor = .systemBackground
+            navigationController?.navigationBar.backgroundColor = .systemBackground
+            resultSearchController.searchBar.returnKeyType = .done
+            if searchValue?.tagView == 1 {
+                getUserLocationButton.isHidden = true
+            } else {
+                getUserLocationButton.isHidden = false
+            }
         } else {
             view.addSubview(table)
             view.addSubview(segmentalButtons)
@@ -285,6 +322,20 @@ class SearchViewController: UIViewController {
         }
     }
     
+    private  func setupViewWithEnum(objectives: SearchControllerEnum){
+        switch objectives {
+        case .firstTextField:
+            print("first text field test")
+        case .secondTextField:
+            print("second text field test")
+        case .basic:
+            view.addSubview(table)
+            view.addSubview(segmentalButtons)
+            view.addSubview(categoryCollectionView)
+            view.addSubview(clearHistoryButton)
+            view.backgroundColor = .systemBackground
+        }
+    }
     private func convertDistance(user: CLLocation,annotation: CLLocationCoordinate2D) -> String? {
         var output = ""
         let coordinateAnn = CLLocation(latitude: annotation.latitude, longitude: annotation.longitude)
@@ -330,6 +381,7 @@ extension SearchViewController: UISearchResultsUpdating, UISearchBarDelegate {
         } else {
             if !text.isEmpty {
                 setPinOnMapButton.isHidden = true
+                getUserLocationButton.isHidden = true
                 self.table.isHidden = false
                 search.start { response, _ in
                     guard let response = response else {
@@ -345,7 +397,7 @@ extension SearchViewController: UISearchResultsUpdating, UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         resultSearchController.searchBar.resignFirstResponder()
-        if let text = searchBar.text, !text.isEmpty {
+        if let text = searchBar.text, !text.isEmpty, searchValue?.indicatorOfView == false {
                     let data = matchingItems
                     self.handleMapSearchDelegate?.dropSomeAnnotations(items: data)
                     self.view.window?.rootViewController?.dismiss(animated: true)
@@ -368,6 +420,7 @@ extension SearchViewController: UISearchResultsUpdating, UISearchBarDelegate {
                     self.table.reloadData()
                     self.resultSearchController.dismiss(animated: true)
                     self.setPinOnMapButton.isHidden = false
+                    self.getUserLocationButton.isHidden = false
                     self.table.isHidden = true
                 }
             }
@@ -387,6 +440,7 @@ extension SearchViewController: UISearchResultsUpdating, UISearchBarDelegate {
                 matchingItems = []
                 table.reloadData()
                 setPinOnMapButton.isHidden = false
+                getUserLocationButton.isHidden = false
                 table.isHidden = true
             }
         }
@@ -470,6 +524,7 @@ extension SearchViewController:  UITableViewDelegate, UITableViewDataSource {
             let placemark = matchingItems[indexPath.row].placemark
             guard let value = searchValue?.tagView else { return }
             delegate?.passSearchResult(coordinates: placemark.coordinate, placemark: placemark,tagView: value)
+            self.resultSearchController.dismiss(animated: true)
             self.dismiss(animated: true)
         }
     }

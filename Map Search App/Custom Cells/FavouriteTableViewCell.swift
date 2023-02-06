@@ -49,23 +49,7 @@ class FavouriteTableViewCell: UITableViewCell {
 //        detailButton.addTarget(self, action: #selector(didTapDetail), for: .touchUpInside)
     }
     
-    @objc private func didTapDetail(sender: AnyObject){
-        let menu = UIMenu(title: "Settings",options: .displayInline,children: [
-            UIAction(title: "Delete", handler: { _ in
-                print("Deleted")
-            }),
-            UIAction(title: "Edit",attributes: .destructive, handler: { _ in
-                print("Edited")
-            }),
 
-            UIAction(title: "Show on map", handler: { _ in
-                print("Showed on map")
-            }),
-            UIAction(title: "Set Direction", handler: { _ in
-                print("Set Direction")
-            })
-        ])
-    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
