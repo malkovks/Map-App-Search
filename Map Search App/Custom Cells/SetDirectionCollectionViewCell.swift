@@ -10,7 +10,7 @@ import UIKit
 class SetDirectionCollectionViewCell: UICollectionViewCell {
     static let identifier = "SetDirectionCollectionViewCell"
     
-    private let imageOfDirection: UIImageView = {
+    public let imageOfDirection: UIImageView = {
        let image = UIImageView()
         image.contentMode = .center
 
@@ -18,7 +18,7 @@ class SetDirectionCollectionViewCell: UICollectionViewCell {
         return image
     }()
     
-    private let typeOfSetDirection: UILabel = {
+    public let typeOfSetDirection: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 10, weight: .light)
         label.textAlignment = .center

@@ -17,17 +17,6 @@ struct Geocoder {
     let postalCode: String
     let areaOfInterest: String?
     let placemark: CLPlacemark
-    
-    init(streetName: String, appNumber: String, administrativArea: String, district: String, country: String, postalCode: String, areaOfInterest: String?, placemark: CLPlacemark) {
-        self.streetName = streetName
-        self.appNumber = appNumber
-        self.administrativArea = administrativArea
-        self.district = district
-        self.country = country
-        self.postalCode = postalCode
-        self.areaOfInterest = areaOfInterest
-        self.placemark = placemark
-    }
 }
 
 class GeocoderReturn: NSObject {
@@ -41,8 +30,6 @@ class GeocoderReturn: NSObject {
             guard let place = places?.first, error != nil else {
                 return
             }
-            
-            print(place.country)
             let street = place.thoroughfare ?? ""
             let appNum = place.subThoroughfare ?? ""
             let area = place.administrativeArea ?? ""
@@ -56,6 +43,4 @@ class GeocoderReturn: NSObject {
             print(result)
         }
     }
-    
-    
 }

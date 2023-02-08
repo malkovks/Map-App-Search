@@ -10,16 +10,18 @@
 		0A05E9BC2988416400B87C5E /* DeveloperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */; };
 		0A05E9BE298D539C00B87C5E /* SetDirectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9BD298D539C00B87C5E /* SetDirectionViewController.swift */; };
 		0A05E9C0298D9AF800B87C5E /* GeocoderReturn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9BF298D9AF800B87C5E /* GeocoderReturn.swift */; };
-		0A05E9C2298DA11D00B87C5E /* DateClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9C1298DA11D00B87C5E /* DateClass.swift */; };
+		0A05E9C2298DA11D00B87C5E /* DateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9C1298DA11D00B87C5E /* DateConverter.swift */; };
 		0A05E9C8298DB70000B87C5E /* SetDirectionCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9C7298DB70000B87C5E /* SetDirectionCollectionViewCell.swift */; };
 		0A05E9CA298DCCDC00B87C5E /* SetDirectionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9C9298DCCDC00B87C5E /* SetDirectionData.swift */; };
+		0A05E9CD29932F2F00B87C5E /* MapDataConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9CC29932F2F00B87C5E /* MapDataConverter.swift */; };
+		0A05E9D12993456F00B87C5E /* DirectionResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */; };
 		0A1B52AD29865E5E00FB548D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AC29865E5E00FB548D /* AppDelegate.swift */; };
 		0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */; };
 		0A1B52B429865E5E00FB548D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B52B229865E5E00FB548D /* Main.storyboard */; };
 		0A1B52B729865E5E00FB548D /* Map_Search_App.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52B529865E5E00FB548D /* Map_Search_App.xcdatamodeld */; };
 		0A1B52B929865E6000FB548D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B52B829865E6000FB548D /* Assets.xcassets */; };
 		0A1B52BC29865E6000FB548D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B52BA29865E6000FB548D /* LaunchScreen.storyboard */; };
-		0A1B52CA298662DC00FB548D /* ManageStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52C9298662DC00FB548D /* ManageStructs.swift */; };
+		0A1B52CA298662DC00FB548D /* DetailsStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52C9298662DC00FB548D /* DetailsStruct.swift */; };
 		0A1B52D4298663F300FB548D /* PlaceEntityStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52D3298663F200FB548D /* PlaceEntityStack.swift */; };
 		0A1B52D62986642100FB548D /* SearchHistoryStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52D52986642100FB548D /* SearchHistoryStack.swift */; };
 		0A1B52D8298664BE00FB548D /* FavouriteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52D7298664BE00FB548D /* FavouriteTableViewCell.swift */; };
@@ -37,9 +39,11 @@
 		0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewController.swift; sourceTree = "<group>"; };
 		0A05E9BD298D539C00B87C5E /* SetDirectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDirectionViewController.swift; sourceTree = "<group>"; };
 		0A05E9BF298D9AF800B87C5E /* GeocoderReturn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocoderReturn.swift; sourceTree = "<group>"; };
-		0A05E9C1298DA11D00B87C5E /* DateClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateClass.swift; sourceTree = "<group>"; };
+		0A05E9C1298DA11D00B87C5E /* DateConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateConverter.swift; sourceTree = "<group>"; };
 		0A05E9C7298DB70000B87C5E /* SetDirectionCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDirectionCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A05E9C9298DCCDC00B87C5E /* SetDirectionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDirectionData.swift; sourceTree = "<group>"; };
+		0A05E9CC29932F2F00B87C5E /* MapDataConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDataConverter.swift; sourceTree = "<group>"; };
+		0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionResultViewController.swift; sourceTree = "<group>"; };
 		0A1B52A929865E5E00FB548D /* Map Search App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Map Search App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A1B52AC29865E5E00FB548D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -48,7 +52,7 @@
 		0A1B52B829865E6000FB548D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A1B52BB29865E6000FB548D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0A1B52BD29865E6000FB548D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0A1B52C9298662DC00FB548D /* ManageStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageStructs.swift; sourceTree = "<group>"; };
+		0A1B52C9298662DC00FB548D /* DetailsStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsStruct.swift; sourceTree = "<group>"; };
 		0A1B52D3298663F200FB548D /* PlaceEntityStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceEntityStack.swift; sourceTree = "<group>"; };
 		0A1B52D52986642100FB548D /* SearchHistoryStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryStack.swift; sourceTree = "<group>"; };
 		0A1B52D7298664BE00FB548D /* FavouriteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouriteTableViewCell.swift; sourceTree = "<group>"; };
@@ -76,6 +80,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A05E9CB29932F0D00B87C5E /* MapViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				0A05E9CC29932F2F00B87C5E /* MapDataConverter.swift */,
+			);
+			path = MapViewModels;
+			sourceTree = "<group>";
+		};
+		0A05E9CE2993330D00B87C5E /* SetDirectionModels */ = {
+			isa = PBXGroup;
+			children = (
+				0A05E9C9298DCCDC00B87C5E /* SetDirectionData.swift */,
+			);
+			path = SetDirectionModels;
+			sourceTree = "<group>";
+		};
+		0A05E9CF2993332B00B87C5E /* DetailModels */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B52C9298662DC00FB548D /* DetailsStruct.swift */,
+			);
+			path = DetailModels;
+			sourceTree = "<group>";
+		};
 		0A1B52A029865E5E00FB548D = {
 			isa = PBXGroup;
 			children = (
@@ -102,33 +130,35 @@
 				0A1B52C62986626D00FB548D /* Managers */,
 				0A1B52C52986624B00FB548D /* Storyboard and assets */,
 				0A1B52C42986623A00FB548D /* ViewControllers */,
-				0A1B52C32986623100FB548D /* Stores and Managers */,
+				0A1B52C32986623100FB548D /* Public Models */,
 				0A1B52BD29865E6000FB548D /* Info.plist */,
 			);
 			path = "Map Search App";
 			sourceTree = "<group>";
 		};
-		0A1B52C32986623100FB548D /* Stores and Managers */ = {
+		0A1B52C32986623100FB548D /* Public Models */ = {
 			isa = PBXGroup;
 			children = (
-				0A1B52C9298662DC00FB548D /* ManageStructs.swift */,
 				0A05E9BF298D9AF800B87C5E /* GeocoderReturn.swift */,
-				0A05E9C1298DA11D00B87C5E /* DateClass.swift */,
-				0A05E9C9298DCCDC00B87C5E /* SetDirectionData.swift */,
+				0A05E9C1298DA11D00B87C5E /* DateConverter.swift */,
 			);
-			path = "Stores and Managers";
+			path = "Public Models";
 			sourceTree = "<group>";
 		};
 		0A1B52C42986623A00FB548D /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
 				0A1B52DD2986658A00FB548D /* MapViewController.swift */,
+				0A05E9CB29932F0D00B87C5E /* MapViewModels */,
 				0A1B52DF2986659C00FB548D /* FavouriteTableView.swift */,
 				0A1B52E1298665BE00FB548D /* DetailViewController.swift */,
+				0A05E9CF2993332B00B87C5E /* DetailModels */,
 				0A1B52E3298665CF00FB548D /* SearchViewController.swift */,
+				0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */,
 				0A1B52E6298665E200FB548D /* WeatherViewController.swift */,
 				0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */,
 				0A05E9BD298D539C00B87C5E /* SetDirectionViewController.swift */,
+				0A05E9CE2993330D00B87C5E /* SetDirectionModels */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -308,18 +338,20 @@
 				0A05E9BC2988416400B87C5E /* DeveloperViewController.swift in Sources */,
 				0A1B52AD29865E5E00FB548D /* AppDelegate.swift in Sources */,
 				0A1B52E02986659C00FB548D /* FavouriteTableView.swift in Sources */,
+				0A05E9CD29932F2F00B87C5E /* MapDataConverter.swift in Sources */,
 				0A1B52B729865E5E00FB548D /* Map_Search_App.xcdatamodeld in Sources */,
 				0A05E9CA298DCCDC00B87C5E /* SetDirectionData.swift in Sources */,
 				0A1B52E2298665BE00FB548D /* DetailViewController.swift in Sources */,
 				0A1B52D4298663F300FB548D /* PlaceEntityStack.swift in Sources */,
 				0A1B52DE2986658A00FB548D /* MapViewController.swift in Sources */,
+				0A05E9D12993456F00B87C5E /* DirectionResultViewController.swift in Sources */,
 				0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */,
 				0A05E9C0298D9AF800B87C5E /* GeocoderReturn.swift in Sources */,
 				0A1B52D8298664BE00FB548D /* FavouriteTableViewCell.swift in Sources */,
 				0A05E9C8298DB70000B87C5E /* SetDirectionCollectionViewCell.swift in Sources */,
 				0A1B52E4298665CF00FB548D /* SearchViewController.swift in Sources */,
-				0A1B52CA298662DC00FB548D /* ManageStructs.swift in Sources */,
-				0A05E9C2298DA11D00B87C5E /* DateClass.swift in Sources */,
+				0A1B52CA298662DC00FB548D /* DetailsStruct.swift in Sources */,
+				0A05E9C2298DA11D00B87C5E /* DateConverter.swift in Sources */,
 				0A1B52D62986642100FB548D /* SearchHistoryStack.swift in Sources */,
 				0A1B52E7298665E200FB548D /* WeatherViewController.swift in Sources */,
 				0A1B52DA298664CE00FB548D /* ResultCollectionViewCell.swift in Sources */,

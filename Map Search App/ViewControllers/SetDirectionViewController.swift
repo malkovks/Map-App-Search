@@ -8,9 +8,10 @@
 import Foundation
 import UIKit
 import MapKit
+import SPAlert
 
 protocol SetDirectionProtocol: AnyObject{
-    func getDataForDirection(user coordinate: CLLocationCoordinate2D,_ destination: CLLocationCoordinate2D,direction type: String)
+    func getDataForDirection(user coordinate: CLLocationCoordinate2D,destination coordinate: CLLocationCoordinate2D,type direction: String)
 }
 
 class SetDirectionViewController: UIViewController {
@@ -66,6 +67,7 @@ class SetDirectionViewController: UIViewController {
     private var directionCollectionView: UICollectionView!
     
     override func viewDidLoad() {
+        coreData.loadData()
         super.viewDidLoad()
         setupCollectionView()
         setupNavigationBar()
@@ -74,7 +76,7 @@ class SetDirectionViewController: UIViewController {
         guard let location = directionData?.destinationCoordinate else { return }
         guard let user = directionData?.userCoordinate else { return }
 //        setupTextFields(first: user, second: location)
-        
+        table.reloadData()
         
         
     }
@@ -82,10 +84,29 @@ class SetDirectionViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let sArea = view.safeAreaInsets.top
+        let count = CGFloat(coreData.vaultData.count)
+        let ht = setupHeightForTable()
         firstTextField.frame = CGRect(x: 10, y: 10+sArea, width: view.frame.size.width-20, height: 55)
         secondTextField.frame = CGRect(x: 10, y: 20+sArea+firstTextField.frame.size.height, width: view.frame.size.width-20, height: 55)
-        table.frame = CGRect(x: 10, y: 30+sArea+firstTextField.frame.size.height+secondTextField.frame.size.height, width: view.frame.size.width-20, height: 240)
+        table.frame = CGRect(x: 10, y: 30+sArea+firstTextField.frame.size.height+secondTextField.frame.size.height, width: view.frame.size.width-20, height: 50+ht)
         directionCollectionView.frame = CGRect(x: 10, y: 40+sArea+firstTextField.frame.size.height+secondTextField.frame.size.height+table.frame.size.height, width: view.frame.size.width-20, height: 100)
+    }
+    
+    private func setupHeightForTable() -> CGFloat{
+        var height: CGFloat = 0.0
+        let count: CGFloat = CGFloat(coreData.vaultData.count)
+        if count <= 5 {
+            table.showsVerticalScrollIndicator = false
+            table.isScrollEnabled = false
+            table.frame.size.height = 40*count
+            height = table.frame.size.height
+        } else if count > 5 {
+            table.showsVerticalScrollIndicator = true
+            table.isScrollEnabled = true
+            table.frame.size.height = 200
+            height = table.frame.size.height
+        }
+        return height
     }
     
     @objc private func didTapDismiss(){
@@ -95,7 +116,7 @@ class SetDirectionViewController: UIViewController {
         table.delegate = self
         table.dataSource = self
         table.register(UITableViewCell.self, forCellReuseIdentifier: "directionTable")
-        coreData.loadData()
+        
     }
     
     private func setupView(){
@@ -108,11 +129,10 @@ class SetDirectionViewController: UIViewController {
         secondTextField.delegate = self
         let vc = SearchViewController()
         vc.delegate = self
-
+    }
 //        GeocoderReturn.shared.convertFromGeocode(coordinate: location) { place in
 //            self.firstTextField.text = place.streetName+" "+place.appNumber
 //        }
-    }
     
 //    private func setupTextFields(first: CLLocationCoordinate2D,second: CLLocationCoordinate2D){
 //        let firstLoc = CLLocation(latitude: first.latitude, longitude: first.longitude)
@@ -152,7 +172,8 @@ class SetDirectionViewController: UIViewController {
         directionCollectionView.showsHorizontalScrollIndicator = false
         directionCollectionView.dataSource = self
         directionCollectionView.delegate = self
-        directionCollectionView.register(SetDirectionCollectionViewCell.self, forCellWithReuseIdentifier: SetDirectionCollectionViewCell.identifier)
+        directionCollectionView.register(SetDirectionCollectionViewCell.self,
+                                         forCellWithReuseIdentifier: SetDirectionCollectionViewCell.identifier)
         directionCollectionView.isUserInteractionEnabled = true
         directionCollectionView.contentInsetAdjustmentBehavior = .automatic
     }
@@ -160,23 +181,25 @@ class SetDirectionViewController: UIViewController {
 
 extension SetDirectionViewController: SearchControllerDelegate {
     func passSearchResult(coordinates: CLLocationCoordinate2D, placemark: MKPlacemark?,tagView: Int) {
-        
+        print(coordinates.latitude)
+        print(placemark?.title! as Any)
+        print(tagView)
         if let placemark = placemark?.name, !placemark.isEmpty {
-            print("Delegate work fine")
             if tagView == 0 {
                 firstTextField.text = placemark
                 firstTextField.inputViewController?.dismissKeyboard()
+                directionData?.userCoordinate = coordinates
+                directionData?.userAddress = placemark
             } else if tagView == 1 {
-                
                 secondTextField.text = placemark
                 secondTextField.inputViewController?.dismissKeyboard()
+                directionData?.destinationCoordinate  = coordinates
+                directionData?.destinationAddress = placemark
             }
         } else if tagView == 0{
                 firstTextField.text = "📍Пользовательская локация "
+                directionData?.destinationCoordinate  = coordinates
         }
-        
-        
-        
     }
 }
 
@@ -230,6 +253,8 @@ extension SetDirectionViewController: UICollectionViewDelegate, UICollectionView
         return dictionaryOfType.count
     }
     
+    
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SetDirectionCollectionViewCell.identifier, for: indexPath) as! SetDirectionCollectionViewCell
         let key = Array(dictionaryOfType.keys.sorted())[indexPath.row]
@@ -241,22 +266,15 @@ extension SetDirectionViewController: UICollectionViewDelegate, UICollectionView
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         print(indexPath.row)
-        let cell = collectionView.cellForItem(at: indexPath)
+        let cell = collectionView.cellForItem(at: indexPath) as! SetDirectionCollectionViewCell
+        guard let userLoc = directionData?.userCoordinate,
+              let destLoc = directionData?.destinationCoordinate,
+              let text = cell.typeOfSetDirection.text else {
+            return SPAlert.present(message: "Ошибка передачи данных\nПопробуйте еще раз", haptic: .none)
+        }
+        self.delegate?.getDataForDirection(user: userLoc, destination: destLoc, type: text)
+        self.dismiss(animated: true)
         
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didEndDisplayingSupplementaryView view: UICollectionReusableView, forElementOfKind elementKind: String, at indexPath: IndexPath) {
-        
-        
-//        var transport = TypeOfDirection.Car
-//        switch transport {
-//        case .Car :
-//            print("car")
-//        case .Bysicle:
-//            print("bisycle")
-//        case .Walking:
-//            print("walking")
-//        }
     }
 }
 
@@ -266,7 +284,7 @@ extension SetDirectionViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        30
+        40
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -275,7 +293,6 @@ extension SetDirectionViewController: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell = tableView.dequeueReusableCell(withIdentifier: "directionTable",for: indexPath)
-        cell = UITableViewCell(style: .subtitle, reuseIdentifier: "directionTable")
         let data = coreData.vaultData[indexPath.row]
         cell.textLabel?.text = data.place
         return cell
@@ -288,13 +305,6 @@ extension SetDirectionViewController: UITableViewDelegate, UITableViewDataSource
         secondTextField.text = cell.place
         directionData?.destinationCoordinate = location
         directionData?.destinationAddress = cell.place
+        print(cell.place)
     }
-    
-    
-}
-
-enum TypeOfDirection {
-    case Car
-    case Walking
-    case Bysicle
 }

@@ -8,13 +8,15 @@
 
 import UIKit
 import MapKit
+import SPAlert
 
 protocol SearchControllerDelegate: AnyObject {
     func passSearchResult(coordinates: CLLocationCoordinate2D,placemark: MKPlacemark?,tagView: Int)
 }
 
-protocol SetPinSearchDelegate: AnyObject {
-    func isFuncAvailable(boolean: Bool)
+protocol HandleMapSearch {
+    func dropCoordinate(coordinate: CLLocationCoordinate2D, requestName: String)
+    func dropSomeAnnotations(items: [MKMapItem])
 }
 
 enum SearchControllerEnum {
@@ -44,7 +46,7 @@ class SearchViewController: UIViewController {
     var handleMapSearchDelegate: HandleMapSearch? = nil
     
     weak var delegate: SearchControllerDelegate?
-    weak var secondDelegate: SetPinSearchDelegate?
+
     
     let imageDictionary = ["Аэропорт"       :UIImage(systemName: "airplane.arrival"),
                            "Рестораны"      :UIImage(systemName: "fork.knife"),
@@ -224,7 +226,7 @@ class SearchViewController: UIViewController {
     }
     
     @objc private func setPinOnMap(){
-        secondDelegate?.isFuncAvailable(boolean: true)
+        SPAlert.present(message: "This func in test project", haptic: .warning)
         self.view.window?.rootViewController?.dismiss(animated: true)
     }
     
