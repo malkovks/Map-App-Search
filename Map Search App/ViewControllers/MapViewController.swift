@@ -18,6 +18,7 @@ class MapViewController: UIViewController {
     let locationManager = CLLocationManager()
     let annotationCustom = MKPointAnnotation()
     private let converter = MapDataConverter()
+    private let mapTools = MapIntruments()
     private var distanceRoute = CLLocationDistance()
     
     private let geocoder = CLGeocoder()
@@ -400,9 +401,17 @@ class MapViewController: UIViewController {
                 self.mapView.addAnnotation(self.annotationCustom)
                 let dist = self.converter.distanceFunction(coordinate: coordinates, user: self.locationManager)
                 let vc = DetailViewController()
-                vc.pointOfInterest = requestName
-                vc.distanceBetweenUserAndAnnotation = dist
-                vc.coordinatesForPlotInfo = placemark.location?.coordinate
+                //поменять force unwrap
+                guard let coordinate = placemark.location?.coordinate, let title = requestName else {
+                    return SPAlert.present(title: "Ошибка передачи данных.\nПопробуйте включить геолокацию в настройках", preset: .error)
+                    
+                }
+                vc.gettingData = DetailsData(userLocation: self.locationManager,
+                                             placePoint: coordinate,
+                                             pointOfInterestName: title)
+//                vc.pointOfInterest = requestName
+//                vc.distanceBetweenUserAndAnnotation = dist
+//                vc.coordinatesForPlotInfo = placemark.location?.coordinate
                 vc.delegate = self
                 vc.modalPresentationStyle = .pageSheet
                 vc.sheetPresentationController?.detents = [.medium(),.large(),.custom(resolver: { context in
@@ -449,7 +458,10 @@ class MapViewController: UIViewController {
     //MARK: - Direction Settings
     //func for starting showing direction. Func input user location and return polyline on map
     func getDirection(start location: CLLocationCoordinate2D?,final destination: CLLocationCoordinate2D,type: String?){
-        let request = createDirectionRequest(from: location, to: destination, type: type)
+        let request = MapIntruments().createDirectionRequest(user: locationManager,
+                                                             from: location,
+                                                             to: destination,
+                                                             type: type)
         let directions = MKDirections(request: request)
         let annotationOne = MKPointAnnotation()
         annotationOne.title = "Начало маршрута"
@@ -463,61 +475,57 @@ class MapViewController: UIViewController {
             guard let response = response, error == nil else {
                 return
             }
-            let dist = response.routes.first?.distance
-            
             for route in response.routes {
-                
+                _ = route.steps
+                mapTools.plotPolyline(route: route, mapView: mapView)
             }
-//            for route in response.routes {
-//                _ = route.steps
-//                self.mapView.addAnnotations([annotationOne,annotationTwo])
-//                self.mapView.addOverlay(route.polyline, level: .aboveRoads)
-//                self.mapView.setVisibleMapRect(route.polyline.boundingMapRect, animated: true)
-//
-//            }
+            DispatchQueue.main.async {
+                let vc = DirectionResultViewController()
+                let startLoc = location ?? self.locationManager.location?.coordinate
+                vc.routeData = DirectionResultStruct(startCoordinate: startLoc!, finalCoordinate: destination, responseDirection: response, typeOfDirection: type ?? "")
+                let nav = UINavigationController(rootViewController: vc)
+                nav.modalPresentationStyle = .pageSheet
+                nav.sheetPresentationController?.detents = [.custom(resolver: { context in return self.view.frame.size.height/3 })]
+                self.present(nav, animated: true)
+            }
+            
         }
     }
-    //функция для отображения ДЛИННЫ МАРШРУТА
-//    private func getRouteDistance(coordinate: CLLocationCoordinate2D){
-//        let request = MKDirections.Request()
-//        let user = locationManager.location?.coordinate
-//        let destination = MKPlacemark(coordinate: coordinate)
-//        let userMark = MKPlacemark(coordinate: user)
-//        request.source = MKMapItem(placemark: userMark)
-//        request.destination = MKMapItem(placemark: destination)
+    
+    private func getRoute(request: MKDirections.Request)/* -> [MKRoute] */ {
+        let directions = MKDirections(request: request)
+        directions.calculate { response, error in
+            guard response  != nil else { return }
+        }
+    }
+    
+    
+//    //main setups for direction display. Input user location and output result of request by start and end location
+//    func createDirectionRequest(from location: CLLocationCoordinate2D?,to coordinate: CLLocationCoordinate2D,type transport: String?) -> MKDirections.Request {
+//        let startCoordinate = location ?? locationManager.location!.coordinate //start or user point
+//        let destinationCoordinate = coordinate //endpoint coordinates
+//        let startingLocation      = MKPlacemark(coordinate: startCoordinate)//checking for active user location
+//        let destination           = MKPlacemark(coordinate: destinationCoordinate) //checking for having endpoint coordinates
+//        let request               = MKDirections.Request()
+//        request.source                       = MKMapItem(placemark: startingLocation)
+//        request.destination                  = MKMapItem(placemark: destination)
+//        request.requestsAlternateRoutes      = true
+//        switch transport {
+//        case "Автомобиль":
+//            request.transportType = .automobile
+//        case "Пешком":
+//            request.transportType = .walking
+//        case "Велосипед":
+//            request.transportType = .any
+//        case "Транспорт":
+//            request.transportType = .transit
+//        default:
+//            request.transportType = .walking
+//        }
+//        return request
 //    }
-    //main setups for direction display. Input user location and output result of request by start and end location
-    func createDirectionRequest(from location: CLLocationCoordinate2D?,to coordinate: CLLocationCoordinate2D,type transport: String?) -> MKDirections.Request {
-        let startCoordinate = location ?? locationManager.location!.coordinate
-//        let startCoordinate = locationManager.location!.coordinate
-        let destinationCoordinate = coordinate //endpoint coordinates
-        let startingLocation      = MKPlacemark(coordinate: startCoordinate)//checking for active user location
-        let destination           = MKPlacemark(coordinate: destinationCoordinate) //checking for having endpoint coordinates
-        let request               = MKDirections.Request()
-        request.source                       = MKMapItem(placemark: startingLocation)
-        request.destination                  = MKMapItem(placemark: destination)
-        request.requestsAlternateRoutes      = false
-        let direction = MKDirections(request: request)
-        direction.calculate { response, error in
-            let distance = response!.routes.first?.distance
-            self.distanceRoute = distance!
-        }
-        switch transport {
-        case "Автомобиль":
-            request.transportType = .automobile
-        case "Пешком":
-            request.transportType = .walking
-        case "Велосипед":
-            request.transportType = .any
-        case "Транспорт":
-            request.transportType = .transit
-        default:
-            request.transportType = .walking
-        }
-        
-//        annotationCustom.coordinate = destinationCoordinate//проверить нужна или нет
-        return request
-    }
+    
+
     //func for clean direction
     func resetMap(withNew directions: MKDirections) {
         mapView.removeOverlays(mapView.overlays)
@@ -644,23 +652,43 @@ extension MapViewController: MKMapViewDelegate {
 //        }
         mapView.removeAnnotation(annotationCustom)
         guard let annotation = (view.annotation?.coordinate) else { return }
-        let dist = converter.distanceFunction(coordinate: annotation, user: locationManager)
-        let vc = DetailViewController()
-        vc.pointOfInterest = view.annotation?.title ?? "No title"
-        vc.coordinatesForPlotInfo = view.annotation?.coordinate
-        vc.distanceBetweenUserAndAnnotation = dist
-        vc.delegate = self
-        vc.modalPresentationStyle = .pageSheet
-        vc.sheetPresentationController?.detents = [.medium(),.large(),.custom(resolver: { context in
-            return 175.0
-        })]
-        vc.sheetPresentationController?.prefersGrabberVisible = true
-        present(vc, animated: true)
+//        let dist = converter.distanceFunction(coordinate: annotation, user: locationManager) f
+        if let coord = view.annotation?.coordinate , let title = view.annotation?.title{
+            let vc = DetailViewController()
+            vc.gettingData = DetailsData(userLocation: self.locationManager,
+                                         placePoint: coord,
+                                         pointOfInterestName: title ?? "No title delegate")
+    //        vc.pointOfInterest = view.annotation?.title ?? "No title"
+    //        vc.coordinatesForPlotInfo = view.annotation?.coordinate
+    //        vc.distanceBetweenUserAndAnnotation = dist
+            vc.delegate = self
+            vc.modalPresentationStyle = .pageSheet
+            vc.sheetPresentationController?.detents = [.medium(),.large(),.custom(resolver: { context in
+                return 175.0
+            })]
+            vc.sheetPresentationController?.prefersGrabberVisible = true
+            present(vc, animated: true)
+        }
+        
    }
     //polyline setups
+//    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+//        let renderer = MKPolylineRenderer(overlay: overlay as! MKPolyline)
+//        renderer.strokeColor = .systemIndigo
+//        return renderer
+//    }
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        let renderer = MKPolylineRenderer(overlay: overlay as! MKPolyline)
-        renderer.strokeColor = .systemIndigo
-        return renderer
+        let polyline = MKPolylineRenderer(overlay: overlay)
+        if overlay is MKPolyline {
+            if mapView.overlays.count == 1 {
+                polyline.strokeColor = .systemIndigo.withAlphaComponent(1)
+                polyline.lineWidth = 10
+            } else {
+                polyline.strokeColor = .systemBlue.withAlphaComponent(0.4)
+                polyline.lineWidth = 5
+            }
+            
+        }
+        return polyline
     }
 }

@@ -15,6 +15,7 @@
 		0A05E9CA298DCCDC00B87C5E /* SetDirectionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9C9298DCCDC00B87C5E /* SetDirectionData.swift */; };
 		0A05E9CD29932F2F00B87C5E /* MapDataConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9CC29932F2F00B87C5E /* MapDataConverter.swift */; };
 		0A05E9D12993456F00B87C5E /* DirectionResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */; };
+		0A05E9D32996245C00B87C5E /* MapCreateDistance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9D22996245C00B87C5E /* MapCreateDistance.swift */; };
 		0A1B52AD29865E5E00FB548D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AC29865E5E00FB548D /* AppDelegate.swift */; };
 		0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */; };
 		0A1B52B429865E5E00FB548D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B52B229865E5E00FB548D /* Main.storyboard */; };
@@ -44,6 +45,7 @@
 		0A05E9C9298DCCDC00B87C5E /* SetDirectionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDirectionData.swift; sourceTree = "<group>"; };
 		0A05E9CC29932F2F00B87C5E /* MapDataConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDataConverter.swift; sourceTree = "<group>"; };
 		0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionResultViewController.swift; sourceTree = "<group>"; };
+		0A05E9D22996245C00B87C5E /* MapCreateDistance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCreateDistance.swift; sourceTree = "<group>"; };
 		0A1B52A929865E5E00FB548D /* Map Search App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Map Search App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A1B52AC29865E5E00FB548D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				0A05E9CC29932F2F00B87C5E /* MapDataConverter.swift */,
+				0A05E9D22996245C00B87C5E /* MapCreateDistance.swift */,
 			);
 			path = MapViewModels;
 			sourceTree = "<group>";
@@ -350,6 +353,7 @@
 				0A1B52D8298664BE00FB548D /* FavouriteTableViewCell.swift in Sources */,
 				0A05E9C8298DB70000B87C5E /* SetDirectionCollectionViewCell.swift in Sources */,
 				0A1B52E4298665CF00FB548D /* SearchViewController.swift in Sources */,
+				0A05E9D32996245C00B87C5E /* MapCreateDistance.swift in Sources */,
 				0A1B52CA298662DC00FB548D /* DetailsStruct.swift in Sources */,
 				0A05E9C2298DA11D00B87C5E /* DateConverter.swift in Sources */,
 				0A1B52D62986642100FB548D /* SearchHistoryStack.swift in Sources */,

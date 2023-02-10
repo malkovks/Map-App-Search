@@ -9,6 +9,9 @@ import UIKit
 import MapKit
 
 class MapDataConverter {
+    
+    static let instance = MapDataConverter()
+    
     func distanceFunction(coordinate: CLLocationCoordinate2D,user locationManager: CLLocationManager) -> Double {
         let user = locationManager.location
         let convert = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
@@ -17,9 +20,9 @@ class MapDataConverter {
     }
     
     func getCenterLocation(for mapView: MKMapView) -> CLLocation {
-           let latitude = mapView.centerCoordinate.latitude
-           let longitude = mapView.centerCoordinate.longitude
-           return CLLocation(latitude: latitude, longitude: longitude)
+        let latitude = mapView.centerCoordinate.latitude
+        let longitude = mapView.centerCoordinate.longitude
+        return CLLocation(latitude: latitude, longitude: longitude)
     }
     
     func gestureLocation(for gesture: UILongPressGestureRecognizer,mapView: MKMapView,annotationCustom: MKPointAnnotation) -> CLLocationCoordinate2D? {
@@ -29,4 +32,6 @@ class MapDataConverter {
         mapView.addAnnotation(annotationCustom)
         return coordinate
     }
+    
+
 }
