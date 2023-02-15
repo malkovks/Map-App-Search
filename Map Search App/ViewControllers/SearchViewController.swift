@@ -426,6 +426,8 @@ extension SearchViewController: UISearchResultsUpdating, UISearchBarDelegate {
                     self.table.isHidden = true
                 }
             }
+        } else if !searchBar.text!.isEmpty {
+            self.table.reloadData()
         }
     }
 

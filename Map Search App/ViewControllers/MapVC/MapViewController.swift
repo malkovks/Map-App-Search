@@ -230,6 +230,7 @@ class MapViewController: UIViewController {
     @objc private func didTapToFavourite(){
         let vc = FavouriteTableViewController()
         vc.delegate = self
+        vc.userLocationCoordinate = locationManager
         let secVC = DetailViewController()
         secVC.delegate = self
         let navVc = UINavigationController(rootViewController: vc)
@@ -353,6 +354,9 @@ class MapViewController: UIViewController {
         mapView.userTrackingMode = .followWithHeading
         mapView.addGestureRecognizer(longGesture)
         mapView.selectableMapFeatures = [.pointsOfInterest]
+        mapView.showsUserLocation = true
+        mapView.userTrackingMode = .followWithHeading
+        mapView.setUserTrackingMode(.followWithHeading, animated: true)
         let mapConfig = MKStandardMapConfiguration()
         mapConfig.pointOfInterestFilter = .includingAll
         mapConfig.showsTraffic = true
@@ -362,6 +366,7 @@ class MapViewController: UIViewController {
     func setupLocationManager(){
         locationManager.startUpdatingLocation()
         locationManager.requestAlwaysAuthorization()
+        locationManager.startUpdatingHeading()
         locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         if let location = locationManager.location?.coordinate {
             let center = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
@@ -408,7 +413,8 @@ class MapViewController: UIViewController {
                 }
                 vc.gettingData = DetailsData(userLocation: self.locationManager,
                                              placePoint: coordinate,
-                                             pointOfInterestName: title)
+                                             pointOfInterestName: title,
+                                             distanceRoute: "Distance is not avaliable..")
 //                vc.pointOfInterest = requestName
 //                vc.distanceBetweenUserAndAnnotation = dist
 //                vc.coordinatesForPlotInfo = placemark.location?.coordinate
@@ -647,17 +653,15 @@ extension MapViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-//        if view.annotation != nil {
-//            mapView.removeAnnotation(annotationCustom)
-//        }
+        
         mapView.removeAnnotation(annotationCustom)
-        guard let annotation = (view.annotation?.coordinate) else { return }
-//        let dist = converter.distanceFunction(coordinate: annotation, user: locationManager) f
+//        let distance = mapTools.getDistanceBetweenPoints(route: <#T##MKRoute#>)
         if let coord = view.annotation?.coordinate , let title = view.annotation?.title{
             let vc = DetailViewController()
             vc.gettingData = DetailsData(userLocation: self.locationManager,
                                          placePoint: coord,
-                                         pointOfInterestName: title ?? "No title delegate")
+                                         pointOfInterestName: title ?? "No title delegate",
+                                         distanceRoute: "Distance is not available..")
     //        vc.pointOfInterest = view.annotation?.title ?? "No title"
     //        vc.coordinatesForPlotInfo = view.annotation?.coordinate
     //        vc.distanceBetweenUserAndAnnotation = dist
@@ -671,12 +675,7 @@ extension MapViewController: MKMapViewDelegate {
         }
         
    }
-    //polyline setups
-//    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-//        let renderer = MKPolylineRenderer(overlay: overlay as! MKPolyline)
-//        renderer.strokeColor = .systemIndigo
-//        return renderer
-//    }
+
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let polyline = MKPolylineRenderer(overlay: overlay)
         if overlay is MKPolyline {

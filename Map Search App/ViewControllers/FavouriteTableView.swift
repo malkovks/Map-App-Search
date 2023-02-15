@@ -22,6 +22,8 @@ class FavouriteTableViewController: UIViewController, UIGestureRecognizerDelegat
     
     weak var delegate: FavouritePlaceDelegate?
     
+    var userLocationCoordinate = CLLocationManager()
+    
     let tableview: UITableView = {
         let table = UITableView()
         table.register(FavouriteTableViewCell.self, forCellReuseIdentifier: FavouriteTableViewCell.identifier)
@@ -52,7 +54,7 @@ class FavouriteTableViewController: UIViewController, UIGestureRecognizerDelegat
                 let place = coredata.vaultData[indexPath.row]
                 let coordinate = CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude)
                 let vc = DetailViewController()
-                vc.coordinatesForPlotInfo = coordinate
+                vc.gettingData = DetailsData(userLocation: userLocationCoordinate, placePoint: coordinate, pointOfInterestName: place.place ?? "No place", distanceRoute: "0.0")
                 let navVC = UINavigationController(rootViewController: vc)
                 present(navVC, animated: true)
             }

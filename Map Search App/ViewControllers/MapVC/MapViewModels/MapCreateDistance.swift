@@ -7,31 +7,37 @@
 
 import UIKit
 import MapKit
+import SPAlert
 
 class MapIntruments {
     
     static let instance = MapIntruments()
     
     func createDirectionRequest(user locationManager: CLLocationManager,from location: CLLocationCoordinate2D?,to coordinate: CLLocationCoordinate2D,type transport: String?) -> MKDirections.Request {
-        let startCoordinate = location ?? locationManager.location!.coordinate //start or user point
-        let destinationCoordinate = coordinate //endpoint coordinates
-        let startingLocation      = MKPlacemark(coordinate: startCoordinate)//checking for active user location
-        let destination           = MKPlacemark(coordinate: destinationCoordinate) //checking for having endpoint coordinates
-        let request               = MKDirections.Request()
-        request.source                       = MKMapItem(placemark: startingLocation)
-        request.destination                  = MKMapItem(placemark: destination)
-        request.requestsAlternateRoutes      = true
-        switch transport {
-        case "Автомобиль":
-            request.transportType = .automobile
-        case "Пешком":
-            request.transportType = .walking
-        case "Велосипед":
-            request.transportType = .any
-        case "Транспорт":
-            request.transportType = .transit
-        default:
-            request.transportType = .walking
+        let request = MKDirections.Request()
+        if let locationUser = locationManager.location {
+            let startCoordinate = location ?? locationUser.coordinate //start or user point
+            let destinationCoordinate = coordinate //endpoint coordinates
+            let startingLocation      = MKPlacemark(coordinate: startCoordinate)//checking for active user location
+            let destination           = MKPlacemark(coordinate: destinationCoordinate) //checking for having endpoint coordinates
+            request.source                       = MKMapItem(placemark: startingLocation)
+            request.destination                  = MKMapItem(placemark: destination)
+            request.requestsAlternateRoutes      = true
+            switch transport {
+            case "Автомобиль":
+                request.transportType = .automobile
+            case "Пешком":
+                request.transportType = .walking
+            case "Велосипед":
+                request.transportType = .any
+            case "Транспорт":
+                request.transportType = .transit
+            default:
+                request.transportType = .walking
+            }
+            return request
+        }else {
+            SPAlert.present(title: "Turn on user location", preset: .error)
         }
         return request
     }

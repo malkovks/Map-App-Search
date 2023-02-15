@@ -226,6 +226,7 @@ extension SetDirectionViewController: UITextFieldDelegate {
             })]
             nav.sheetPresentationController?.prefersGrabberVisible = false
             nav.isNavigationBarHidden = false
+            self.view.endEditing(true)
             present(nav, animated: true)
         } else {
             guard let data = directionData?.destinationCoordinate else { return }
@@ -239,7 +240,9 @@ extension SetDirectionViewController: UITextFieldDelegate {
             })]
             nav.sheetPresentationController?.prefersGrabberVisible = false
             nav.isNavigationBarHidden = false
+            self.view.endEditing(true)
             present(nav, animated: true)
+            
         }
     }
     

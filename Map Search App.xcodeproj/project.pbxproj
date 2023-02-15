@@ -16,6 +16,7 @@
 		0A05E9CD29932F2F00B87C5E /* MapDataConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9CC29932F2F00B87C5E /* MapDataConverter.swift */; };
 		0A05E9D12993456F00B87C5E /* DirectionResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */; };
 		0A05E9D32996245C00B87C5E /* MapCreateDistance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9D22996245C00B87C5E /* MapCreateDistance.swift */; };
+		0A05E9DB299B6E7F00B87C5E /* DirectionResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9DA299B6E7F00B87C5E /* DirectionResultTableViewCell.swift */; };
 		0A1B52AD29865E5E00FB548D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AC29865E5E00FB548D /* AppDelegate.swift */; };
 		0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */; };
 		0A1B52B429865E5E00FB548D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B52B229865E5E00FB548D /* Main.storyboard */; };
@@ -46,6 +47,7 @@
 		0A05E9CC29932F2F00B87C5E /* MapDataConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDataConverter.swift; sourceTree = "<group>"; };
 		0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionResultViewController.swift; sourceTree = "<group>"; };
 		0A05E9D22996245C00B87C5E /* MapCreateDistance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCreateDistance.swift; sourceTree = "<group>"; };
+		0A05E9DA299B6E7F00B87C5E /* DirectionResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionResultTableViewCell.swift; sourceTree = "<group>"; };
 		0A1B52A929865E5E00FB548D /* Map Search App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Map Search App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A1B52AC29865E5E00FB548D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -107,6 +109,59 @@
 			path = DetailModels;
 			sourceTree = "<group>";
 		};
+		0A05E9D4299B6DCE00B87C5E /* MapVC */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B52DD2986658A00FB548D /* MapViewController.swift */,
+				0A05E9CB29932F0D00B87C5E /* MapViewModels */,
+			);
+			path = MapVC;
+			sourceTree = "<group>";
+		};
+		0A05E9D5299B6DDE00B87C5E /* DetailVC */ = {
+			isa = PBXGroup;
+			children = (
+				0A05E9CF2993332B00B87C5E /* DetailModels */,
+				0A1B52E1298665BE00FB548D /* DetailViewController.swift */,
+			);
+			path = DetailVC;
+			sourceTree = "<group>";
+		};
+		0A05E9D6299B6DFF00B87C5E /* SetDirectionVC */ = {
+			isa = PBXGroup;
+			children = (
+				0A05E9D7299B6E3100B87C5E /* CustomCell */,
+				0A05E9BD298D539C00B87C5E /* SetDirectionViewController.swift */,
+				0A05E9CE2993330D00B87C5E /* SetDirectionModels */,
+			);
+			path = SetDirectionVC;
+			sourceTree = "<group>";
+		};
+		0A05E9D7299B6E3100B87C5E /* CustomCell */ = {
+			isa = PBXGroup;
+			children = (
+				0A05E9C7298DB70000B87C5E /* SetDirectionCollectionViewCell.swift */,
+			);
+			path = CustomCell;
+			sourceTree = "<group>";
+		};
+		0A05E9D8299B6E5400B87C5E /* DirectionResultVC */ = {
+			isa = PBXGroup;
+			children = (
+				0A05E9D9299B6E5F00B87C5E /* CustomCell */,
+				0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */,
+			);
+			path = DirectionResultVC;
+			sourceTree = "<group>";
+		};
+		0A05E9D9299B6E5F00B87C5E /* CustomCell */ = {
+			isa = PBXGroup;
+			children = (
+				0A05E9DA299B6E7F00B87C5E /* DirectionResultTableViewCell.swift */,
+			);
+			path = CustomCell;
+			sourceTree = "<group>";
+		};
 		0A1B52A029865E5E00FB548D = {
 			isa = PBXGroup;
 			children = (
@@ -133,7 +188,6 @@
 				0A1B52C62986626D00FB548D /* Managers */,
 				0A1B52C52986624B00FB548D /* Storyboard and assets */,
 				0A1B52C42986623A00FB548D /* ViewControllers */,
-				0A1B52C32986623100FB548D /* Public Models */,
 				0A1B52BD29865E6000FB548D /* Info.plist */,
 			);
 			path = "Map Search App";
@@ -151,17 +205,15 @@
 		0A1B52C42986623A00FB548D /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				0A1B52DD2986658A00FB548D /* MapViewController.swift */,
-				0A05E9CB29932F0D00B87C5E /* MapViewModels */,
+				0A05E9D8299B6E5400B87C5E /* DirectionResultVC */,
+				0A05E9D5299B6DDE00B87C5E /* DetailVC */,
+				0A05E9D4299B6DCE00B87C5E /* MapVC */,
 				0A1B52DF2986659C00FB548D /* FavouriteTableView.swift */,
-				0A1B52E1298665BE00FB548D /* DetailViewController.swift */,
-				0A05E9CF2993332B00B87C5E /* DetailModels */,
 				0A1B52E3298665CF00FB548D /* SearchViewController.swift */,
-				0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */,
 				0A1B52E6298665E200FB548D /* WeatherViewController.swift */,
 				0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */,
-				0A05E9BD298D539C00B87C5E /* SetDirectionViewController.swift */,
-				0A05E9CE2993330D00B87C5E /* SetDirectionModels */,
+				0A05E9D6299B6DFF00B87C5E /* SetDirectionVC */,
+				0A1B52C32986623100FB548D /* Public Models */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -201,7 +253,6 @@
 				0A1B52D7298664BE00FB548D /* FavouriteTableViewCell.swift */,
 				0A1B52DB298664E000FB548D /* SearchResultTableViewCell.swift */,
 				0A1B52D9298664CE00FB548D /* ResultCollectionViewCell.swift */,
-				0A05E9C7298DB70000B87C5E /* SetDirectionCollectionViewCell.swift */,
 			);
 			path = "Custom Cells";
 			sourceTree = "<group>";
@@ -346,6 +397,7 @@
 				0A05E9CA298DCCDC00B87C5E /* SetDirectionData.swift in Sources */,
 				0A1B52E2298665BE00FB548D /* DetailViewController.swift in Sources */,
 				0A1B52D4298663F300FB548D /* PlaceEntityStack.swift in Sources */,
+				0A05E9DB299B6E7F00B87C5E /* DirectionResultTableViewCell.swift in Sources */,
 				0A1B52DE2986658A00FB548D /* MapViewController.swift in Sources */,
 				0A05E9D12993456F00B87C5E /* DirectionResultViewController.swift in Sources */,
 				0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */,
