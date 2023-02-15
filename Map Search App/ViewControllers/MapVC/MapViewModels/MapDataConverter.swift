@@ -12,11 +12,18 @@ class MapDataConverter {
     
     static let instance = MapDataConverter()
     
-    func distanceFunction(coordinate: CLLocationCoordinate2D,user locationManager: CLLocationManager) -> Double {
+    func distanceFunction(coordinate: CLLocationCoordinate2D,user locationManager: CLLocationManager) -> String {
         let user = locationManager.location
         let convert = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        guard let dist = user?.distance(from: convert) else { return 0.0 }
-        return dist
+        guard var dist = user?.distance(from: convert) else { return "0.0" }
+        if dist <= 1000 {
+            let intDist = Int(dist)
+            return String(intDist) + " м"
+        } else {
+            dist = dist / 1000
+            let str = (String(format: "%.1f", dist))
+            return str + " км"
+        }
     }
     
     func getCenterLocation(for mapView: MKMapView) -> CLLocation {

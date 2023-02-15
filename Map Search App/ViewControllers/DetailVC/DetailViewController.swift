@@ -28,17 +28,9 @@ class DetailViewController: UIViewController {
     
     private let coreData = PlaceEntityStack.instance
     
-    var selectedLocationOnMap = CLLocationCoordinate2D()
-    var selectedPlacemark: MKPlacemark?
-
-    
-//    var coordinatesForPlotInfo: CLLocationCoordinate2D?
-//    var pointOfInterest: String?
-//    var distanceBetweenUserAndAnnotation: Double = 0.0
     var gettingData: DetailsData?
     
-    
-    let mapInstruments = MapIntruments.instance
+    let mapInstruments = MapDataConverter.instance
     
     private let geocoder = CLGeocoder()
     
@@ -156,7 +148,6 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         if let data = gettingData {
             setPlotInfoByCoordinates(data: data)
-            getDataForView(data)
         } else {
             SPAlert.present(message: "Ошибка работы приложения.\nПопробуйте позже", haptic: .none)
         }
@@ -255,27 +246,6 @@ class DetailViewController: UIViewController {
         }
         return output
     }
-    
-    private func getDataForView(_ data: DetailsData) {
-        let req = mapInstruments.createDirectionRequest(user: data.userLocation, from: nil, to: data.placePoint, type: "Автомобиль")
-//        let request = MapIntruments().createDirectionRequest(user: data.userLocation ,
-//                                                             from: nil,
-//                                                             to: data.placePoint,
-//                                                             type: "Автомобиль")
-        let direction = MKDirections(request: req)
-        direction.calculate { response, error in
-            guard let response = response, error != nil else { return }
-            if let distance = response.routes.first {
-                let formattedDistance = self.mapInstruments.getDistanceBetweenPoints(route: distance)
-                print(formattedDistance)
-                self.distanceLabelPlotView.text = formattedDistance
-                print("подсчитано")
-            } else {
-                SPAlert.present(title: "Ошибка вычисления дистанции", preset: .error)
-            }
-        }
-    }
-    
 
     func setPlotInfoByCoordinates(data: DetailsData) {
         let location = CLLocation(latitude: data.placePoint.latitude, longitude: data.placePoint.longitude)
@@ -284,24 +254,22 @@ class DetailViewController: UIViewController {
                 return
             }
             guard let self = self else { return }
-            let streetName = placemark.thoroughfare ?? "No str.name"
-            let streetSubname = placemark.subThoroughfare ?? "No num."
-            let city = placemark.administrativeArea ?? ""
-            let country = placemark.country ?? ""
-            let postIndex = placemark.postalCode ?? ""
-//            let meter = self.distanceBetweenUserAndAnnotation
+            let streetName = placemark.thoroughfare ?? "\n" + ","
+            let streetSubname = placemark.subThoroughfare ?? "\n"
+            let city = placemark.administrativeArea ?? "\n"
+            let country = placemark.country ?? "\n"
+            let postIndex = placemark.postalCode ?? "\n"
+            let distance = self.mapInstruments.distanceFunction(coordinate: data.placePoint, user: data.userLocation)
             DispatchQueue.main.async {
                 if !data.pointOfInterestName.isEmpty {
                     self.mainTitlePlotView.text = data.pointOfInterestName
-//                    self.distanceLabelPlotView.text = data.distanceRoute
-                    self.cellData = "\(streetName), \(streetSubname)\n\(city)\n\(country)\n\(postIndex)"
-                    self.dataStruct = FullAdress(street: streetName, appartmentNumber: streetSubname, city: city, country: country, postIndex: postIndex, latitude: data.placePoint.latitude, longitude: data.placePoint.longitude)
+                    self.distanceLabelPlotView.text = distance
+                    self.cellData = "\(streetName) \(streetSubname)\n\(city)\n\(country)\n\(postIndex)"
                     self.addressTableViewPlotView.reloadData()
                 } else {
                     self.mainTitlePlotView.text = streetName
-//                    self.distanceLabelPlotView.text = data.distanceRoute
-                    self.cellData = "\(streetName), \(streetSubname)\n\(city)\n\(country)\n\(postIndex)"
-                    self.dataStruct = FullAdress(street: streetName, appartmentNumber: streetSubname, city: city, country: country, postIndex: postIndex, latitude: data.placePoint.latitude, longitude: data.placePoint.longitude)
+                    self.distanceLabelPlotView.text = distance
+                    self.cellData = "\(streetName) \(streetSubname)\n\(city)\n\(country)\n\(postIndex)"
                     self.addressTableViewPlotView.reloadData()
                 }
             }
@@ -409,47 +377,3 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
         return 60
     }
 }
-
-//    public func setPlotInfoByCoordinates(coordinates: CLLocationCoordinate2D,pointOfInterest: String?){
-//        let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
-//        geocoder.reverseGeocodeLocation(location) { [weak self] placemark, error in
-//            guard let placemark = placemark?.first else {
-//                return
-//            }
-//            guard let self = self else { return }
-//            let streetName = placemark.thoroughfare ?? "No str.name"
-//            let streetSubname = placemark.subThoroughfare ?? "No num."
-//            let city = placemark.administrativeArea ?? ""
-//            let country = placemark.country ?? ""
-//            let postIndex = placemark.postalCode ?? ""
-//            let meter = self.distanceBetweenUserAndAnnotation
-//            let distance = self.convertDistance(distance: meter)
-//            DispatchQueue.main.async {
-//                if let point = pointOfInterest {
-//                    self.mainTitlePlotView.text = point
-////                    self.distanceLabelPlotView.text = distance
-//                    self.cellData = "\(streetName), \(streetSubname)\n\(city)\n\(country)\n\(postIndex)"
-//                    self.dataStruct = FullAdress(street: streetName, appartmentNumber: streetSubname, city: city, country: country, postIndex: postIndex, latitude: coordinates.latitude, longitude: coordinates.longitude)
-//                    self.addressTableViewPlotView.reloadData()
-//                } else {
-//                    self.mainTitlePlotView.text = streetName
-////                    self.distanceLabelPlotView.text = distance
-//                    self.cellData = "\(streetName), \(streetSubname)\n\(city)\n\(country)\n\(postIndex)"
-//                    self.dataStruct = FullAdress(street: streetName, appartmentNumber: streetSubname, city: city, country: country, postIndex: postIndex, latitude: coordinates.latitude, longitude: coordinates.longitude)
-//                    self.addressTableViewPlotView.reloadData()
-//                }
-//            }
-//        }
-//    }
-
-//    private func convertDataToPlacemark(coordinates: CLLocationCoordinate2D) -> CLPlacemark {
-//        let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
-//        var placemark: CLPlacemark?
-//        geocoder.reverseGeocodeLocation(location) { placemarkFirst, error in
-//            guard let placemarkLast = placemarkFirst?.first else {
-//                return
-//            }
-//            placemark = placemarkLast
-//        }
-//        return placemark!
-//    }

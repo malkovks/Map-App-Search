@@ -82,18 +82,18 @@ class FavouriteTableViewCell: UITableViewCell {
 //        }
         geocoder.reverseGeocodeLocation(location) { [weak self] placemark, error in
             guard let placemark = placemark?.first else { return }
-            let streetName = placemark.thoroughfare ?? "Street is disabled"
-            let appNumber = placemark.subThoroughfare ?? "Out of number"
+            let streetName = placemark.thoroughfare ?? "\n"
+            let appNumber = placemark.subThoroughfare ?? ""
             let city = placemark.administrativeArea ?? ""
             let country = placemark.country ?? ""
-            let areaOfInterest = placemark.areasOfInterest ?? []
+            let areaOfInterest = String(describing: model.place!)
             DispatchQueue.main.async {
-                if areaOfInterest == [] {
+                if areaOfInterest.isEmpty {
                     self?.titleLabel.text = "\(streetName), д. \(appNumber)"
-                    self?.subtitleLabel.text = "Регион: \(city), \(country).\nSaved: \(model.date ?? "No date")"
+                    self?.subtitleLabel.text = "Регион: \(city), \(country).\nСохранено: \(model.date ?? "Ошибка")"
                 } else {
-                    self?.titleLabel.text = " \"\(areaOfInterest.first ?? "No date")\", улица: \(streetName), д. \(appNumber)"
-                    self?.subtitleLabel.text = "Регион: \(city), \(country).\nSaved: \(model.date ?? "No date")"
+                    self?.titleLabel.text = " \"\(areaOfInterest)\", улица: \(streetName), д. \(appNumber)"
+                    self?.subtitleLabel.text = "Регион: \(city), \(country).\nСохранено: \(model.date ?? "Ошибка")"
                 }
             }
         }

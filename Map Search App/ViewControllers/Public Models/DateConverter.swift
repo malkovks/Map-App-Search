@@ -14,7 +14,7 @@ class DateClass {
         format.dateFormat = "HH:mm:ss"
         format.timeStyle = .medium
         format.dateStyle = .long
-        format.timeZone = TimeZone(abbreviation: "UTC")
+        format.timeZone = TimeZone(abbreviation: "UTC+3")
         let stringFormat = format.string(from: date)
         return stringFormat
     }

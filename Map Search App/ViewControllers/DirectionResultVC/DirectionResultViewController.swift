@@ -98,22 +98,9 @@ extension DirectionResultViewController: UITableViewDataSource, UITableViewDeleg
     //на каждую строку сделать массив с дистанцией, временем и плейсмарком, чтобы для выбора конкретной строки пользователь мог выбрать наиболее короткий или удобный маршрут
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell = tableView.dequeueReusableCell(withIdentifier: "cellDistanceResult",for: indexPath)
-    
         cell.imageView?.image = UIImage(systemName: "arrow.triangle.turn.up.right.diamond")
-        cell.textLabel?.text = "Check label"
+        cell.textLabel?.text = "distance"
         cell.detailTextLabel?.text = "Check detail label"
-//        cell.textLabel?.text = getDistance(data: routeData!)
-//        cell.textLabel?.font = .systemFont(ofSize: 16,weight: .heavy)
-//        cell.detailTextLabel?.text = "Displaying distance"
-//        let button = UIButton(type: .system)
-//        button.backgroundColor = .systemGreen
-//        button.titleLabel?.text = "Начать"
-//        button.layer.cornerRadius = 8
-//        button.tag = indexPath.row
-////        button.titleLabel?.font = .systemFont(ofSize: 12,weight: .medium)
-//        button.frame = CGRect(x: cell.frame.size.width-60, y: 10, width: 40, height: 40)
-//        button.addTarget(self, action: #selector(didTapStartDirection), for: .touchUpInside)
-//        cell.accessoryView = button as UIView
         return cell
     }
     

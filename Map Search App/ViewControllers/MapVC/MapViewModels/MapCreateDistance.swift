@@ -13,9 +13,9 @@ class MapIntruments {
     
     static let instance = MapIntruments()
     
-    func createDirectionRequest(user locationManager: CLLocationManager,from location: CLLocationCoordinate2D?,to coordinate: CLLocationCoordinate2D,type transport: String?) -> MKDirections.Request {
+    func createDirectionRequest(user locationManager: CLLocationManager?,from location: CLLocationCoordinate2D?,to coordinate: CLLocationCoordinate2D,type transport: String?) -> MKDirections.Request {
         let request = MKDirections.Request()
-        if let locationUser = locationManager.location {
+        if let locationUser = locationManager?.location {
             let startCoordinate = location ?? locationUser.coordinate //start or user point
             let destinationCoordinate = coordinate //endpoint coordinates
             let startingLocation      = MKPlacemark(coordinate: startCoordinate)//checking for active user location
@@ -49,6 +49,7 @@ class MapIntruments {
             guard let response = response, error != nil else { return }
             distance = response.routes[0].distance
         }
+        print(distance)
         return distance
     }
     

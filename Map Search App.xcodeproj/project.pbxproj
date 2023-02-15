@@ -17,6 +17,8 @@
 		0A05E9D12993456F00B87C5E /* DirectionResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */; };
 		0A05E9D32996245C00B87C5E /* MapCreateDistance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9D22996245C00B87C5E /* MapCreateDistance.swift */; };
 		0A05E9DB299B6E7F00B87C5E /* DirectionResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9DA299B6E7F00B87C5E /* DirectionResultTableViewCell.swift */; };
+		0A05E9E0299D809C00B87C5E /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9DF299D809C00B87C5E /* OnboardingViewController.swift */; };
+		0A05E9E2299D80EE00B87C5E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9E1299D80EE00B87C5E /* Core.swift */; };
 		0A1B52AD29865E5E00FB548D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AC29865E5E00FB548D /* AppDelegate.swift */; };
 		0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */; };
 		0A1B52B429865E5E00FB548D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B52B229865E5E00FB548D /* Main.storyboard */; };
@@ -48,6 +50,8 @@
 		0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionResultViewController.swift; sourceTree = "<group>"; };
 		0A05E9D22996245C00B87C5E /* MapCreateDistance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCreateDistance.swift; sourceTree = "<group>"; };
 		0A05E9DA299B6E7F00B87C5E /* DirectionResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionResultTableViewCell.swift; sourceTree = "<group>"; };
+		0A05E9DF299D809C00B87C5E /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		0A05E9E1299D80EE00B87C5E /* Core.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 		0A1B52A929865E5E00FB548D /* Map Search App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Map Search App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A1B52AC29865E5E00FB548D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -130,8 +134,8 @@
 		0A05E9D6299B6DFF00B87C5E /* SetDirectionVC */ = {
 			isa = PBXGroup;
 			children = (
-				0A05E9D7299B6E3100B87C5E /* CustomCell */,
 				0A05E9BD298D539C00B87C5E /* SetDirectionViewController.swift */,
+				0A05E9D7299B6E3100B87C5E /* CustomCell */,
 				0A05E9CE2993330D00B87C5E /* SetDirectionModels */,
 			);
 			path = SetDirectionVC;
@@ -160,6 +164,31 @@
 				0A05E9DA299B6E7F00B87C5E /* DirectionResultTableViewCell.swift */,
 			);
 			path = CustomCell;
+			sourceTree = "<group>";
+		};
+		0A05E9DC299D746800B87C5E /* FavouriteVC */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B52DF2986659C00FB548D /* FavouriteTableView.swift */,
+				0A05E9DD299D747100B87C5E /* CustomCell */,
+			);
+			path = FavouriteVC;
+			sourceTree = "<group>";
+		};
+		0A05E9DD299D747100B87C5E /* CustomCell */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B52D7298664BE00FB548D /* FavouriteTableViewCell.swift */,
+			);
+			path = CustomCell;
+			sourceTree = "<group>";
+		};
+		0A05E9DE299D804800B87C5E /* OnboardingVC */ = {
+			isa = PBXGroup;
+			children = (
+				0A05E9DF299D809C00B87C5E /* OnboardingViewController.swift */,
+			);
+			path = OnboardingVC;
 			sourceTree = "<group>";
 		};
 		0A1B52A029865E5E00FB548D = {
@@ -205,10 +234,11 @@
 		0A1B52C42986623A00FB548D /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				0A05E9DE299D804800B87C5E /* OnboardingVC */,
+				0A05E9DC299D746800B87C5E /* FavouriteVC */,
 				0A05E9D8299B6E5400B87C5E /* DirectionResultVC */,
 				0A05E9D5299B6DDE00B87C5E /* DetailVC */,
 				0A05E9D4299B6DCE00B87C5E /* MapVC */,
-				0A1B52DF2986659C00FB548D /* FavouriteTableView.swift */,
 				0A1B52E3298665CF00FB548D /* SearchViewController.swift */,
 				0A1B52E6298665E200FB548D /* WeatherViewController.swift */,
 				0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */,
@@ -233,6 +263,7 @@
 			children = (
 				0A1B52AC29865E5E00FB548D /* AppDelegate.swift */,
 				0A1B52AE29865E5E00FB548D /* SceneDelegate.swift */,
+				0A05E9E1299D80EE00B87C5E /* Core.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -250,7 +281,6 @@
 		0A1B52C8298662B900FB548D /* Custom Cells */ = {
 			isa = PBXGroup;
 			children = (
-				0A1B52D7298664BE00FB548D /* FavouriteTableViewCell.swift */,
 				0A1B52DB298664E000FB548D /* SearchResultTableViewCell.swift */,
 				0A1B52D9298664CE00FB548D /* ResultCollectionViewCell.swift */,
 			);
@@ -401,6 +431,7 @@
 				0A1B52DE2986658A00FB548D /* MapViewController.swift in Sources */,
 				0A05E9D12993456F00B87C5E /* DirectionResultViewController.swift in Sources */,
 				0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */,
+				0A05E9E0299D809C00B87C5E /* OnboardingViewController.swift in Sources */,
 				0A05E9C0298D9AF800B87C5E /* GeocoderReturn.swift in Sources */,
 				0A1B52D8298664BE00FB548D /* FavouriteTableViewCell.swift in Sources */,
 				0A05E9C8298DB70000B87C5E /* SetDirectionCollectionViewCell.swift in Sources */,
@@ -408,6 +439,7 @@
 				0A05E9D32996245C00B87C5E /* MapCreateDistance.swift in Sources */,
 				0A1B52CA298662DC00FB548D /* DetailsStruct.swift in Sources */,
 				0A05E9C2298DA11D00B87C5E /* DateConverter.swift in Sources */,
+				0A05E9E2299D80EE00B87C5E /* Core.swift in Sources */,
 				0A1B52D62986642100FB548D /* SearchHistoryStack.swift in Sources */,
 				0A1B52E7298665E200FB548D /* WeatherViewController.swift in Sources */,
 				0A1B52DA298664CE00FB548D /* ResultCollectionViewCell.swift in Sources */,

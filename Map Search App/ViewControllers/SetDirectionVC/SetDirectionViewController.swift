@@ -24,6 +24,9 @@ class SetDirectionViewController: UIViewController {
     
     private let geocoder = CLGeocoder()
     
+    var detailDelegate: HandleMapSearch? = nil
+    
+    
     let dictionaryOfType: [String:UIImage] = ["Автомобиль":UIImage(systemName: "car")!
                                               ,"Пешком":UIImage(systemName: "figure.walk")!
                                               ,"Велосипед":UIImage(systemName: "bicycle")!
@@ -64,28 +67,36 @@ class SetDirectionViewController: UIViewController {
         return field
     }()
     
+    private let detailsOfPlace: UIButton = {
+        let button = UIButton(type: .system)
+        button.configuration = .tinted()
+        button.configuration?.title = "Что здесь находится?"
+        button.configuration?.image = UIImage(systemName: "mappin.and.ellipse")
+        button.configuration?.imagePlacement = .top
+        button.configuration?.imagePadding = 8
+        button.configuration?.baseBackgroundColor = .systemBlue
+        button.configuration?.baseForegroundColor = .systemBlue
+        return button
+    }()
+    
     private var directionCollectionView: UICollectionView!
     
     override func viewDidLoad() {
-        coreData.loadData()
+        
         super.viewDidLoad()
         setupCollectionView()
-        setupNavigationBar()
         setupView()
+        setupNavigationBar()
         setupTableView()
-        guard let location = directionData?.destinationCoordinate else { return }
-        guard let user = directionData?.userCoordinate else { return }
-//        setupTextFields(first: user, second: location)
         table.reloadData()
-        
-        
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        let sArea = view.safeAreaInsets.top
-        let count = CGFloat(coreData.vaultData.count)
+        let safeArea = view.safeAreaInsets.top
+        let sArea = view.safeAreaInsets.top+10+detailsOfPlace.frame.size.height
         let ht = setupHeightForTable()
+        detailsOfPlace.frame = CGRect(x: 10, y: 10+safeArea, width: view.frame.size.width-20, height: 55)
         firstTextField.frame = CGRect(x: 10, y: 10+sArea, width: view.frame.size.width-20, height: 55)
         secondTextField.frame = CGRect(x: 10, y: 20+sArea+firstTextField.frame.size.height, width: view.frame.size.width-20, height: 55)
         table.frame = CGRect(x: 10, y: 30+sArea+firstTextField.frame.size.height+secondTextField.frame.size.height, width: view.frame.size.width-20, height: 50+ht)
@@ -112,6 +123,13 @@ class SetDirectionViewController: UIViewController {
     @objc private func didTapDismiss(){
         self.dismiss(animated: true)
     }
+    
+    @objc private func didTapShowDetailOfPlace(){
+        guard let coordinate = directionData?.destinationCoordinate else { return }
+        self.detailDelegate?.dropCoordinate(coordinate: coordinate, requestName: "")
+        self.dismiss(animated: true)
+    }
+    
     private func setupTableView(){
         table.delegate = self
         table.dataSource = self
@@ -120,39 +138,21 @@ class SetDirectionViewController: UIViewController {
     }
     
     private func setupView(){
+        view.addSubview(detailsOfPlace)
         view.addSubview(firstTextField)
         view.addSubview(secondTextField)
         view.addSubview(table)
         view.addSubview(directionCollectionView)
+        
+        detailsOfPlace.addTarget(self, action: #selector(didTapShowDetailOfPlace), for: .touchUpInside)
+        
         view.backgroundColor = .secondarySystemBackground
+        coreData.loadData()
         firstTextField.delegate = self
         secondTextField.delegate = self
         let vc = SearchViewController()
         vc.delegate = self
     }
-//        GeocoderReturn.shared.convertFromGeocode(coordinate: location) { place in
-//            self.firstTextField.text = place.streetName+" "+place.appNumber
-//        }
-    
-//    private func setupTextFields(first: CLLocationCoordinate2D,second: CLLocationCoordinate2D){
-//        let firstLoc = CLLocation(latitude: first.latitude, longitude: first.longitude)
-//        let secLod = CLLocation(latitude: second.latitude, longitude: second.longitude)
-//        guard let firstMark = parseGeolocation(location: firstLoc) else { return }
-//        guard let secondMark = parseGeolocation(location: secLod) else { return }
-//        firstTextField.text = firstMark.thoroughfare ?? "" + " " + (firstMark.subThoroughfare ?? "")
-//        secondTextField.text = secondMark.thoroughfare ?? "" + " " + (secondMark.subThoroughfare ?? "")
-//    }
-//
-//    private func parseGeolocation(location: CLLocation) -> CLPlacemark?{
-//        var returnPlacemark: CLPlacemark?
-////        let location = CLLocation(latitude: location.latitude, longitude: location.longitude)
-//
-//        geocoder.reverseGeocodeLocation(location) { placemark, error in
-//            guard let placemark = placemark?.first, error != nil else { return }
-//        }
-//        print(returnPlacemark?.thoroughfare)
-//        return returnPlacemark
-//    }
     
     private func setupNavigationBar(){
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.down")!, landscapeImagePhone: nil, style: .done, target: self, action: #selector(didTapDismiss))

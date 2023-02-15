@@ -115,6 +115,7 @@ class DeveloperViewController: UIViewController {
         view.addSubview(mailButton)
         view.addSubview(telegramButton)
         developerTextView.text = textForView
+        developerTextView.isEditable = false
         
         
         view.backgroundColor = .systemBackground
