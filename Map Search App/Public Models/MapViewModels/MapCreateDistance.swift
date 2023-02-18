@@ -33,7 +33,7 @@ class MapIntruments {
             case "Транспорт":
                 request.transportType = .transit
             default:
-                request.transportType = .walking
+                request.transportType = .automobile
             }
             return request
         }else {
@@ -42,16 +42,22 @@ class MapIntruments {
         return request
     }
     
-    func getDistanceBetweenPoints(request: MKDirections.Request) -> CLLocationDistance {
-        let direction = MKDirections(request: request)
-        var distance = CLLocationDistance()
-        direction.calculate { response, error in
-            guard let response = response, error != nil else { return }
-            distance = response.routes[0].distance
+    func getDistanceTime(route: MKRoute) -> String{
+        let time = Int(route.expectedTravelTime)
+        let (h,m,s) = secondsToHoursMinutesSeconds(time: time)
+        if h == 0 {
+            return "\(m) минут"
+        } else {
+            return "\(h) часов, \(m) минут."
         }
-        print(distance)
-        return distance
+        
     }
+    
+    func secondsToHoursMinutesSeconds(time: Int) -> (Int, Int, Int) {
+        return (time / 3600, (time % 3600) / 60, (time % 3600) % 60)
+    }
+    
+    
     
     func getDistanceBetweenPoints(route: MKRoute) -> String {
         var distance = CLLocationDistance()
@@ -65,9 +71,11 @@ class MapIntruments {
         }
     }
     
-    func plotPolyline(route: MKRoute,mapView: MKMapView){
+    
+    
+    func plotPolyline(route: MKRoute,mapView: MKMapView,choosenCount: Int){
         mapView.addOverlay(route.polyline)
-        if mapView.overlays.count == 1 {
+        if mapView.overlays.count == choosenCount {
             mapView.setVisibleMapRect(route.polyline.boundingMapRect,
                                       edgePadding: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10),
                                       animated: true)

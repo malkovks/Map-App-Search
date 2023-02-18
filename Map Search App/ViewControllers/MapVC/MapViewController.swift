@@ -9,6 +9,7 @@ import UIKit
 import MapKit
 import CoreLocationUI
 import SPAlert
+import FloatingPanel
 
 enum ActionPressed {
     case pressed
@@ -22,14 +23,16 @@ struct FavouriteAnnotations {
 }
 
 class MapViewController: UIViewController {
-
+//main attributes
     let mapView = MKMapView()
     let locationManager = CLLocationManager()
     let annotationCustom = MKPointAnnotation()
-    let annotationFavourite = MKPointAnnotation()
+    
     private let converter = MapDataConverter()
     private let mapTools = MapIntruments()
-    private var distanceRoute = CLLocationDistance()
+    private let panel = FloatingPanelController()
+
+    var polylineIndex: Int = 1
     
     private let geocoder = CLGeocoder()
     var selectedCoordination: CLLocationCoordinate2D?
@@ -197,7 +200,21 @@ class MapViewController: UIViewController {
                                     
                                 }),
                                 UIAction(title: "Построить маршрут",image: UIImage(systemName: "arrow.triangle.turn.up.right.diamond"), handler: { _ in
-                                    print("Set direction")
+                                    guard let userLoc = self.locationManager.location?.coordinate else { return self.displayError() }
+                                    
+                                    let vc = SetDirectionViewController()
+                                    vc.delegate = self
+                                    vc.directionData = SetDirectionData(userCoordinate: userLoc, mapViewDirection: self.mapView, destinationCoordinate: CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0))
+                                    let nav = UINavigationController(rootViewController: vc)
+                                    nav.modalPresentationStyle = .pageSheet
+                                    nav.sheetPresentationController?.detents = [.medium(),.large()]
+                                    nav.sheetPresentationController?.prefersGrabberVisible = true
+                                    nav.isNavigationBarHidden = false
+                                    self.present(nav, animated: true)
+                                    
+                                    
+                                    
+//                                    getDirection(start: userLoc, final: <#T##CLLocationCoordinate2D#>, type: <#T##String?#>, index: <#T##Int#>)
                                 }),
                                 UIAction(title: "Добавить геопозицию в избранное",image: UIImage(systemName: "suit.heart.fill"), handler: { _ in
                                    let dateC = DateClass.dateConverter()
@@ -306,7 +323,7 @@ class MapViewController: UIViewController {
     //func of cleaning view from directions and pins
     @objc private func didTapClearDirection(){
         mapView.removeOverlays(mapView.overlays)
-//        mapView.removeAnnotations(mapView.annotations)
+        mapView.removeAnnotations(mapView.annotations)
         mapView.removeAnnotation(annotationCustom)
     }
     //подумать нужна или нет
@@ -348,9 +365,6 @@ class MapViewController: UIViewController {
         tableDelegate.mapView = mapView
         tableDelegate.handleMapSearchDelegate = self
         definesPresentationContext = true
-        //КОНТРОЛЛЕР убран из вью!!!!
-//        navigationItem.searchController = searchController
-        //
     }
     func setupSubviews(){
         view.addSubview(mapView)
@@ -415,6 +429,8 @@ class MapViewController: UIViewController {
         let destVC = SetDirectionViewController()
         destVC.delegate = self
         destVC.detailDelegate = self
+        let destResult = DirectionResultViewController()
+        destResult.delegate = self
     }
     //func for gesture location and for output locations data
     //MARK: - methods for adding annotation, open detail VC and setting up direction
@@ -455,90 +471,58 @@ class MapViewController: UIViewController {
             }
         }
     }
-    //setup func for showing navigation,geocode placemark and add annotation
-    
-    func passAddressNavigation(location: CLLocationCoordinate2D) {
-        let locationData = CLLocation(latitude: location.latitude, longitude: location.longitude)
-        geocoder.reverseGeocodeLocation(locationData) { [weak self] placemark, error in
-            guard let placemark = placemark?.first,
-                  let self = self else {
-                return
-            }
-            let streetName = placemark.thoroughfare ?? ""
-            let streetNumber = placemark.subThoroughfare ?? ""
-            let city = placemark.administrativeArea ?? ""
-            let country = placemark.country ?? ""
-            let areaInterests = placemark.areasOfInterest ?? []
-            DispatchQueue.main.async {
-                    if areaInterests == [] {
-                        self.annotationCustom.coordinate = location
-                        self.annotationCustom.title = "\(streetName), дом \(streetNumber)"
-                        self.annotationCustom.subtitle = "\(city), \(country)"
-                        self.mapView.addAnnotation(self.annotationCustom)
-                        self.getDirection(start: nil, final: location, type: nil)
-                    } else if areaInterests != [] {
-                        self.annotationCustom.coordinate = location
-                        self.annotationCustom.title = areaInterests.first
-                        self.annotationCustom.subtitle = "г. \(city) "
-                        self.mapView.addAnnotation(self.annotationCustom)
-                        self.getDirection(start: nil, final: location, type: nil)
-                        
-                }
-            }
-        }
-    }
     //MARK: - Direction Settings
     //func for starting showing direction. Func input user location and return polyline on map
-    func getDirection(start location: CLLocationCoordinate2D?,final destination: CLLocationCoordinate2D,type: String?){
+    func getDirection(start location: CLLocationCoordinate2D?,final destination: CLLocationCoordinate2D,type: String?,index: Int){
         let request = MapIntruments().createDirectionRequest(user: locationManager,
                                                              from: location,
                                                              to: destination,
                                                              type: type)
         let directions = MKDirections(request: request)
-        let annotationOne = MKPointAnnotation()
-        annotationOne.title = "Начало маршрута"
-        annotationOne.coordinate = location ?? locationManager.location!.coordinate
-        let annotationTwo = MKPointAnnotation()
-        annotationTwo.title = "Конец маршрута"
-        annotationTwo.coordinate = destination
-        
         directions.calculate { [unowned self] response, error in
             //output alert if error
             guard let response = response, error == nil else {
                 return
             }
+            self.didTapClearDirection()
             for route in response.routes {
                 _ = route.steps
-                mapTools.plotPolyline(route: route, mapView: mapView)
+                mapTools.plotPolyline(route: route, mapView: mapView, choosenCount: index)
+                
+                let annotationOne = MKPointAnnotation()
+                annotationOne.title = "Начало маршрута"
+                mapView.addAnnotation(annotationOne)
+                annotationOne.coordinate = location ?? locationManager.location!.coordinate
+                let annotationTwo = MKPointAnnotation()
+                annotationTwo.title = "Конец маршрута"
+                annotationTwo.coordinate = destination
+                mapView.addAnnotation(annotationTwo)
             }
             DispatchQueue.main.async {
-                let vc = DirectionResultViewController()
                 let startLoc = location ?? self.locationManager.location?.coordinate
+                let vc = DirectionResultViewController()
+                vc.delegate = self
                 vc.routeData = DirectionResultStruct(startCoordinate: startLoc!, finalCoordinate: destination, responseDirection: response, typeOfDirection: type ?? "")
-                let nav = UINavigationController(rootViewController: vc)
-                nav.modalPresentationStyle = .pageSheet
-                nav.sheetPresentationController?.detents = [.custom(resolver: { context in return self.view.frame.size.height/3 })]
-                self.present(nav, animated: true)
+                self.panel.set(contentViewController: vc)
+                self.panel.addPanel(toParent: self)
+                self.panel.move(to: .half, animated: true)
             }
-            
         }
     }
     
-    private func getRoute(request: MKDirections.Request)/* -> [MKRoute] */ {
-        let directions = MKDirections(request: request)
-        directions.calculate { response, error in
-            guard response  != nil else { return }
+    private func setDirectionRoute(data: DirectionResultStruct,index: Int) {
+        let response = data.responseDirection
+        for route in response.routes {
+            _ = route.steps
+            mapTools.plotPolyline(route: route, mapView: mapView, choosenCount: index)
         }
     }
-    
-
-    
 
     //func for clean direction
     func resetMap(withNew directions: MKDirections) {
         mapView.removeOverlays(mapView.overlays)
         directionsArray.append(directions)
-        let _ = directionsArray.map { $0.cancel() }
+        directionsArray.map { $0.cancel() }
     }
     
 
@@ -568,6 +552,12 @@ class MapViewController: UIViewController {
     }
 }
 //MARK: - Extensions for Delegates
+extension MapViewController: ReturnResultOfDirection{
+    func passChoise(data: DirectionResultStruct, boolean: Bool, count choosenPolyline: Int) {
+        setDirectionRoute(data: data, index: choosenPolyline)
+    }
+}
+
 extension MapViewController: FavouritePlaceDelegate{
     func passCoordinates(coordinates: CLLocationCoordinate2D,name: String?) {
         mapView.removeAnnotations(mapView.annotations)
@@ -590,22 +580,24 @@ extension MapViewController:  PlotInfoDelegate {
         }
     }
     
-
-}
-extension MapViewController: SetDirectionProtocol {
-    func getDataForDirection(user coordinate: CLLocationCoordinate2D, destination: CLLocationCoordinate2D, type: String) {
-        getDirection(start: coordinate, final: destination, type: type)
+    func passAddressNavigation(location: CLLocationCoordinate2D) {
+        guard let userLocation = locationManager.location?.coordinate else { return SPAlert.present(preset: .error)}
+        getDirection(start: userLocation, final: location, type: "Автомобиль", index: 1)
     }
 }
 
+extension MapViewController: SetDirectionProtocol {
+    func getDataForDirection(user coordinate: CLLocationCoordinate2D, destination: CLLocationCoordinate2D, type: String,route index: Int) {
+        getDirection(start: coordinate, final: destination, type: type,index: index)
+    }
+}
 
 extension MapViewController: HandleMapSearch {
     func dropCoordinate(coordinate: CLLocationCoordinate2D, requestName: String) {
         setChoosenLocation(coordinates: coordinate)
-        
     }
+    
     func dropSomeAnnotations(items: [MKMapItem]) {
-        
         let annotations = items.map { location -> MKAnnotation in
             let annotation = MKPointAnnotation()
             annotation.title = location.placemark.name
@@ -676,16 +668,16 @@ extension MapViewController: MKMapViewDelegate {
             })]
             vc.sheetPresentationController?.prefersGrabberVisible = true
             present(vc, animated: true)
-            
-            
         }
-        
    }
+
 
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let polyline = MKPolylineRenderer(overlay: overlay)
+        let index = polylineIndex
         if overlay is MKPolyline {
-            if mapView.overlays.count == 1 {
+            
+            if mapView.overlays.count == index {
                 polyline.strokeColor = .systemIndigo.withAlphaComponent(1)
                 polyline.lineWidth = 10
             } else {

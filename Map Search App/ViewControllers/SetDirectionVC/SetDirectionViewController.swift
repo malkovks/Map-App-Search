@@ -11,7 +11,10 @@ import MapKit
 import SPAlert
 
 protocol SetDirectionProtocol: AnyObject{
-    func getDataForDirection(user coordinate: CLLocationCoordinate2D,destination coordinate: CLLocationCoordinate2D,type direction: String)
+    func getDataForDirection(user coordinate: CLLocationCoordinate2D,
+                             destination coordinate: CLLocationCoordinate2D,
+                             type direction: String,
+                             route index: Int)
 }
 
 class SetDirectionViewController: UIViewController {
@@ -152,6 +155,8 @@ class SetDirectionViewController: UIViewController {
         secondTextField.delegate = self
         let vc = SearchViewController()
         vc.delegate = self
+        
+        checkForCoordinates(data: directionData!)
     }
     
     private func setupNavigationBar(){
@@ -177,13 +182,22 @@ class SetDirectionViewController: UIViewController {
         directionCollectionView.isUserInteractionEnabled = true
         directionCollectionView.contentInsetAdjustmentBehavior = .automatic
     }
+    
+    private func checkForCoordinates(data: SetDirectionData) {
+        let location = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
+        let dataDest = data.destinationCoordinate
+        if dataDest.latitude == location.latitude && dataDest.longitude == location.longitude {
+            //изменить филды для вводы и вывода данных
+            print("This func for new direction")
+            
+        }
+    }
+    
+    
 }
 
 extension SetDirectionViewController: SearchControllerDelegate {
     func passSearchResult(coordinates: CLLocationCoordinate2D, placemark: MKPlacemark?,tagView: Int) {
-        print(coordinates.latitude)
-        print(placemark?.title! as Any)
-        print(tagView)
         if let placemark = placemark?.name, !placemark.isEmpty {
             if tagView == 0 {
                 firstTextField.text = placemark
@@ -221,12 +235,13 @@ extension SetDirectionViewController: UITextFieldDelegate {
             vc.delegate = self
             let nav = UINavigationController(rootViewController: vc)
             nav.modalPresentationStyle = .automatic
-            nav.sheetPresentationController?.detents = [.custom(resolver: { context in
-                return 400
-            })]
+            nav.sheetPresentationController?.detents = [.large()]
+//            nav.sheetPresentationController?.detents = [.custom(resolver: { context in
+//                return 400
+//            })]
             nav.sheetPresentationController?.prefersGrabberVisible = false
             nav.isNavigationBarHidden = false
-            self.view.endEditing(true)
+            
             present(nav, animated: true)
         } else {
             guard let data = directionData?.destinationCoordinate else { return }
@@ -235,12 +250,9 @@ extension SetDirectionViewController: UITextFieldDelegate {
             vc.delegate = self
             let nav = UINavigationController(rootViewController: vc)
             nav.modalPresentationStyle = .pageSheet
-            nav.sheetPresentationController?.detents = [.custom(resolver: { context in
-                return 400
-            })]
+            nav.sheetPresentationController?.detents = [.large()]
             nav.sheetPresentationController?.prefersGrabberVisible = false
             nav.isNavigationBarHidden = false
-            self.view.endEditing(true)
             present(nav, animated: true)
             
         }
@@ -275,7 +287,7 @@ extension SetDirectionViewController: UICollectionViewDelegate, UICollectionView
               let text = cell.typeOfSetDirection.text else {
             return SPAlert.present(message: "Ошибка передачи данных\nПопробуйте еще раз", haptic: .none)
         }
-        self.delegate?.getDataForDirection(user: userLoc, destination: destLoc, type: text)
+        self.delegate?.getDataForDirection(user: userLoc, destination: destLoc, type: text, route: 0)
         self.dismiss(animated: true)
         
     }
@@ -295,8 +307,10 @@ extension SetDirectionViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell = tableView.dequeueReusableCell(withIdentifier: "directionTable",for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "directionTable",for: indexPath)
         let data = coreData.vaultData[indexPath.row]
+        cell.imageView?.image = UIImage(systemName: "star.fill")
+        cell.imageView?.tintColor = .black
         cell.textLabel?.text = data.place
         return cell
     }
@@ -308,6 +322,5 @@ extension SetDirectionViewController: UITableViewDelegate, UITableViewDataSource
         secondTextField.text = cell.place
         directionData?.destinationCoordinate = location
         directionData?.destinationAddress = cell.place
-        print(cell.place)
     }
 }

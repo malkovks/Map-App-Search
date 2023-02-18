@@ -117,7 +117,6 @@
 			isa = PBXGroup;
 			children = (
 				0A1B52DD2986658A00FB548D /* MapViewController.swift */,
-				0A05E9CB29932F0D00B87C5E /* MapViewModels */,
 			);
 			path = MapVC;
 			sourceTree = "<group>";
@@ -170,17 +169,17 @@
 			isa = PBXGroup;
 			children = (
 				0A1B52DF2986659C00FB548D /* FavouriteTableView.swift */,
-				0A05E9DD299D747100B87C5E /* CustomCell */,
+				0A05E9DD299D747100B87C5E /* CustomCells */,
 			);
 			path = FavouriteVC;
 			sourceTree = "<group>";
 		};
-		0A05E9DD299D747100B87C5E /* CustomCell */ = {
+		0A05E9DD299D747100B87C5E /* CustomCells */ = {
 			isa = PBXGroup;
 			children = (
 				0A1B52D7298664BE00FB548D /* FavouriteTableViewCell.swift */,
 			);
-			path = CustomCell;
+			path = CustomCells;
 			sourceTree = "<group>";
 		};
 		0A05E9DE299D804800B87C5E /* OnboardingVC */ = {
@@ -212,11 +211,11 @@
 		0A1B52AB29865E5E00FB548D /* Map Search App */ = {
 			isa = PBXGroup;
 			children = (
-				0A1B52C8298662B900FB548D /* Custom Cells */,
 				0A1B52C7298662AD00FB548D /* CoreDataStack */,
 				0A1B52C62986626D00FB548D /* Managers */,
 				0A1B52C52986624B00FB548D /* Storyboard and assets */,
 				0A1B52C42986623A00FB548D /* ViewControllers */,
+				0A1B52C32986623100FB548D /* Public Models */,
 				0A1B52BD29865E6000FB548D /* Info.plist */,
 			);
 			path = "Map Search App";
@@ -225,6 +224,7 @@
 		0A1B52C32986623100FB548D /* Public Models */ = {
 			isa = PBXGroup;
 			children = (
+				0A05E9CB29932F0D00B87C5E /* MapViewModels */,
 				0A05E9BF298D9AF800B87C5E /* GeocoderReturn.swift */,
 				0A05E9C1298DA11D00B87C5E /* DateConverter.swift */,
 			);
@@ -234,16 +234,15 @@
 		0A1B52C42986623A00FB548D /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				0A05E9DE299D804800B87C5E /* OnboardingVC */,
-				0A05E9DC299D746800B87C5E /* FavouriteVC */,
-				0A05E9D8299B6E5400B87C5E /* DirectionResultVC */,
 				0A05E9D5299B6DDE00B87C5E /* DetailVC */,
+				0A810FDB299F5F5600227AA3 /* DeveloperInfoVC */,
+				0A05E9D8299B6E5400B87C5E /* DirectionResultVC */,
+				0A05E9DC299D746800B87C5E /* FavouriteVC */,
 				0A05E9D4299B6DCE00B87C5E /* MapVC */,
-				0A1B52E3298665CF00FB548D /* SearchViewController.swift */,
-				0A1B52E6298665E200FB548D /* WeatherViewController.swift */,
-				0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */,
+				0A05E9DE299D804800B87C5E /* OnboardingVC */,
+				0A810FD8299F5ED300227AA3 /* SearchVC */,
 				0A05E9D6299B6DFF00B87C5E /* SetDirectionVC */,
-				0A1B52C32986623100FB548D /* Public Models */,
+				0A810FDA299F5F4900227AA3 /* WeatherVC */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -278,13 +277,38 @@
 			path = CoreDataStack;
 			sourceTree = "<group>";
 		};
-		0A1B52C8298662B900FB548D /* Custom Cells */ = {
+		0A810FD8299F5ED300227AA3 /* SearchVC */ = {
 			isa = PBXGroup;
 			children = (
-				0A1B52DB298664E000FB548D /* SearchResultTableViewCell.swift */,
-				0A1B52D9298664CE00FB548D /* ResultCollectionViewCell.swift */,
+				0A1B52E3298665CF00FB548D /* SearchViewController.swift */,
+				0A810FD9299F5EE300227AA3 /* CustomCell */,
 			);
-			path = "Custom Cells";
+			path = SearchVC;
+			sourceTree = "<group>";
+		};
+		0A810FD9299F5EE300227AA3 /* CustomCell */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B52D9298664CE00FB548D /* ResultCollectionViewCell.swift */,
+				0A1B52DB298664E000FB548D /* SearchResultTableViewCell.swift */,
+			);
+			path = CustomCell;
+			sourceTree = "<group>";
+		};
+		0A810FDA299F5F4900227AA3 /* WeatherVC */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B52E6298665E200FB548D /* WeatherViewController.swift */,
+			);
+			path = WeatherVC;
+			sourceTree = "<group>";
+		};
+		0A810FDB299F5F5600227AA3 /* DeveloperInfoVC */ = {
+			isa = PBXGroup;
+			children = (
+				0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */,
+			);
+			path = DeveloperInfoVC;
 			sourceTree = "<group>";
 		};
 		4EF4495F76D906FBC41374F8 /* Pods */ = {

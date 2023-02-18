@@ -9,6 +9,7 @@
 //или почитать про то, как добавлять два вью на один
 import UIKit
 import MapKit
+import FloatingPanel
 
 protocol ReturnResultOfDirection: AnyObject {
     func passChoise(data: DirectionResultStruct, boolean: Bool,count choosenPolyline: Int)
@@ -27,18 +28,29 @@ class DirectionResultViewController: UIViewController {
     
     var routeData: DirectionResultStruct?
     
+    private let panel = FloatingPanelController()
     private let converter = MapDataConverter.instance
     private let mapTools = MapIntruments.instance
     
-    private let testLabel: UILabel = {
-       let label = UILabel()
-        label.font = .systemFont(ofSize: 30,weight: .bold)
-        label.text = ""
-        label.textColor = .systemRed
-        return label
+    private let directionTable = UITableView()
+    
+    private let closeViewButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
+        button.backgroundColor = .secondarySystemBackground
+        button.tintColor = .darkGray
+        return button
     }()
     
-    private let directionTable = UITableView()
+    private let titleLabel: UILabel = {
+       let label = UILabel()
+        label.text = "Выберите удобный маршрут"
+        label.font = .systemFont(ofSize: 18, weight: .heavy)
+        label.textAlignment = .center
+        label.contentMode = .center
+        label.numberOfLines = 1
+        return label
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,24 +59,35 @@ class DirectionResultViewController: UIViewController {
         setupTableView()
     }
     
+
+    
  
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        testLabel.frame = CGRect(x: 10, y: 50, width: view.frame.size.width-20, height: 55)
-        directionTable.frame = CGRect(x: 10, y: view.safeAreaInsets.top+10, width: view.frame.size.width-20, height: 180)
+
+        titleLabel.frame = CGRect(x: 50, y: 10, width: view.frame.size.width-100, height: 40)
+        closeViewButton.frame = CGRect(x: view.frame.size.width-50, y: 10, width: 40, height: 40)
+        directionTable.frame = CGRect(x: 10, y: view.safeAreaInsets.top+10+closeViewButton.frame.size.height+10, width: view.frame.size.width-20, height: 180)
     }
     
     @objc private func didTapStartDirection(){
         
     }
     
+    @objc private func didTapDismiss(){
+        self.dismiss(animated: true)
+    }
+    
     private func setupView(){
         view.backgroundColor = .secondarySystemBackground
         view.addSubview(directionTable)
+        view.addSubview(titleLabel)
+        view.addSubview(closeViewButton)
     }
     
     private func setupNavigationBar(){
         title = "Result of directions"
+        closeViewButton.addTarget(self, action: #selector(didTapDismiss), for: .touchUpInside)
     }
     
     private func setupTableView(){
@@ -78,13 +101,17 @@ class DirectionResultViewController: UIViewController {
         directionTable.isScrollEnabled = false
     }
     
-    private func getDistance(data: DirectionResultStruct) -> String{
-        var text = String()
-       if let route = data.responseDirection.routes.first {
-            let text = mapTools.getDistanceBetweenPoints(route: route)
-            testLabel.text = text
-       }
-        return text
+    func getDistanceInMeters(data: DirectionResultStruct,index: Int) -> String {
+        let response = data.responseDirection
+        let routes = response.routes
+        let distanceRoute = mapTools.getDistanceBetweenPoints(route: routes[index])
+        return distanceRoute
+    }
+    
+    func getTimeOfDistance(data: DirectionResultStruct,index: Int) -> String {
+        let routes = data.responseDirection.routes
+        let time = mapTools.getDistanceTime(route: routes[index])
+        return time
     }
     
 }
@@ -92,19 +119,23 @@ class DirectionResultViewController: UIViewController {
 extension DirectionResultViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        3
+        return routeData?.responseDirection.routes.count ?? 0
     }
-    //сделать кастомную строку для отображения лейбла, доплейбла и кнопки
-    //на каждую строку сделать массив с дистанцией, временем и плейсмарком, чтобы для выбора конкретной строки пользователь мог выбрать наиболее короткий или удобный маршрут
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell = tableView.dequeueReusableCell(withIdentifier: "cellDistanceResult",for: indexPath)
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellDistanceResult")
+        let route = getDistanceInMeters(data: routeData!, index: indexPath.row)
+        let routeTime = getTimeOfDistance(data: routeData!, index: indexPath.row)
         cell.imageView?.image = UIImage(systemName: "arrow.triangle.turn.up.right.diamond")
-        cell.textLabel?.text = "distance"
-        cell.detailTextLabel?.text = "Check detail label"
+        cell.textLabel?.text = "Дистанция: "+route
+        cell.detailTextLabel?.text = "Время маршрута "+routeTime
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         60
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        delegate?.passChoise(data: routeData!, boolean: true, count: indexPath.row)
     }
 }

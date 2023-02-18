@@ -279,12 +279,12 @@ class SearchViewController: UIViewController {
         if coreData.historyVault.count > 10 {
             let countOfData = coreData.historyVault.count
             var lastCount = countOfData - 30
-            if lastCount != 0 {
-                coreData.historyVault.remove(at: lastCount-1)
-                let data = coreData.historyVault[lastCount-1]
-                coreData.deleteLastElement(data: data)
-                lastCount -= 1
-            }
+//            if lastCount != 0 {
+////                coreData.historyVault.remove(at: lastCount-1)
+//                let data = coreData.historyVault[lastCount-1]
+//                coreData.deleteLastElement(data: data)
+//                lastCount -= 1
+//            }
         }
     }
     
