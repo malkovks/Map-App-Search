@@ -189,7 +189,10 @@ class SetDirectionViewController: UIViewController {
         if dataDest.latitude == location.latitude && dataDest.longitude == location.longitude {
             //изменить филды для вводы и вывода данных
             print("This func for new direction")
-            
+            firstTextField.text = "Укажите начало маршрута"
+            secondTextField.text = "Укажите конец маршрута"
+            detailsOfPlace.isHidden = true
+            navigationItem.largeTitleDisplayMode = .always
         }
     }
     

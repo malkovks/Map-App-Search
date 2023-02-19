@@ -38,7 +38,6 @@ class MapViewController: UIViewController {
     var selectedCoordination: CLLocationCoordinate2D?
     var previosLocation: CLLocation?
     var directionsArray: [MKDirections] = []
-    var savedLocationToShowDirection: CLLocationCoordinate2D?
     var savedNameLocation: String?
     var previousMainName: String?
     var coordinateSpanValue = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
@@ -100,17 +99,31 @@ class MapViewController: UIViewController {
         return button
     }()
     
-    var searchController: UISearchController = {
-        let search = UISearchController()
-        search.searchBar.searchBarStyle = .prominent
-        search.searchBar.placeholder = "Print Request"
-        search.searchBar.backgroundColor = .systemBackground
-        search.showsSearchResultsController = true
-        search.automaticallyShowsCancelButton = true
-        search.hidesNavigationBarDuringPresentation = false
-        search.searchBar.sizeToFit()
-        return search
+    private let weatherLabelButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.configuration = .tinted()
+        button.configuration?.title = "Temp"
+        button.titleLabel?.numberOfLines = 1
+//        button.configuration?.image = UIImage(systemName: "cloud")
+        button.configuration?.imagePlacement = .leading
+        button.titleLabel?.textColor = .black
+        button.configuration?.imagePadding = 2
+        button.configuration?.baseBackgroundColor = .black
+        button.configuration?.baseForegroundColor = .black
+        return button
     }()
+    
+//    private let weatherLabelButton: UIButton = {
+//        let button = UIButton(type: .system)
+////        button.setImage(UIImage(systemName: "cloud"), for: .normal)
+//        button.tintColor = .black
+//        button.backgroundColor = .systemFill
+//        button.contentMode = .scaleAspectFit
+//        button.titleLabel?.text = "Temp ℃"
+//        button.titleLabel?.font = .systemFont(ofSize: 16)
+//        button.layer.cornerRadius = 8
+//        return button
+//    }()
     //MARK: - Main View Loadings Methods
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -129,18 +142,12 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         startTrackingUserLocation()
-        setupWeather()
     }
     //key func for collecting all funcs for working and showing first necessary information
     private func startTrackingUserLocation(){
-        if let location = savedLocationToShowDirection {
-            setChoosenLocation(coordinates: location)
-            savedLocationToShowDirection = nil
-        }
         setupSubviews()
         setupLocationManager()
         setupViewsTargetsAndDelegates()
-        setupSearchAndTable()
         setupDelegates()
         previosLocation = converter.getCenterLocation(for: mapView) //collect last data with latitude and longitude
     }
@@ -150,12 +157,22 @@ class MapViewController: UIViewController {
         super.viewDidLayoutSubviews()
         guard let navVC = navigationController?.navigationBar.frame.size.height else { return }
         mapView.frame = view.bounds
+        weatherLabelButton.frame = CGRect(x: 10, y: view.safeAreaInsets.top+navVC, width: 80, height: 30)
         locationButton.frame = CGRect(x: view.frame.size.width-40, y:view.safeAreaInsets.top+navVC+locationButton.frame.size.height+40 , width: 40, height: 40)
         clearMapButton.frame = CGRect(x: view.frame.size.width-40, y: view.safeAreaInsets.top+navVC+40+locationButton.frame.size.height+40, width: 40, height: 40)
         clearMapButton.layer.cornerRadius = 0.5 * clearMapButton.bounds.size.width
         stepper.frame = CGRect(x: view.frame.size.width-120, y: view.frame.size.height-view.safeAreaInsets.top, width: 100, height: 100)
         menuButton.frame = CGRect(x: 15, y: view.frame.size.height-view.safeAreaInsets.top, width: 40, height: 40)
         menuButton.layer.cornerRadius = 0.5 * menuButton.bounds.size.width
+    }
+    
+    func setupSubviews(){
+        view.addSubview(mapView)
+        view.addSubview(weatherLabelButton)
+        view.addSubview(locationButton)
+        view.addSubview(clearMapButton)
+        view.addSubview(stepper)
+        view.addSubview(menuButton)
     }
     //MARK: - Objc methods
     //func for getting user location when user press on location button
@@ -165,19 +182,31 @@ class MapViewController: UIViewController {
     //method for menu Button and displaying UIMenu
     //сделать меню для отображения части данных, редактирование окна, показа избранного и пр.
     @objc private func didTapMenu(){
+        
         let menu = UIMenu(title: "",options: .displayInline,children:
                             [
                                 UIAction(title: "Clear map",image: UIImage(systemName: "xmark.circle.fill"),attributes: .destructive, handler: { _ in
                                     self.didTapClearDirection()
                                 }),
-                                UIAction(title: "Тип карты",image: UIImage(systemName: "map.fill"),attributes: .keepsMenuPresented, handler: { _ in
+                                UIAction(title: "Тип карты",image: UIImage(systemName: "map.fill"),attributes: .keepsMenuPresented, handler: { [self] _ in
                                 switch self.mapView.mapType {
                                 case .standard:
-                                    self.mapView.mapType = .satellite
+                                    mapView.mapType = .satellite
+                                    
+                                    navigationItem.leftBarButtonItem?.tintColor = .systemBackground
+                                    navigationItem.rightBarButtonItem?.tintColor = .systemBackground
+                                    clearMapButton.tintColor = .systemBackground
+                                    menuButton.tintColor = .systemBackground
                                 case .satellite:
-                                    self.mapView.mapType = .hybrid
+                                    mapView.mapType = .hybrid
+                                    
                                 default:
-                                    self.mapView.mapType = .standard
+                                    mapView.mapType = .standard
+                                    
+                                    navigationItem.leftBarButtonItem?.tintColor = .black
+                                    navigationItem.rightBarButtonItem?.tintColor = .black
+                                    clearMapButton.tintColor = .black
+                                    menuButton.tintColor = .black
                                     }
                                 }),
                                 UIAction(title: "Трафик",image: UIImage(systemName: "car.fill"),attributes: .keepsMenuPresented, handler: { _ in
@@ -196,6 +225,10 @@ class MapViewController: UIViewController {
                                             activity.popoverPresentationController?.permittedArrowDirections = .up
                                             self.present(activity,animated: true)
                                         }
+                                        else {
+                                            self.displayError()
+                                        }
+                                        
                                     }
                                     
                                 }),
@@ -211,10 +244,6 @@ class MapViewController: UIViewController {
                                     nav.sheetPresentationController?.prefersGrabberVisible = true
                                     nav.isNavigationBarHidden = false
                                     self.present(nav, animated: true)
-                                    
-                                    
-                                    
-//                                    getDirection(start: userLoc, final: <#T##CLLocationCoordinate2D#>, type: <#T##String?#>, index: <#T##Int#>)
                                 }),
                                 UIAction(title: "Добавить геопозицию в избранное",image: UIImage(systemName: "suit.heart.fill"), handler: { _ in
                                    let dateC = DateClass.dateConverter()
@@ -236,6 +265,7 @@ class MapViewController: UIViewController {
                                 }),
                                 UIAction(title: "Избранное",image: UIImage(systemName: "bookmark.fill"), handler: { _ in
                                    self.didTapToFavourite()
+                                    
                                 }),
                                 UIAction(title: "Информация о приложении",image: UIImage(systemName: "info.circle.fill"), handler: { _ in
                                     let vc = DeveloperViewController()
@@ -276,9 +306,6 @@ class MapViewController: UIViewController {
     @objc private func didTapToFavourite(){
         let vc = FavouriteTableViewController()
         vc.delegate = self
-        vc.userLocationCoordinate = locationManager
-        let secVC = DetailViewController()
-        secVC.delegate = self
         let navVc = UINavigationController(rootViewController: vc)
         navVc.modalPresentationStyle = .fullScreen
         present(navVc, animated: true)
@@ -349,30 +376,30 @@ class MapViewController: UIViewController {
             self.view.frame.origin.y = 0
         }
     }
+    
+    @objc private func didTapToWeather(){
+        setupWeather(user: locationManager)
+        
+    }
     //MARK: - setup visual elements
     //weather test
-    func setupWeather(){
-        //импортировать кит с погодой
+    func setupWeather(user coordinates: CLLocationManager){
+        let vc = WeatherDisplayViewController()
+        vc.userLocationManager = coordinates
+        let nav = UINavigationController(rootViewController: vc)
+        nav.modalPresentationStyle = .pageSheet
+        nav.modalTransitionStyle = .coverVertical
+        nav.sheetPresentationController?.detents = [.large()]
+        nav.sheetPresentationController?.prefersGrabberVisible = true
+        nav.isNavigationBarHidden = false
+        present(nav, animated: true)
     }
+    
+    
     func displayError(){
-        SPAlert.present(title: "Turn on your location in settings", preset: .error, haptic: .error)
+        SPAlert.present(title: "Fatal failure!\nPlease try again", preset: .error, haptic: .error)
     }
-    //проверить нужна ли эта функция ???
-    func setupSearchAndTable(){
-        let tableDelegate = SearchViewController()
-        searchController = UISearchController(searchResultsController: tableDelegate)
-        searchController.searchResultsUpdater = tableDelegate
-        tableDelegate.mapView = mapView
-        tableDelegate.handleMapSearchDelegate = self
-        definesPresentationContext = true
-    }
-    func setupSubviews(){
-        view.addSubview(mapView)
-        view.addSubview(locationButton)
-        view.addSubview(clearMapButton)
-        view.addSubview(stepper)
-        view.addSubview(menuButton)
-    }
+ 
     //add views in subview,targets and delegates
     func setupViewsTargetsAndDelegates(){
         //targets
@@ -381,6 +408,7 @@ class MapViewController: UIViewController {
         clearMapButton.addTarget(self, action: #selector(didTapClearDirection), for: .touchUpInside)
         stepper.addTarget(self, action: #selector(updateStepper), for: .valueChanged)
         menuButton.addTarget(self, action: #selector(didTapMenu), for: .touchUpInside)
+        weatherLabelButton.addTarget(self, action: #selector(didTapToWeather), for: .touchUpInside)
 
         //nav item set up
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark.fill"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(didTapToFavourite))
@@ -425,7 +453,6 @@ class MapViewController: UIViewController {
         sec.delegate = self
         locationManager.delegate = self
         mapView.delegate = self
-        searchController.delegate = self
         let destVC = SetDirectionViewController()
         destVC.delegate = self
         destVC.detailDelegate = self
@@ -434,31 +461,29 @@ class MapViewController: UIViewController {
     }
     //func for gesture location and for output locations data
     //MARK: - methods for adding annotation, open detail VC and setting up direction
-    public func setChoosenLocation(coordinates: CLLocationCoordinate2D) {
+    public func setChoosenLocation(coordinates: CLLocationCoordinate2D,name title: String?) {
         let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
-        mapView.removeAnnotation(annotationCustom)
-        mapView.removeAnnotations(mapView.annotations)
-        geocoder.reverseGeocodeLocation(location) { placemark, error in
+        geocoder.reverseGeocodeLocation(location) { [self] placemark, error in
             guard let placemark = placemark?.first else { return }
             let streetName = placemark.thoroughfare ?? ""
             let appartmentNumber = placemark.subThoroughfare ?? ""
-            let areaOfinterest = placemark.areasOfInterest?.first ?? "\(streetName), \(appartmentNumber)"
+            let placeName = title ?? placemark.areasOfInterest?.first ??  streetName + " " + appartmentNumber
+            annotationCustom.title = placeName
+            annotationCustom.subtitle = streetName + " " + appartmentNumber
+            annotationCustom.coordinate = placemark.location!.coordinate
+            mapView.addAnnotation(annotationCustom)
             DispatchQueue.main.async {
-                self.annotationCustom.title = areaOfinterest
-                self.annotationCustom.subtitle = "\(streetName), дом \(appartmentNumber)"
-                self.annotationCustom.coordinate = coordinates
                 self.mapView.setRegion(MKCoordinateRegion(center: coordinates, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)),  animated: true)
-                self.mapView.addAnnotation(self.annotationCustom)
                 let vc = DetailViewController()
                 //поменять force unwrap
                 guard let coordinate = placemark.location?.coordinate else {
                     return SPAlert.present(title: "Ошибка передачи данных.\nПопробуйте включить геолокацию в настройках", preset: .error)
-                    
                 }
                 vc.gettingData = DetailsData(userLocation: self.locationManager,
                                              placePoint: coordinate,
-                                             pointOfInterestName: areaOfinterest,
-                                             distanceRoute: "Distance is not avaliable..")
+                                             pointOfInterestName: placeName,
+                                             distanceRoute: "Distance is not avaliable..",
+                                             placemark: placemark)
                 vc.delegate = self
                 
                 vc.modalPresentationStyle = .pageSheet
@@ -505,11 +530,11 @@ class MapViewController: UIViewController {
                 vc.routeData = DirectionResultStruct(startCoordinate: startLoc!, finalCoordinate: destination, responseDirection: response, typeOfDirection: type ?? "")
                 self.panel.set(contentViewController: vc)
                 self.panel.addPanel(toParent: self)
-                self.panel.move(to: .half, animated: true)
+                self.panel.move(to: .tip, animated: true)
             }
         }
     }
-    
+    //MARK: - some helpful methods
     private func setDirectionRoute(data: DirectionResultStruct,index: Int) {
         let response = data.responseDirection
         for route in response.routes {
@@ -524,9 +549,6 @@ class MapViewController: UIViewController {
         directionsArray.append(directions)
         directionsArray.map { $0.cancel() }
     }
-    
-
-   
     //MARK: - Error debagging and if statements
 
     //check for error
@@ -541,11 +563,12 @@ class MapViewController: UIViewController {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
         case .restricted:
+            displayError()
             break
-            //show alert
+            
         case .denied:
+            displayError()
             break
-            //show alert
         @unknown default:
             fatalError()
         }
@@ -553,28 +576,26 @@ class MapViewController: UIViewController {
 }
 //MARK: - Extensions for Delegates
 extension MapViewController: ReturnResultOfDirection{
+    func dismissContoller(isDismissed: Bool) {
+        if isDismissed == true {
+            didTapClearDirection()
+        }
+    }
+    
     func passChoise(data: DirectionResultStruct, boolean: Bool, count choosenPolyline: Int) {
         setDirectionRoute(data: data, index: choosenPolyline)
     }
 }
 
 extension MapViewController: FavouritePlaceDelegate{
-    func passCoordinates(coordinates: CLLocationCoordinate2D,name: String?) {
-        mapView.removeAnnotations(mapView.annotations)
-        mapView.removeAnnotation(annotationCustom)
-        savedLocationToShowDirection = coordinates
-        savedNameLocation = name
+    func passCoordinates(coordinates: CLLocationCoordinate2D,name: String?){
+        setChoosenLocation(coordinates: coordinates, name: name)
     }
 }
 
 extension MapViewController:  PlotInfoDelegate {
     func deleteAnnotations(boolean: Bool) {
         if boolean == true {
-            if let search = searchController.searchBar.text, !search.isEmpty {
-                mapView.removeAnnotation(annotationCustom)
-                mapView.removeAnnotations(mapView.annotations)
-                searchController.searchBar.text = ""
-            }
             mapView.removeAnnotation(annotationCustom)
             mapView.removeAnnotations(mapView.annotations)
         }
@@ -594,7 +615,7 @@ extension MapViewController: SetDirectionProtocol {
 
 extension MapViewController: HandleMapSearch {
     func dropCoordinate(coordinate: CLLocationCoordinate2D, requestName: String) {
-        setChoosenLocation(coordinates: coordinate)
+        setChoosenLocation(coordinates: coordinate, name: requestName)
     }
     
     func dropSomeAnnotations(items: [MKMapItem]) {
@@ -610,13 +631,6 @@ extension MapViewController: HandleMapSearch {
     }
 }
 //MARK: - Extensions Data Source
-extension MapViewController: UISearchBarDelegate, UISearchControllerDelegate{
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        let nav = UINavigationController(rootViewController: SearchViewController())
-        self.present(nav,animated: true)
-    }
-}
-
 extension MapViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -651,23 +665,13 @@ extension MapViewController: MKMapViewDelegate {
         return annView
     }
     
+
+    
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        
         mapView.removeAnnotation(annotationCustom)
-        
-        if let coord = view.annotation?.coordinate , let title = view.annotation?.title{
-            let vc = DetailViewController()
-            vc.gettingData = DetailsData(userLocation: self.locationManager,
-                                         placePoint: coord,
-                                         pointOfInterestName: title ?? "No title delegate",
-                                         distanceRoute: "Check delegation")
-            vc.delegate = self
-            vc.modalPresentationStyle = .pageSheet
-            vc.sheetPresentationController?.detents = [.medium(),.large(),.custom(resolver: { context in
-                return 175.0
-            })]
-            vc.sheetPresentationController?.prefersGrabberVisible = true
-            present(vc, animated: true)
+        if let coord = view.annotation?.coordinate ,
+           let title = view.annotation?.title{
+            setChoosenLocation(coordinates: coord, name: title)
         }
    }
 
@@ -676,7 +680,6 @@ extension MapViewController: MKMapViewDelegate {
         let polyline = MKPolylineRenderer(overlay: overlay)
         let index = polylineIndex
         if overlay is MKPolyline {
-            
             if mapView.overlays.count == index {
                 polyline.strokeColor = .systemIndigo.withAlphaComponent(1)
                 polyline.lineWidth = 10
@@ -684,7 +687,6 @@ extension MapViewController: MKMapViewDelegate {
                 polyline.strokeColor = .systemBlue.withAlphaComponent(0.4)
                 polyline.lineWidth = 5
             }
-            
         }
         return polyline
     }
@@ -693,29 +695,3 @@ extension MapViewController: MKMapViewDelegate {
 //below two funcs which setup showing and hiding keyboard
 //        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-
-//GLOBAL FUNC in MODELS
-//    //main setups for direction display. Input user location and output result of request by start and end location
-//    func createDirectionRequest(from location: CLLocationCoordinate2D?,to coordinate: CLLocationCoordinate2D,type transport: String?) -> MKDirections.Request {
-//        let startCoordinate = location ?? locationManager.location!.coordinate //start or user point
-//        let destinationCoordinate = coordinate //endpoint coordinates
-//        let startingLocation      = MKPlacemark(coordinate: startCoordinate)//checking for active user location
-//        let destination           = MKPlacemark(coordinate: destinationCoordinate) //checking for having endpoint coordinates
-//        let request               = MKDirections.Request()
-//        request.source                       = MKMapItem(placemark: startingLocation)
-//        request.destination                  = MKMapItem(placemark: destination)
-//        request.requestsAlternateRoutes      = true
-//        switch transport {
-//        case "Автомобиль":
-//            request.transportType = .automobile
-//        case "Пешком":
-//            request.transportType = .walking
-//        case "Велосипед":
-//            request.transportType = .any
-//        case "Транспорт":
-//            request.transportType = .transit
-//        default:
-//            request.transportType = .walking
-//        }
-//        return request
-//    }

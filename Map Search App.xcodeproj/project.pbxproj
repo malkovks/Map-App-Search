@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0A05E9BC2988416400B87C5E /* DeveloperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */; };
 		0A05E9BE298D539C00B87C5E /* SetDirectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9BD298D539C00B87C5E /* SetDirectionViewController.swift */; };
-		0A05E9C0298D9AF800B87C5E /* GeocoderReturn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9BF298D9AF800B87C5E /* GeocoderReturn.swift */; };
 		0A05E9C2298DA11D00B87C5E /* DateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9C1298DA11D00B87C5E /* DateConverter.swift */; };
 		0A05E9C8298DB70000B87C5E /* SetDirectionCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9C7298DB70000B87C5E /* SetDirectionCollectionViewCell.swift */; };
 		0A05E9CA298DCCDC00B87C5E /* SetDirectionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05E9C9298DCCDC00B87C5E /* SetDirectionData.swift */; };
@@ -42,7 +41,6 @@
 /* Begin PBXFileReference section */
 		0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewController.swift; sourceTree = "<group>"; };
 		0A05E9BD298D539C00B87C5E /* SetDirectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDirectionViewController.swift; sourceTree = "<group>"; };
-		0A05E9BF298D9AF800B87C5E /* GeocoderReturn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocoderReturn.swift; sourceTree = "<group>"; };
 		0A05E9C1298DA11D00B87C5E /* DateConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateConverter.swift; sourceTree = "<group>"; };
 		0A05E9C7298DB70000B87C5E /* SetDirectionCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDirectionCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A05E9C9298DCCDC00B87C5E /* SetDirectionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDirectionData.swift; sourceTree = "<group>"; };
@@ -71,6 +69,7 @@
 		0A1B52E1298665BE00FB548D /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		0A1B52E3298665CF00FB548D /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		0A1B52E6298665E200FB548D /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
+		0A810FDC29A2C1CA00227AA3 /* Map Search App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Map Search App.entitlements"; sourceTree = "<group>"; };
 		3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Map_Search_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B61FC16511157D3CC42CC77 /* Pods-Map Search App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.debug.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.debug.xcconfig"; sourceTree = "<group>"; };
 		CA51D5CB2C5289EBACB64F69 /* Pods-Map Search App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.release.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.release.xcconfig"; sourceTree = "<group>"; };
@@ -211,6 +210,7 @@
 		0A1B52AB29865E5E00FB548D /* Map Search App */ = {
 			isa = PBXGroup;
 			children = (
+				0A810FDC29A2C1CA00227AA3 /* Map Search App.entitlements */,
 				0A1B52C7298662AD00FB548D /* CoreDataStack */,
 				0A1B52C62986626D00FB548D /* Managers */,
 				0A1B52C52986624B00FB548D /* Storyboard and assets */,
@@ -225,7 +225,6 @@
 			isa = PBXGroup;
 			children = (
 				0A05E9CB29932F0D00B87C5E /* MapViewModels */,
-				0A05E9BF298D9AF800B87C5E /* GeocoderReturn.swift */,
 				0A05E9C1298DA11D00B87C5E /* DateConverter.swift */,
 			);
 			path = "Public Models";
@@ -456,7 +455,6 @@
 				0A05E9D12993456F00B87C5E /* DirectionResultViewController.swift in Sources */,
 				0A1B52AF29865E5E00FB548D /* SceneDelegate.swift in Sources */,
 				0A05E9E0299D809C00B87C5E /* OnboardingViewController.swift in Sources */,
-				0A05E9C0298D9AF800B87C5E /* GeocoderReturn.swift in Sources */,
 				0A1B52D8298664BE00FB548D /* FavouriteTableViewCell.swift in Sources */,
 				0A05E9C8298DB70000B87C5E /* SetDirectionCollectionViewCell.swift in Sources */,
 				0A1B52E4298665CF00FB548D /* SearchViewController.swift in Sources */,
@@ -614,9 +612,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Map Search App/Map Search App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 8UABHSLKYJ;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Map Search App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Maps;
@@ -647,9 +646,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Map Search App/Map Search App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 8UABHSLKYJ;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Map Search App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Maps;

@@ -44,7 +44,7 @@ class MapIntruments {
     
     func getDistanceTime(route: MKRoute) -> String{
         let time = Int(route.expectedTravelTime)
-        let (h,m,s) = secondsToHoursMinutesSeconds(time: time)
+        let (h,m,_) = secondsToHoursMinutesSeconds(time: time)
         if h == 0 {
             return "\(m) минут"
         } else {

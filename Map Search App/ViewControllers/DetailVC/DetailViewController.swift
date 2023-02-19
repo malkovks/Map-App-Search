@@ -9,6 +9,7 @@ import UIKit
 import CoreLocation
 import MapKit
 import SPAlert
+import Contacts
 
 
 protocol PlotInfoDelegate: AnyObject {
@@ -21,6 +22,7 @@ struct DetailsData {
     let placePoint: CLLocationCoordinate2D
     let pointOfInterestName: String
     let distanceRoute: String
+    let placemark: CLPlacemark?
     
 }
 
@@ -32,7 +34,6 @@ class DetailViewController: UIViewController {
     
     let mapInstruments = MapDataConverter.instance
     
-    private let geocoder = CLGeocoder()
     
     private var dataStruct: FullAdress!
     private var cellData: String?
@@ -207,14 +208,17 @@ class DetailViewController: UIViewController {
                             [UIAction(title: "Close window",image: UIImage(systemName: "trash"),attributes: .destructive, handler: { _ in
                                 self.dismiss(animated: true)
                              }),
-                             UIAction(title: "Set Direction",image: UIImage(systemName: "arrow.triangle.turn.up.right.diamond"), handler: { _ in
+                             UIAction(title: "Set Direction",image: UIImage(systemName: "arrow.triangle.turn.up.right.diamond.fill"), handler: { _ in
                                 self.didTapSetDirection()
                              }),
                              UIAction(title: "Share location",image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in
                                 self.didTapToShare()
                              }),
-                             UIAction(title: "Add to Favourite",image: UIImage(systemName: "star"), handler: { _ in
+                             UIAction(title: "Add to Favourite",image: UIImage(systemName: "star.fill"), handler: { _ in
                                 self.didTapAddToFavourite()
+                             }),
+                             UIAction(title: "Open in Maps",image: UIImage(systemName: "map.fill"),handler: { _ in
+                                self.openMapsApp(data: self.gettingData!)
                              })
                         ])
         moreInfoButtonPlotView.showsMenuAsPrimaryAction = true
@@ -246,32 +250,43 @@ class DetailViewController: UIViewController {
         }
         return output
     }
+    
+    private func openMapsApp(data: DetailsData){
+        let streetName = data.placemark?.name
+        let city = data.placemark?.administrativeArea ?? ""
+        let country = data.placemark?.country ?? ""
+        let postalKey = data.placemark?.postalCode
+        let address = [CNPostalAddressStreetKey: streetName,
+                         CNPostalAddressCityKey: city,
+                      CNPostalAddressCountryKey: country,
+                   CNPostalAddressPostalCodeKey: postalKey
+        ]
+        
+        let placemark = MKPlacemark(coordinate: data.placePoint,addressDictionary: address)
+        let mapItem = MKMapItem(placemark: placemark)
+        mapItem.openInMaps()
+    }
 
     func setPlotInfoByCoordinates(data: DetailsData) {
-        let location = CLLocation(latitude: data.placePoint.latitude, longitude: data.placePoint.longitude)
-        geocoder.reverseGeocodeLocation(location) { [weak self] placemark, error in
-            guard let placemark = placemark?.first else {
-                return
-            }
-            guard let self = self else { return }
-            let streetName = placemark.thoroughfare ?? "\n" + ","
-            let streetSubname = placemark.subThoroughfare ?? "\n"
-            let city = placemark.administrativeArea ?? "\n"
-            let country = placemark.country ?? "\n"
-            let postIndex = placemark.postalCode ?? "\n"
-            let distance = self.mapInstruments.distanceFunction(coordinate: data.placePoint, user: data.userLocation)
-            DispatchQueue.main.async {
-                if !data.pointOfInterestName.isEmpty {
-                    self.mainTitlePlotView.text = data.pointOfInterestName
-                    self.distanceLabelPlotView.text = distance
-                    self.cellData = "\(streetName) \(streetSubname)\n\(city)\n\(country)\n\(postIndex)"
-                    self.addressTableViewPlotView.reloadData()
-                } else {
-                    self.mainTitlePlotView.text = streetName
-                    self.distanceLabelPlotView.text = distance
-                    self.cellData = "\(streetName) \(streetSubname)\n\(city)\n\(country)\n\(postIndex)"
-                    self.addressTableViewPlotView.reloadData()
-                }
+        guard let placemark = data.placemark else { return }
+        let streetName = placemark.thoroughfare ?? ""
+        let streetSubname = placemark.subThoroughfare ?? ""
+        let city = placemark.administrativeArea ?? "\n"
+        let country = placemark.country ?? "\n"
+        let postIndex = placemark.postalCode ?? "\n"
+        let distance = self.mapInstruments.distanceFunction(coordinate: data.placePoint, user: data.userLocation)
+        DispatchQueue.main.async {
+            if !data.pointOfInterestName.isEmpty {
+                self.mainTitlePlotView.text = data.pointOfInterestName
+                self.distanceLabelPlotView.text = distance
+                self.cellData = "\(streetName) \(streetSubname)\n\(city)\n\(country)\n\(postIndex)"
+                self.addressTableViewPlotView.reloadData()
+            } else {
+                self.mainTitlePlotView.text = streetName
+                self.distanceLabelPlotView.text = distance
+
+                self.cellData = "\(streetName) \(streetSubname)\n\(city)\n\(country)\n\(postIndex)"
+                self.addressTableViewPlotView.reloadData()
             }
         }
     }
@@ -297,7 +312,7 @@ class DetailViewController: UIViewController {
         addToFavouriteCellPlotView.addTarget(self, action: #selector(didTapAddToFavourite), for: .touchUpInside)
         deleteMarkPlotView.addTarget(self, action: #selector(didTapToDelete), for: .touchUpInside)
         removeAddressButtonPlotView.addTarget(self, action: #selector(didTapToDelete), for: .touchUpInside)
-        moreInfoButtonPlotView.addTarget(self, action: #selector(didTapToDetails), for: .touchUpInside)
+        moreInfoButtonPlotView.addTarget(self, action: #selector(didTapToDetails), for: .allTouchEvents)
         shareButtonPlotView.addTarget(self, action: #selector(didTapToShare), for: .touchUpInside)
     }
 

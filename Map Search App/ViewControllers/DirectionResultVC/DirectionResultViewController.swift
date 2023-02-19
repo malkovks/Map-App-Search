@@ -13,6 +13,7 @@ import FloatingPanel
 
 protocol ReturnResultOfDirection: AnyObject {
     func passChoise(data: DirectionResultStruct, boolean: Bool,count choosenPolyline: Int)
+    func dismissContoller(isDismissed: Bool)
 }
 
 struct DirectionResultStruct {
@@ -64,10 +65,10 @@ class DirectionResultViewController: UIViewController {
  
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-
+        var count = CGFloat(routeData?.responseDirection.routes.count ?? Int(0.0))
         titleLabel.frame = CGRect(x: 50, y: 10, width: view.frame.size.width-100, height: 40)
         closeViewButton.frame = CGRect(x: view.frame.size.width-50, y: 10, width: 40, height: 40)
-        directionTable.frame = CGRect(x: 10, y: view.safeAreaInsets.top+10+closeViewButton.frame.size.height+10, width: view.frame.size.width-20, height: 180)
+        directionTable.frame = CGRect(x: 10, y: view.safeAreaInsets.top+10+closeViewButton.frame.size.height+10, width: view.frame.size.width-20, height: 60*count)
     }
     
     @objc private func didTapStartDirection(){
@@ -75,6 +76,7 @@ class DirectionResultViewController: UIViewController {
     }
     
     @objc private func didTapDismiss(){
+        self.delegate?.dismissContoller(isDismissed: true)
         self.dismiss(animated: true)
     }
     

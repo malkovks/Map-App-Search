@@ -22,8 +22,6 @@ class FavouriteTableViewController: UIViewController, UIGestureRecognizerDelegat
     
     weak var delegate: FavouritePlaceDelegate?
     
-    var userLocationCoordinate = CLLocationManager()
-    
     let tableview: UITableView = {
         let table = UITableView()
         table.register(FavouriteTableViewCell.self, forCellReuseIdentifier: FavouriteTableViewCell.identifier)
@@ -47,19 +45,6 @@ class FavouriteTableViewController: UIViewController, UIGestureRecognizerDelegat
         dismiss(animated: true)
     }
     
-    @objc private func didTapLongGesture(gesture: UILongPressGestureRecognizer){
-        if gesture.state == .ended {
-            let p = gesture.location(in: tableview)
-            if let indexPath = tableview.indexPathForRow(at: p) {
-                let place = coredata.vaultData[indexPath.row]
-                let coordinate = CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude)
-                let vc = DetailViewController()
-                vc.gettingData = DetailsData(userLocation: userLocationCoordinate, placePoint: coordinate, pointOfInterestName: place.place ?? "No place", distanceRoute: "0.0")
-                let navVC = UINavigationController(rootViewController: vc)
-                present(navVC, animated: true)
-            }
-        }
-    }
     func setupNavigationController(){
         title = "Favourite Places"
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancel))
@@ -69,18 +54,13 @@ class FavouriteTableViewController: UIViewController, UIGestureRecognizerDelegat
     func setupViewController(){
         view.addSubview(tableview)
         view.backgroundColor = .systemBackground
-        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(didTapLongGesture(gesture: )))
-        gesture.minimumPressDuration = 1.0
-        gesture.delegate = self
-        gesture.delaysTouchesBegan = true
-        tableview.addGestureRecognizer(gesture)
         tableview.delegate = self
         tableview.dataSource = self
     }
     
     func setupAlert(){
         let alert = SPAlertView(title: "Deleted from library", preset: .done)
-        alert.duration = 5
+        alert.duration = 1
         alert.dismissByTap = true
         alert.present()
     }

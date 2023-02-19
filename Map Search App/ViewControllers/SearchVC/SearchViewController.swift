@@ -276,16 +276,16 @@ class SearchViewController: UIViewController {
             clearHistoryButton.configuration?.baseForegroundColor = .systemGray3
         }
         
-        if coreData.historyVault.count > 10 {
-            let countOfData = coreData.historyVault.count
-            var lastCount = countOfData - 30
+//        if coreData.historyVault.count > 10 {
+//            let countOfData = coreData.historyVault.count
+//            _ = countOfData - 30
 //            if lastCount != 0 {
 ////                coreData.historyVault.remove(at: lastCount-1)
 //                let data = coreData.historyVault[lastCount-1]
 //                coreData.deleteLastElement(data: data)
 //                lastCount -= 1
 //            }
-        }
+//        }
     }
     
     private func setupNavigationAndView(){
@@ -524,6 +524,7 @@ extension SearchViewController:  UITableViewDelegate, UITableViewDataSource {
             let location = CLLocationCoordinate2D(latitude: data.langitude, longitude: data.longitude)
             handleMapSearchDelegate?.dropCoordinate(coordinate: location, requestName: name)
             self.dismiss(animated: true)
+            //condition for set direction after choosing one of textfields
         } else if searchValue?.indicatorOfView == true {
             let placemark = matchingItems[indexPath.row].placemark
             guard let value = searchValue?.tagView else { return }
