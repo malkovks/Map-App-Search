@@ -35,6 +35,8 @@
 		0A1B52E2298665BE00FB548D /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52E1298665BE00FB548D /* DetailViewController.swift */; };
 		0A1B52E4298665CF00FB548D /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52E3298665CF00FB548D /* SearchViewController.swift */; };
 		0A1B52E7298665E200FB548D /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52E6298665E200FB548D /* WeatherViewController.swift */; };
+		0A810FDF29A2C61600227AA3 /* WeatherParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A810FDE29A2C61600227AA3 /* WeatherParsing.swift */; };
+		0A810FE129A2D0AB00227AA3 /* WeatherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A810FE029A2D0AB00227AA3 /* WeatherModel.swift */; };
 		4F96613ADD4C578851915A65 /* Pods_Map_Search_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +72,9 @@
 		0A1B52E3298665CF00FB548D /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		0A1B52E6298665E200FB548D /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
 		0A810FDC29A2C1CA00227AA3 /* Map Search App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Map Search App.entitlements"; sourceTree = "<group>"; };
+		0A810FDE29A2C61600227AA3 /* WeatherParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherParsing.swift; sourceTree = "<group>"; };
+		0A810FE029A2D0AB00227AA3 /* WeatherModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherModel.swift; sourceTree = "<group>"; };
+		0A810FE229A2D9D900227AA3 /* ExampleOfAPI.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = ExampleOfAPI.geojson; sourceTree = "<group>"; };
 		3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Map_Search_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B61FC16511157D3CC42CC77 /* Pods-Map Search App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.debug.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.debug.xcconfig"; sourceTree = "<group>"; };
 		CA51D5CB2C5289EBACB64F69 /* Pods-Map Search App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.release.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.release.xcconfig"; sourceTree = "<group>"; };
@@ -298,6 +303,7 @@
 			isa = PBXGroup;
 			children = (
 				0A1B52E6298665E200FB548D /* WeatherViewController.swift */,
+				0A810FDD29A2C5F700227AA3 /* ModelWeatherVC */,
 			);
 			path = WeatherVC;
 			sourceTree = "<group>";
@@ -308,6 +314,16 @@
 				0A05E9BB2988416400B87C5E /* DeveloperViewController.swift */,
 			);
 			path = DeveloperInfoVC;
+			sourceTree = "<group>";
+		};
+		0A810FDD29A2C5F700227AA3 /* ModelWeatherVC */ = {
+			isa = PBXGroup;
+			children = (
+				0A810FDE29A2C61600227AA3 /* WeatherParsing.swift */,
+				0A810FE029A2D0AB00227AA3 /* WeatherModel.swift */,
+				0A810FE229A2D9D900227AA3 /* ExampleOfAPI.geojson */,
+			);
+			path = ModelWeatherVC;
 			sourceTree = "<group>";
 		};
 		4EF4495F76D906FBC41374F8 /* Pods */ = {
@@ -460,9 +476,11 @@
 				0A1B52E4298665CF00FB548D /* SearchViewController.swift in Sources */,
 				0A05E9D32996245C00B87C5E /* MapCreateDistance.swift in Sources */,
 				0A1B52CA298662DC00FB548D /* DetailsStruct.swift in Sources */,
+				0A810FDF29A2C61600227AA3 /* WeatherParsing.swift in Sources */,
 				0A05E9C2298DA11D00B87C5E /* DateConverter.swift in Sources */,
 				0A05E9E2299D80EE00B87C5E /* Core.swift in Sources */,
 				0A1B52D62986642100FB548D /* SearchHistoryStack.swift in Sources */,
+				0A810FE129A2D0AB00227AA3 /* WeatherModel.swift in Sources */,
 				0A1B52E7298665E200FB548D /* WeatherViewController.swift in Sources */,
 				0A1B52DA298664CE00FB548D /* ResultCollectionViewCell.swift in Sources */,
 				0A05E9BE298D539C00B87C5E /* SetDirectionViewController.swift in Sources */,
@@ -615,7 +633,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Map Search App/Map Search App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2275P6FG35;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Map Search App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Maps;
@@ -649,7 +667,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Map Search App/Map Search App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2275P6FG35;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Map Search App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Maps;
