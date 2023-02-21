@@ -21,13 +21,11 @@ final class WeatherModel {
         let longitude = Int(coordinate.longitude)
         guard let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?lat=\(latitude)&lon=\(longitude)&appid=e7b2054dc37b1f464d912c00dd309595&units=Metric") else { return }
         URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data, error != nil else { return }
+            guard let data = data, error == nil else { return }
             do {
                 let result = try JSONDecoder().decode(WeatherDataAPI.self, from: data)
-                self.structData = result
                 completion(.success(result))
             } catch {
-                SPAlert.present(message: "Error parsing data", haptic: .error)
                 completion(.failure(error))
             }
         }.resume()
