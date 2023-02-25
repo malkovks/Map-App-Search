@@ -21,9 +21,9 @@ class WeatherDisplayViewController: UIViewController {
     
     let services = WeatherService()
     
-    private let firstLabel = UILabel()
-    private let secondLabel = UILabel()
-    private let thirdLabel = UILabel()
+    private let cityLabel = UILabel()
+    private let currentTemperatureLabel = UILabel()
+    private let minMaxLabel = UILabel()
     
     private let weatherTableView = UITableView()
     private let scrollView = UIScrollView()
@@ -42,10 +42,10 @@ class WeatherDisplayViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         scrollView.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: view.frame.size.width, height: view.frame.size.height)
-        firstLabel.frame = CGRect(x: 10, y: 0, width: view.frame.size.width-20, height: 55)
-        secondLabel.frame = CGRect(x: 10, y: 75, width: view.frame.size.width-20, height: 55)
-        thirdLabel.frame = CGRect(x: 10, y: 150, width: view.frame.size.width-20, height: 55)
-        weatherTableView.frame = CGRect(x: 10, y: 225, width: view.frame.size.width-20, height: 620)
+        cityLabel.frame = CGRect(x: 10, y: 0, width: view.frame.size.width-20, height: 60)
+        currentTemperatureLabel.frame = CGRect(x: 10, y: cityLabel.frame.size.height+10, width: view.frame.size.width-20, height: 80)
+        minMaxLabel.frame = CGRect(x: 10, y: cityLabel.frame.size.height+currentTemperatureLabel.frame.size.height+20, width: view.frame.size.width-20, height: 80)
+        weatherTableView.frame = CGRect(x: 10, y: cityLabel.frame.size.height+currentTemperatureLabel.frame.size.height+minMaxLabel.frame.size.height+30, width: view.frame.size.width-20, height: 620)
     }
     
     @objc private func didTapDismiss(){
@@ -58,6 +58,8 @@ class WeatherDisplayViewController: UIViewController {
         weatherTableView.register(UITableViewCell.self, forCellReuseIdentifier: "weatherCell")
         weatherTableView.isScrollEnabled = false
         weatherTableView.separatorStyle = .none
+        weatherTableView.backgroundColor = .secondarySystemBackground
+        
     }
     
     private func setupNavigationBar(){
@@ -67,24 +69,26 @@ class WeatherDisplayViewController: UIViewController {
     }
 
     private func setupLabel(){
-        firstLabel.backgroundColor = .systemBackground
-        firstLabel.textAlignment = .center
-        firstLabel.font = .systemFont(ofSize: 24,weight: .bold)
+        cityLabel.backgroundColor = .secondarySystemBackground
+        cityLabel.textAlignment = .center
+        cityLabel.font = .systemFont(ofSize: 24,weight: .bold)
         
-        secondLabel.font = .systemFont(ofSize: 24,weight: .semibold)
-        secondLabel.backgroundColor = .systemBackground
-        secondLabel.textAlignment = .center
+        currentTemperatureLabel.font = .systemFont(ofSize: 30 ,weight: .medium)
+        currentTemperatureLabel.backgroundColor = .secondarySystemBackground
+        currentTemperatureLabel.textAlignment = .center
+        currentTemperatureLabel.numberOfLines = 1
         
-        thirdLabel.backgroundColor = .systemBackground
-        thirdLabel.textAlignment = .center
-        thirdLabel.font = .systemFont(ofSize: 20,weight: .medium)
+        minMaxLabel.backgroundColor = .secondarySystemBackground
+        minMaxLabel.textAlignment = .center
+        minMaxLabel.numberOfLines = 2
+        minMaxLabel.font = .systemFont(ofSize: 20,weight: .medium)
     }
     
     private func setupScrollView(){
         scrollView.contentSize = CGSize(width: view.frame.size.width, height: 1000)
-        scrollView.addSubview(firstLabel)
-        scrollView.addSubview(secondLabel)
-        scrollView.addSubview(thirdLabel)
+        scrollView.addSubview(cityLabel)
+        scrollView.addSubview(currentTemperatureLabel)
+        scrollView.addSubview(minMaxLabel)
         scrollView.addSubview(weatherTableView)
         scrollView.backgroundColor = .secondarySystemBackground
     }
@@ -93,33 +97,117 @@ class WeatherDisplayViewController: UIViewController {
         view.backgroundColor = .secondarySystemBackground
         view.addSubview(scrollView)
         guard let location = userLocationManager.location?.coordinate else { return }
-        requestWeatherAPI(coordinate: location)
+        getCallerAPI(location: location)
     }
     
-    public func requestWeatherAPI(coordinate: CLLocationCoordinate2D){
-        let latitude = coordinate.latitude
-        let longitude = coordinate.longitude
-        print(latitude)
-        print(longitude)
-        guard let url = URL(string: "https://api.weatherapi.com/v1/current.json?key=982e0f449bc841028ee230603231902&q=\(latitude),\(longitude)&aqi=no") else { return }
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data, error == nil else { return  }
-            do {
-                let result = try JSONDecoder().decode(WeatherDataAPI.self, from: data)
-                DispatchQueue.main.async {
-                    let temp = "\(result.current.feelslike_c)"
-                    self.weatherData = result
-                    self.firstLabel.text = self.weatherData?.location.country
-                    self.secondLabel.text = self.weatherData?.location.region
-                    self.thirdLabel.text = "Ощущается как \(temp) ℃"
-                    print(result.location.region)
-                }
-                
-            } catch {
-                print("Error catching data from API")
-            }
-        }.resume()
+    private func setupImageDisplay(image code: Int) -> UIImage{
+        print(code)
+        switch code {
+            
+        case 1000:
+            return UIImage(systemName: "sun.max")!
+        case 1003:
+            return UIImage(systemName: "cloud")!
+        case 1006:
+            print("cloudy")
+            return UIImage(systemName: "cloud")!
+        case 1009:
+            print("overcast")
+            return UIImage(systemName: "cloud")!
+        case 1030:
+            return UIImage(systemName: "sun.max")!
+        case 1063:
+            return UIImage(systemName: "sun.max")!
+        case 1066:
+            return UIImage(systemName: "sun.max")!
+        case 1069:
+            return UIImage(systemName: "sun.max")!
+        case 1072:
+            return UIImage(systemName: "sun.max")!
+        case 1087:
+            return UIImage(systemName: "sun.max")!
+        case 1114:
+            return UIImage(systemName: "sun.max")!
+        case 1117:
+            return UIImage(systemName: "wind.snow")!
+        case 1135:
+            return UIImage(systemName: "sun.max")!
+        case 1147:
+            return UIImage(systemName: "sun.max")!
+        case 1150:
+            return UIImage(systemName: "sun.max")!
+        case 1153:
+            return UIImage(systemName: "sun.max")!
+        case 1168:
+            return UIImage(systemName: "sun.max")!
+        case 1171:
+            return UIImage(systemName: "sun.max")!
+        case 1180:
+            return UIImage(systemName: "sun.max")!
+        case 1183:
+            return UIImage(systemName: "sun.max")!
+        case 1186:
+            return UIImage(systemName: "sun.max")!
+        default:
+            print("switch func is working")
+            return UIImage(systemName: "thermometer.sun")!
+            
+        }
     }
+    
+    private func setupBackgroundColor(temp: Int) {
+        switch temp {
+        case 1...10 :
+            scrollView.backgroundColor = .systemYellow
+        case -10...0:
+            scrollView.backgroundColor = .systemBlue
+        case -40 ... -11:
+            scrollView.backgroundColor = .darkGray
+        case 11...60 :
+            scrollView.backgroundColor = .systemOrange
+        default:
+            scrollView.backgroundColor = .systemBackground
+        }
+    }
+    
+    private func getWeekdayFromDay(date: String) -> String {
+        let dateFormatter = DateFormatter()
+        let convertDate = DateFormatter()
+        var dayInWeek = String()
+        convertDate.dateFormat = "yyyy-mm-dd"
+        dateFormatter.dateFormat = "EEEE"
+        dateFormatter.locale = Locale(identifier: "ru_RU")
+        if let finalDate = convertDate.date(from: date) {
+            dayInWeek = dateFormatter.string(from: finalDate).capitalized
+        } else {
+            print("Error converting date")
+        }
+        return dayInWeek
+    }
+    
+    private func getCallerAPI(location: CLLocationCoordinate2D){
+        WeatherModel.shared.requestWeatherAPI(coordinate: location) { [weak self] result in
+            switch result {
+            case .success(let data):
+                let temp = Int(data.current.temp_c)
+                let feelsLikeTemp = Int(data.current.feelslike_c)
+                let minTemp = Int(data.forecast.forecastday[0].day.mintemp_c)
+                let maxTemp = Int(data.forecast.forecastday[0].day.maxtemp_c)
+                self?.setupBackgroundColor(temp: temp)
+                self?.weatherData = data
+                self?.cityLabel.text = data.location.region
+                self?.currentTemperatureLabel.text = "\(temp)"+" °"
+                self?.minMaxLabel.text = "\(data.current.condition.text)"+"\nМакс.: \(maxTemp) °, мин.: \(minTemp) °"
+                
+                DispatchQueue.main.async {
+                    self?.weatherTableView.reloadData()
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
     
 }
 
@@ -130,10 +218,17 @@ extension WeatherDisplayViewController: UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "weatherCell")
-        cell.imageView?.image = UIImage(systemName: "cloud.heavyrain")
-        cell.textLabel?.text = "№\(indexPath.row+1) Rain weather"
-        cell.detailTextLabel?.numberOfLines = 3
-        cell.detailTextLabel?.text = "Today will be very rainy and windy Today will be very rainy and windy Today will be very rainy and windy"
+        cell.selectionStyle = .none
+        cell.backgroundColor = .secondarySystemBackground
+        if let data = weatherData {
+            let day = data.forecast.forecastday[indexPath.row].date
+            let dayOfWeek = getWeekdayFromDay(date: day)
+            let mintemp = String(describing: Int(data.forecast.forecastday[indexPath.row].day.mintemp_c))
+            let maxtemp = String(describing: Int(data.forecast.forecastday[indexPath.row].day.maxtemp_c))
+            cell.textLabel?.text = dayOfWeek + mintemp + "....." +  maxtemp
+            cell.detailTextLabel?.text = data.forecast.forecastday[indexPath.row].day.condition.text + " " + "\(Int(data.forecast.forecastday[indexPath.row].day.avgtemp_c))" + " °"
+            cell.imageView?.image = setupImageDisplay(image: data.forecast.forecastday[indexPath.row].day.condition.code)
+        }
         return cell
     }
     
@@ -143,10 +238,6 @@ extension WeatherDisplayViewController: UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         "Погода на неделю"
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     

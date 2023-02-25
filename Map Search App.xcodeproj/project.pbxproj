@@ -36,7 +36,7 @@
 		0A1B52E4298665CF00FB548D /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52E3298665CF00FB548D /* SearchViewController.swift */; };
 		0A1B52E7298665E200FB548D /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B52E6298665E200FB548D /* WeatherViewController.swift */; };
 		0A810FDF29A2C61600227AA3 /* WeatherParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A810FDE29A2C61600227AA3 /* WeatherParsing.swift */; };
-		0A810FE129A2D0AB00227AA3 /* WeatherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A810FE029A2D0AB00227AA3 /* WeatherModel.swift */; };
+		0A810FE129A2D0AB00227AA3 /* WeatherCurrentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A810FE029A2D0AB00227AA3 /* WeatherCurrentModel.swift */; };
 		4F96613ADD4C578851915A65 /* Pods_Map_Search_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */; };
 /* End PBXBuildFile section */
 
@@ -73,8 +73,10 @@
 		0A1B52E6298665E200FB548D /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
 		0A810FDC29A2C1CA00227AA3 /* Map Search App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Map Search App.entitlements"; sourceTree = "<group>"; };
 		0A810FDE29A2C61600227AA3 /* WeatherParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherParsing.swift; sourceTree = "<group>"; };
-		0A810FE029A2D0AB00227AA3 /* WeatherModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherModel.swift; sourceTree = "<group>"; };
-		0A810FE229A2D9D900227AA3 /* ExampleOfAPI.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = ExampleOfAPI.geojson; sourceTree = "<group>"; };
+		0A810FE029A2D0AB00227AA3 /* WeatherCurrentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherCurrentModel.swift; sourceTree = "<group>"; };
+		0A810FE229A2D9D900227AA3 /* CurrentAPI.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = CurrentAPI.geojson; sourceTree = "<group>"; };
+		0A902E7329A76CB20099D436 /* ForecastAPI.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = ForecastAPI.geojson; sourceTree = "<group>"; };
+		0A902E7429AA01DF0099D436 /* ImagesCode.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = ImagesCode.geojson; sourceTree = "<group>"; };
 		3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Map_Search_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B61FC16511157D3CC42CC77 /* Pods-Map Search App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.debug.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.debug.xcconfig"; sourceTree = "<group>"; };
 		CA51D5CB2C5289EBACB64F69 /* Pods-Map Search App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.release.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.release.xcconfig"; sourceTree = "<group>"; };
@@ -320,8 +322,10 @@
 			isa = PBXGroup;
 			children = (
 				0A810FDE29A2C61600227AA3 /* WeatherParsing.swift */,
-				0A810FE029A2D0AB00227AA3 /* WeatherModel.swift */,
-				0A810FE229A2D9D900227AA3 /* ExampleOfAPI.geojson */,
+				0A810FE029A2D0AB00227AA3 /* WeatherCurrentModel.swift */,
+				0A810FE229A2D9D900227AA3 /* CurrentAPI.geojson */,
+				0A902E7329A76CB20099D436 /* ForecastAPI.geojson */,
+				0A902E7429AA01DF0099D436 /* ImagesCode.geojson */,
 			);
 			path = ModelWeatherVC;
 			sourceTree = "<group>";
@@ -480,7 +484,7 @@
 				0A05E9C2298DA11D00B87C5E /* DateConverter.swift in Sources */,
 				0A05E9E2299D80EE00B87C5E /* Core.swift in Sources */,
 				0A1B52D62986642100FB548D /* SearchHistoryStack.swift in Sources */,
-				0A810FE129A2D0AB00227AA3 /* WeatherModel.swift in Sources */,
+				0A810FE129A2D0AB00227AA3 /* WeatherCurrentModel.swift in Sources */,
 				0A1B52E7298665E200FB548D /* WeatherViewController.swift in Sources */,
 				0A1B52DA298664CE00FB548D /* ResultCollectionViewCell.swift in Sources */,
 				0A05E9BE298D539C00B87C5E /* SetDirectionViewController.swift in Sources */,

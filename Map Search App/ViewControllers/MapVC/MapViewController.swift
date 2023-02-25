@@ -104,6 +104,7 @@ class MapViewController: UIViewController {
         button.configuration = .tinted()
         button.configuration?.title = "Temp"
         button.titleLabel?.numberOfLines = 1
+        button.layer.cornerRadius = 12
 //        button.configuration?.image = UIImage(systemName: "cloud")
         button.configuration?.imagePlacement = .leading
         button.titleLabel?.textColor = .black
@@ -140,6 +141,7 @@ class MapViewController: UIViewController {
     
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         startTrackingUserLocation()
     }
@@ -150,9 +152,22 @@ class MapViewController: UIViewController {
         setupViewsTargetsAndDelegates()
         setupDelegates()
         previosLocation = converter.getCenterLocation(for: mapView) //collect last data with latitude and longitude
+        guard let location = locationManager.location?.coordinate else { return }
+        getAPICaller(location: location)
     }
-
-    //MARK: - Layout setup
+    
+    private func getAPICaller(location: CLLocationCoordinate2D){
+        WeatherModel.shared.requestWeatherAPI(coordinate: location) { [weak self] result in
+            switch result {
+                
+            case .success(let data):
+                let temp = Int(data.current.temp_c)
+                self?.weatherLabelButton.configuration?.title = "\(temp)" + " °"
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         guard let navVC = navigationController?.navigationBar.frame.size.height else { return }

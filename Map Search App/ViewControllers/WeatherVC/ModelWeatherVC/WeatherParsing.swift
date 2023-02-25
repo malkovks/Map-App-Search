@@ -10,6 +10,8 @@ import UIKit
 import MapKit
 import SPAlert
 
+
+
 final class WeatherModel {
     
     static let shared = WeatherModel()
@@ -17,16 +19,21 @@ final class WeatherModel {
     var structData: WeatherDataAPI?
     
     public func requestWeatherAPI(coordinate: CLLocationCoordinate2D, completion: @escaping (Result<WeatherDataAPI, Error>) -> Void){
-        let latitude = Int(coordinate.latitude)
-        let longitude = Int(coordinate.longitude)
-        guard let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?lat=\(latitude)&lon=\(longitude)&appid=e7b2054dc37b1f464d912c00dd309595&units=Metric") else { return }
+        let latitude = coordinate.latitude
+        let longitude = coordinate.longitude
+        guard let url = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=982e0f449bc841028ee230603231902&q=\(latitude),\(longitude)&lang=ru&days=7&aqi=no&alerts=no") else { return }
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data, error == nil else { return }
             do {
                 let result = try JSONDecoder().decode(WeatherDataAPI.self, from: data)
-                completion(.success(result))
+                DispatchQueue.main.async {
+                    completion(.success(result))
+                }
+                
             } catch {
-                completion(.failure(error))
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
             }
         }.resume()
     }
