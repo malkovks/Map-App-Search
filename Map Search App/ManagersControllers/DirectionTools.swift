@@ -9,9 +9,9 @@ import UIKit
 import MapKit
 import SPAlert
 
-class MapIntruments {
+final class DirectionTools {
     
-    static let instance = MapIntruments()
+    static let instance = DirectionTools()
     
     func createDirectionRequest(user locationManager: CLLocationManager?,from location: CLLocationCoordinate2D?,to coordinate: CLLocationCoordinate2D,type transport: String?) -> MKDirections.Request {
         let request = MKDirections.Request()

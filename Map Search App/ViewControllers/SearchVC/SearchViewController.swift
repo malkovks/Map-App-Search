@@ -14,37 +14,25 @@ protocol SearchControllerDelegate: AnyObject {
     func passSearchResult(coordinates: CLLocationCoordinate2D,placemark: MKPlacemark?,tagView: Int)
 }
 
-protocol HandleMapSearch {
+protocol HandleMapSearch: AnyObject {
     func dropCoordinate(coordinate: CLLocationCoordinate2D, requestName: String)
     func dropSomeAnnotations(items: [MKMapItem])
 }
 
-enum SearchControllerEnum {
-    case firstTextField
-    case secondTextField
-    case basic
-}
 
-struct SearchData {
-    let someLocation: CLLocation
-    let indicatorOfView: Bool
-    let mapView: MKMapView
-    let tagView: Int
-}
 
 class SearchViewController: UIViewController {
     
     static let identifier = "SearchViewController"
-    var matchingItems: [MKMapItem] = []
-    var mapView: MKMapView?
-    var someLocation: CLLocation?
-    private let geocoder = CLGeocoder()
+    
     private let coreData = SearchHistoryStack.instance
     private let favouriteCoreData = PlaceEntityStack.instance
+    
+    var matchingItems: [MKMapItem] = []
+    var mapView: MKMapView?
     var searchValue: SearchData?
     
-    var handleMapSearchDelegate: HandleMapSearch? = nil
-    
+    weak var handleMapSearchDelegate: HandleMapSearch?
     weak var delegate: SearchControllerDelegate?
 
     
@@ -185,15 +173,15 @@ class SearchViewController: UIViewController {
     
     @objc private func didTapClearHistory(){
         if !coreData.historyVault.isEmpty {
-            let alert = UIAlertController(title: "Warning!", message: "Do you want to clear your history of request?", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Delete", style: .destructive,handler: { _ in
+            let alert = UIAlertController(title: "Внимание!", message: "Вы действительно хотите очистить историю?", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Удалить", style: .destructive,handler: { _ in
                 let data = self.coreData.historyVault
                 self.coreData.deleteHistoryData(data: data)
                 self.coreData.historyVault.removeAll()
                 self.table.reloadData()
                 self.clearHistoryButton.isEnabled = false
             }))
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
             present(alert,animated: true)
         }
     }
@@ -203,9 +191,9 @@ class SearchViewController: UIViewController {
     }
     
     @objc private func didTapToChangeSegment(){
-        //для перехода от одного вью к другому
+        
         switch segmentalButtons.selectedSegmentIndex {
-        case 0:
+        case 0://search table
             navigationItem.titleView = resultSearchController.searchBar
             resultSearchController.searchBar.isHidden = false
             clearHistoryButton.isHidden = true
@@ -213,7 +201,7 @@ class SearchViewController: UIViewController {
             table.reloadData()
             matchingItems = []
             navigationItem.centerItemGroups = []
-        default:
+        default://history table
             self.navigationItem.titleView = clearHistoryButton
             clearHistoryButton.isHidden = false
             table.reloadData()
@@ -236,7 +224,7 @@ class SearchViewController: UIViewController {
         delegate?.passSearchResult(coordinates: location, placemark: nil, tagView: 0)
         self.dismiss(animated: true)
     }
-    
+    //MARK: - Setup Methods
     private func setupCollectionView(){
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -275,17 +263,6 @@ class SearchViewController: UIViewController {
             clearHistoryButton.configuration?.baseBackgroundColor = .systemGray3
             clearHistoryButton.configuration?.baseForegroundColor = .systemGray3
         }
-        
-//        if coreData.historyVault.count > 10 {
-//            let countOfData = coreData.historyVault.count
-//            _ = countOfData - 30
-//            if lastCount != 0 {
-////                coreData.historyVault.remove(at: lastCount-1)
-//                let data = coreData.historyVault[lastCount-1]
-//                coreData.deleteLastElement(data: data)
-//                lastCount -= 1
-//            }
-//        }
     }
     
     private func setupNavigationAndView(){
@@ -324,20 +301,6 @@ class SearchViewController: UIViewController {
         }
     }
     
-    private  func setupViewWithEnum(objectives: SearchControllerEnum){
-        switch objectives {
-        case .firstTextField:
-            print("first text field test")
-        case .secondTextField:
-            print("second text field test")
-        case .basic:
-            view.addSubview(table)
-            view.addSubview(segmentalButtons)
-            view.addSubview(categoryCollectionView)
-            view.addSubview(clearHistoryButton)
-            view.backgroundColor = .systemBackground
-        }
-    }
     private func convertDistance(user: CLLocation,annotation: CLLocationCoordinate2D) -> String? {
         var output = ""
         let coordinateAnn = CLLocation(latitude: annotation.latitude, longitude: annotation.longitude)
@@ -350,12 +313,6 @@ class SearchViewController: UIViewController {
             output = String(Int(m)) + " м"
         }
         return output
-    }
-    
-    private func alternativeParseData(customMark: MKPlacemark) -> String {
-        
-        let addressLine = "\(customMark.thoroughfare ?? "Адрес отсутствует"), \(customMark.subThoroughfare ?? "Дом остутствует"), \(customMark.subLocality ?? "Название района отсутствует"), \(customMark.administrativeArea ?? "Название города отсутствует"),  \(customMark.country ?? "")"
-        return addressLine
     }
 }
 

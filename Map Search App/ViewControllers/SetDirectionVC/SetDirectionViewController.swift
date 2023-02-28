@@ -22,19 +22,16 @@ class SetDirectionViewController: UIViewController {
     var directionData: SetDirectionData? //сюда сохраняются данные из map view для делегирования их на карту обратно
     
     weak var delegate: SetDirectionProtocol?
+    weak var detailDelegate: HandleMapSearch?
     
     private var coreData = PlaceEntityStack.instance
-    
     private let geocoder = CLGeocoder()
-    
-    var detailDelegate: HandleMapSearch? = nil
-    
-    
+
     let dictionaryOfType: [String:UIImage] = ["Автомобиль":UIImage(systemName: "car")!
                                               ,"Пешком":UIImage(systemName: "figure.walk")!
                                               ,"Велосипед":UIImage(systemName: "bicycle")!
                                               ,"Транспорт":UIImage(systemName: "bus")!]
-    
+    //UI elements
     private let table: UITableView = {
        let table = UITableView()
         table.backgroundColor = .systemBackground
@@ -83,7 +80,7 @@ class SetDirectionViewController: UIViewController {
     }()
     
     private var directionCollectionView: UICollectionView!
-    
+    //setup view for setDirection VC
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -105,7 +102,7 @@ class SetDirectionViewController: UIViewController {
         table.frame = CGRect(x: 10, y: 30+sArea+firstTextField.frame.size.height+secondTextField.frame.size.height, width: view.frame.size.width-20, height: 50+ht)
         directionCollectionView.frame = CGRect(x: 10, y: 40+sArea+firstTextField.frame.size.height+secondTextField.frame.size.height+table.frame.size.height, width: view.frame.size.width-20, height: 100)
     }
-    
+
     private func setupHeightForTable() -> CGFloat{
         var height: CGFloat = 0.0
         let count: CGFloat = CGFloat(coreData.vaultData.count)
@@ -132,7 +129,7 @@ class SetDirectionViewController: UIViewController {
         self.detailDelegate?.dropCoordinate(coordinate: coordinate, requestName: "")
         self.dismiss(animated: true)
     }
-    
+    //MARK: - Setup methods
     private func setupTableView(){
         table.delegate = self
         table.dataSource = self
@@ -182,7 +179,7 @@ class SetDirectionViewController: UIViewController {
         directionCollectionView.isUserInteractionEnabled = true
         directionCollectionView.contentInsetAdjustmentBehavior = .automatic
     }
-    
+    //method for checking if value == nil
     private func checkForCoordinates(data: SetDirectionData) {
         let location = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
         let dataDest = data.destinationCoordinate
@@ -195,10 +192,9 @@ class SetDirectionViewController: UIViewController {
             navigationItem.largeTitleDisplayMode = .always
         }
     }
-    
-    
 }
 
+//delegation data from search if user change start and finish directions point
 extension SetDirectionViewController: SearchControllerDelegate {
     func passSearchResult(coordinates: CLLocationCoordinate2D, placemark: MKPlacemark?,tagView: Int) {
         if let placemark = placemark?.name, !placemark.isEmpty {
@@ -224,7 +220,7 @@ extension SetDirectionViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         secondTextField.resignFirstResponder()
         if let text = secondTextField.text, !text.isEmpty {
-            //метод делегирования данных на главный вью
+            
         }
         return true
     }
@@ -239,12 +235,8 @@ extension SetDirectionViewController: UITextFieldDelegate {
             let nav = UINavigationController(rootViewController: vc)
             nav.modalPresentationStyle = .automatic
             nav.sheetPresentationController?.detents = [.large()]
-//            nav.sheetPresentationController?.detents = [.custom(resolver: { context in
-//                return 400
-//            })]
             nav.sheetPresentationController?.prefersGrabberVisible = false
             nav.isNavigationBarHidden = false
-            
             present(nav, animated: true)
         } else {
             guard let data = directionData?.destinationCoordinate else { return }
@@ -257,11 +249,8 @@ extension SetDirectionViewController: UITextFieldDelegate {
             nav.sheetPresentationController?.prefersGrabberVisible = false
             nav.isNavigationBarHidden = false
             present(nav, animated: true)
-            
         }
     }
-    
-    
 }
 
 
@@ -270,9 +259,7 @@ extension SetDirectionViewController: UICollectionViewDelegate, UICollectionView
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return dictionaryOfType.count
     }
-    
-    
-    
+     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SetDirectionCollectionViewCell.identifier, for: indexPath) as! SetDirectionCollectionViewCell
         let key = Array(dictionaryOfType.keys.sorted())[indexPath.row]
@@ -292,7 +279,6 @@ extension SetDirectionViewController: UICollectionViewDelegate, UICollectionView
         }
         self.delegate?.getDataForDirection(user: userLoc, destination: destLoc, type: text, route: 0)
         self.dismiss(animated: true)
-        
     }
 }
 

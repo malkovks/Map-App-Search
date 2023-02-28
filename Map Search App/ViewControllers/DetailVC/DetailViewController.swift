@@ -12,38 +12,29 @@ import SPAlert
 import Contacts
 
 
-protocol PlotInfoDelegate: AnyObject {
+protocol DetailDelegate: AnyObject {
     func passAddressNavigation(location: CLLocationCoordinate2D)
     func deleteAnnotations(boolean: Bool)
-}
-
-struct DetailsData {
-    let userLocation: CLLocationManager
-    let placePoint: CLLocationCoordinate2D
-    let pointOfInterestName: String
-    let distanceRoute: String
-    let placemark: CLPlacemark?
-    
 }
 
 class DetailViewController: UIViewController {
     
     private let coreData = PlaceEntityStack.instance
     
+    private let mapInstruments = LocationDataConverter.instance
+    
     var gettingData: DetailsData?
     
-    let mapInstruments = MapDataConverter.instance
-    
-    
     private var dataStruct: FullAdress!
+    
     private var cellData: String?
     
-    weak var delegate: PlotInfoDelegate?
+    weak var delegate: DetailDelegate?
 
     //MARK: UI elements
     var mainTitlePlotView: UILabel = {
         let label = UILabel()
-        label.text = "Main title is loading..."
+        label.text = "Загрузка.."
         label.numberOfLines = 2
         label.backgroundColor = .secondarySystemBackground
         label.font = .systemFont(ofSize: 24, weight: .bold)
@@ -68,7 +59,7 @@ class DetailViewController: UIViewController {
     
      let distanceLabelPlotView: UILabel = {
         let label = UILabel()
-        label.text = "Loading"
+        label.text = "Загрузка.."
         label.backgroundColor = .secondarySystemBackground
         label.font = .systemFont(ofSize: 17, weight: .thin)
         return label
@@ -77,7 +68,7 @@ class DetailViewController: UIViewController {
     let directionButtonPlotView: UIButton = {
         let button = UIButton()
         button.backgroundColor = .systemBlue
-        button.setTitle(" Directions", for: .normal)
+        button.setTitle(" Маршруты", for: .normal)
         button.setImage(UIImage(systemName: "arrow.triangle.turn.up.right.diamond"), for: .normal)
         button.imageView?.tintColor = .systemBackground
         button.titleLabel?.textAlignment = .center
@@ -90,7 +81,7 @@ class DetailViewController: UIViewController {
         button.backgroundColor = .systemGray5
         button.titleLabel?.textAlignment = .center
         button.setTitleColor(.systemBlue, for: .normal)
-        button.setTitle(" More", for: .normal)
+        button.setTitle(" Больше", for: .normal)
         button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         button.imageView?.tintColor = .systemBlue
         button.layer.cornerRadius = 8
@@ -99,7 +90,7 @@ class DetailViewController: UIViewController {
     
      let plotInfoPlotView: UILabel = {
         let label = UILabel()
-        label.text = "Details"
+        label.text = "Детали"
         label.backgroundColor = .secondarySystemBackground
         label.font = .systemFont(ofSize: 17, weight: .bold)
         return label
@@ -123,7 +114,7 @@ class DetailViewController: UIViewController {
     let addToFavouriteCellPlotView: UIButton = {
         let button = UIButton()
         button.backgroundColor = .systemBackground
-        button.setTitle("Add to Favourite", for: .normal)
+        button.setTitle("В избранное", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .light)
         button.setTitleColor(.black, for: .normal)
         button.titleLabel?.textAlignment = .justified
@@ -135,7 +126,7 @@ class DetailViewController: UIViewController {
     let deleteMarkPlotView: UIButton = {
         let button = UIButton()
         button.backgroundColor = .systemBackground
-        button.setTitle("Delete", for: .normal)
+        button.setTitle("Удалить", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .light)
         button.titleLabel?.textAlignment = .justified
@@ -158,6 +149,7 @@ class DetailViewController: UIViewController {
         setupFirstTableView()
         buttonTargets()
     }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let const = view.safeAreaInsets.top+10
@@ -194,7 +186,7 @@ class DetailViewController: UIViewController {
     @objc private func didTapAddToFavourite(){
         let date = DateClass.dateConverter()
         if let coordinate = gettingData?.placePoint {
-            self.coreData.saveData(lat: coordinate.latitude, lon: coordinate.longitude, date: date,name: gettingData?.pointOfInterestName ?? "No Name")
+            self.coreData.saveData(lat: coordinate.latitude, lon: coordinate.longitude, date: date,name: gettingData?.pointOfInterestName ?? "Без названия")
         }
     }
     
@@ -205,19 +197,19 @@ class DetailViewController: UIViewController {
     
     @objc private func didTapToDetails(){
         let menu = UIMenu(title: "",options: .displayInline,children:
-                            [UIAction(title: "Close window",image: UIImage(systemName: "trash"),attributes: .destructive, handler: { _ in
+                            [UIAction(title: "Закрыть",image: UIImage(systemName: "trash"),attributes: .destructive, handler: { _ in
                                 self.dismiss(animated: true)
                              }),
-                             UIAction(title: "Set Direction",image: UIImage(systemName: "arrow.triangle.turn.up.right.diamond.fill"), handler: { _ in
+                             UIAction(title: "Построить маршрут",image: UIImage(systemName: "arrow.triangle.turn.up.right.diamond.fill"), handler: { _ in
                                 self.didTapSetDirection()
                              }),
-                             UIAction(title: "Share location",image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in
+                             UIAction(title: "Поделиться локацией",image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in
                                 self.didTapToShare()
                              }),
-                             UIAction(title: "Add to Favourite",image: UIImage(systemName: "star.fill"), handler: { _ in
+                             UIAction(title: "В избранное",image: UIImage(systemName: "star.fill"), handler: { _ in
                                 self.didTapAddToFavourite()
                              }),
-                             UIAction(title: "Open in Maps",image: UIImage(systemName: "map.fill"),handler: { _ in
+                             UIAction(title: "Открыть в Maps",image: UIImage(systemName: "map.fill"),handler: { _ in
                                 self.openMapsApp(data: self.gettingData!)
                              })
                         ])
@@ -233,6 +225,8 @@ class DetailViewController: UIViewController {
                 let activity = UIActivityViewController(activityItems: [url], applicationActivities: nil)
                 activity.popoverPresentationController?.permittedArrowDirections = .up
                 self.present(activity,animated: true)
+            } else {
+                SPAlert.present(title: "Ошибка!",message: "Ошибка функции поделится!\nПопробуйте позже", preset: .error)
             }
         }
     }
@@ -261,13 +255,12 @@ class DetailViewController: UIViewController {
                       CNPostalAddressCountryKey: country,
                    CNPostalAddressPostalCodeKey: postalKey
         ]
-        
-        let placemark = MKPlacemark(coordinate: data.placePoint,addressDictionary: address)
+        let placemark = MKPlacemark(coordinate: data.placePoint,addressDictionary: address as [String : Any])
         let mapItem = MKMapItem(placemark: placemark)
         mapItem.openInMaps()
     }
 
-    func setPlotInfoByCoordinates(data: DetailsData) {
+    private func setPlotInfoByCoordinates(data: DetailsData) {
         guard let placemark = data.placemark else { return }
         let streetName = placemark.thoroughfare ?? ""
         let streetSubname = placemark.subThoroughfare ?? ""

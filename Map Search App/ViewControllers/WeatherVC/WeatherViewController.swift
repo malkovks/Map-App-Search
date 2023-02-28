@@ -14,7 +14,6 @@ import SPAlert
 
 class WeatherDisplayViewController: UIViewController {
     
-    
     var weatherData: WeatherDataAPI?
     
     var userLocationManager = CLLocationManager() 
@@ -99,101 +98,15 @@ class WeatherDisplayViewController: UIViewController {
         guard let location = userLocationManager.location?.coordinate else { return }
         getCallerAPI(location: location)
     }
-    
-    private func setupImageDisplay(image code: Int) -> UIImage{
-        print(code)
-        switch code {
-            
-        case 1000:
-            return UIImage(systemName: "sun.max")!
-        case 1003:
-            return UIImage(systemName: "cloud")!
-        case 1006:
-            print("cloudy")
-            return UIImage(systemName: "cloud")!
-        case 1009:
-            print("overcast")
-            return UIImage(systemName: "cloud")!
-        case 1030:
-            return UIImage(systemName: "sun.max")!
-        case 1063:
-            return UIImage(systemName: "sun.max")!
-        case 1066:
-            return UIImage(systemName: "sun.max")!
-        case 1069:
-            return UIImage(systemName: "sun.max")!
-        case 1072:
-            return UIImage(systemName: "sun.max")!
-        case 1087:
-            return UIImage(systemName: "sun.max")!
-        case 1114:
-            return UIImage(systemName: "sun.max")!
-        case 1117:
-            return UIImage(systemName: "wind.snow")!
-        case 1135:
-            return UIImage(systemName: "sun.max")!
-        case 1147:
-            return UIImage(systemName: "sun.max")!
-        case 1150:
-            return UIImage(systemName: "sun.max")!
-        case 1153:
-            return UIImage(systemName: "sun.max")!
-        case 1168:
-            return UIImage(systemName: "sun.max")!
-        case 1171:
-            return UIImage(systemName: "sun.max")!
-        case 1180:
-            return UIImage(systemName: "sun.max")!
-        case 1183:
-            return UIImage(systemName: "sun.max")!
-        case 1186:
-            return UIImage(systemName: "sun.max")!
-        default:
-            print("switch func is working")
-            return UIImage(systemName: "thermometer.sun")!
-            
-        }
-    }
-    
-    private func setupBackgroundColor(temp: Int) {
-        switch temp {
-        case 1...10 :
-            scrollView.backgroundColor = .systemYellow
-        case -10...0:
-            scrollView.backgroundColor = .systemBlue
-        case -40 ... -11:
-            scrollView.backgroundColor = .darkGray
-        case 11...60 :
-            scrollView.backgroundColor = .systemOrange
-        default:
-            scrollView.backgroundColor = .systemBackground
-        }
-    }
-    
-    private func getWeekdayFromDay(date: String) -> String {
-        let dateFormatter = DateFormatter()
-        let convertDate = DateFormatter()
-        var dayInWeek = String()
-        convertDate.dateFormat = "yyyy-mm-dd"
-        dateFormatter.dateFormat = "EEEE"
-        dateFormatter.locale = Locale(identifier: "ru_RU")
-        if let finalDate = convertDate.date(from: date) {
-            dayInWeek = dateFormatter.string(from: finalDate).capitalized
-        } else {
-            print("Error converting date")
-        }
-        return dayInWeek
-    }
+
     
     private func getCallerAPI(location: CLLocationCoordinate2D){
         WeatherModel.shared.requestWeatherAPI(coordinate: location) { [weak self] result in
             switch result {
             case .success(let data):
                 let temp = Int(data.current.temp_c)
-                let feelsLikeTemp = Int(data.current.feelslike_c)
                 let minTemp = Int(data.forecast.forecastday[0].day.mintemp_c)
                 let maxTemp = Int(data.forecast.forecastday[0].day.maxtemp_c)
-                self?.setupBackgroundColor(temp: temp)
                 self?.weatherData = data
                 self?.cityLabel.text = data.location.region
                 self?.currentTemperatureLabel.text = "\(temp)"+" °"
@@ -207,8 +120,6 @@ class WeatherDisplayViewController: UIViewController {
             }
         }
     }
-    
-    
 }
 
 extension WeatherDisplayViewController: UITableViewDelegate, UITableViewDataSource {
@@ -221,13 +132,17 @@ extension WeatherDisplayViewController: UITableViewDelegate, UITableViewDataSour
         cell.selectionStyle = .none
         cell.backgroundColor = .secondarySystemBackground
         if let data = weatherData {
+
             let day = data.forecast.forecastday[indexPath.row].date
-            let dayOfWeek = getWeekdayFromDay(date: day)
+            let dayOfWeek = WeatherModel.shared.getWeekdayFromDay(date: day)
             let mintemp = String(describing: Int(data.forecast.forecastday[indexPath.row].day.mintemp_c))
             let maxtemp = String(describing: Int(data.forecast.forecastday[indexPath.row].day.maxtemp_c))
-            cell.textLabel?.text = dayOfWeek + mintemp + "....." +  maxtemp
-            cell.detailTextLabel?.text = data.forecast.forecastday[indexPath.row].day.condition.text + " " + "\(Int(data.forecast.forecastday[indexPath.row].day.avgtemp_c))" + " °"
-            cell.imageView?.image = setupImageDisplay(image: data.forecast.forecastday[indexPath.row].day.condition.code)
+            let conditionText = data.forecast.forecastday[indexPath.row].day.condition.text
+            let code = data.forecast.forecastday[indexPath.row].day.condition.code
+            let avgTemp = Int(data.forecast.forecastday[indexPath.row].day.avgtemp_c)
+            cell.textLabel?.text = dayOfWeek + "   : " + mintemp + "  →   " +  maxtemp
+            cell.detailTextLabel?.text = conditionText + ", Сред.: " + "\(avgTemp)" + " °"
+            cell.imageView?.image = WeatherModel.shared.setupImageCategory(image: code)
         }
         return cell
     }

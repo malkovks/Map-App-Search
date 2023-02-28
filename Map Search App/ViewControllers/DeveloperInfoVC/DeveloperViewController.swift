@@ -13,15 +13,16 @@ import SPAlert
 class DeveloperViewController: UIViewController {
     
     private let textForView = """
-                                Dear user, before using I'll hope you will read it.
-                                This application is only testing example of future application,which sooner will tested and using different type of mapkit (such as 2GIS, YandexMap, Google or something like this). Before using I hope You ready that there may cause some bugs, app error and other mistakes which I possibily could make.
-                                If You interested to contact with me to share some ideas, notes and problems that you get when using this application I will leave below ways to contact with me and check my projects.
+                                Дорогие пользователи, перед использованием я надеюсь вы прочтете это сообщение.
+                                Данное приложение является тестовым проектом, не являющимся коммерческим и используется только в пробной работе для тестирования кода, устройства и прочих вещей. Приложение сделано на подобие Yandex Maps, Google Maps, Apple Maps и прочие.
+                                Если вы заинтересованы в том как можно улучшить данное приложение, имеются какие-либо идеи, а также вопросы относительно производительности приложения, вы можете связаться со мной при помощи ссылок, указанных ниже
+                                Хорошего вам использования приложения!
                                 """
     
     private let githubButton: UIButton = {
        let button = UIButton()
         button.configuration = .tinted()
-        button.configuration?.title = "Go to GitHub"
+        button.configuration?.title = "Перейти на GitHub"
         button.configuration?.image = UIImage(named: "github_img")?.withTintColor(.black).withRenderingMode(.alwaysOriginal)
         button.configuration?.imagePlacement = .leading
         button.configuration?.imagePadding = 8
@@ -33,7 +34,7 @@ class DeveloperViewController: UIViewController {
     private let mailButton: UIButton = {
        let button = UIButton()
         button.configuration = .tinted()
-        button.configuration?.title = "Write to Mail"
+        button.configuration?.title = "Написать на почту"
         button.configuration?.image = UIImage(named: "gmail_img")
         button.configuration?.imagePlacement = .leading
         button.configuration?.imagePadding = 8
@@ -45,7 +46,7 @@ class DeveloperViewController: UIViewController {
     private let telegramButton: UIButton = {
        let button = UIButton()
         button.configuration = .tinted()
-        button.configuration?.title = "Write to Telegram"
+        button.configuration?.title = "Написать в телеграмм"
         button.configuration?.image = UIImage(named: "telegram_img")
         button.configuration?.imagePlacement = .leading
         button.configuration?.imagePadding = 8
@@ -66,7 +67,7 @@ class DeveloperViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        title = "Information from Developer"
+        title = "Информация о разработчике"
 
     }
     

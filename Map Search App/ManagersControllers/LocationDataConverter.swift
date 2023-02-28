@@ -8,9 +8,9 @@
 import UIKit
 import MapKit
 
-class MapDataConverter {
+final class LocationDataConverter {
     
-    static let instance = MapDataConverter()
+    static let instance = LocationDataConverter()
     
     func distanceFunction(coordinate: CLLocationCoordinate2D,user locationManager: CLLocationManager) -> String {
         let user = locationManager.location

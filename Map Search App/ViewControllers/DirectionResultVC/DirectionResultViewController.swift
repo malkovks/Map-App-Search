@@ -16,13 +16,6 @@ protocol ReturnResultOfDirection: AnyObject {
     func dismissContoller(isDismissed: Bool)
 }
 
-struct DirectionResultStruct {
-    let startCoordinate: CLLocationCoordinate2D
-    let finalCoordinate: CLLocationCoordinate2D
-    let responseDirection: MKDirections.Response
-    let typeOfDirection: String
-}
-
 class DirectionResultViewController: UIViewController {
 
     weak var delegate: ReturnResultOfDirection?
@@ -30,8 +23,8 @@ class DirectionResultViewController: UIViewController {
     var routeData: DirectionResultStruct?
     
     private let panel = FloatingPanelController()
-    private let converter = MapDataConverter.instance
-    private let mapTools = MapIntruments.instance
+    private let converter = LocationDataConverter.instance
+    private let mapTools = DirectionTools.instance
     
     private let directionTable = UITableView()
     
@@ -59,10 +52,7 @@ class DirectionResultViewController: UIViewController {
         setupView()
         setupTableView()
     }
-    
 
-    
- 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         var count = CGFloat(routeData?.responseDirection.routes.count ?? Int(0.0))
@@ -72,14 +62,14 @@ class DirectionResultViewController: UIViewController {
     }
     
     @objc private func didTapStartDirection(){
-        
+        //unfinished method
     }
     
     @objc private func didTapDismiss(){
         self.delegate?.dismissContoller(isDismissed: true)
         self.dismiss(animated: true)
     }
-    
+    //MARK: - setup methods
     private func setupView(){
         view.backgroundColor = .secondarySystemBackground
         view.addSubview(directionTable)
@@ -115,7 +105,6 @@ class DirectionResultViewController: UIViewController {
         let time = mapTools.getDistanceTime(route: routes[index])
         return time
     }
-    
 }
 
 extension DirectionResultViewController: UITableViewDataSource, UITableViewDelegate {

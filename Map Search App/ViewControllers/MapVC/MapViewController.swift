@@ -11,40 +11,29 @@ import CoreLocationUI
 import SPAlert
 import FloatingPanel
 
-enum ActionPressed {
-    case pressed
-    case unpressed
-}
-
-struct FavouriteAnnotations {
-    let coordinate: CLLocationCoordinate2D
-    let adressName: String?
-    let detailName: String?
-}
-
 class MapViewController: UIViewController {
-//main attributes
+    //main attributes
     let mapView = MKMapView()
     let locationManager = CLLocationManager()
     let annotationCustom = MKPointAnnotation()
     
-    private let converter = MapDataConverter()
-    private let mapTools = MapIntruments()
+    //instance constants
+    private let converter = LocationDataConverter()
+    private let mapTools = DirectionTools()
     private let panel = FloatingPanelController()
-
-    var polylineIndex: Int = 1
-    
+    private let coredata = PlaceEntityStack.instance
     private let geocoder = CLGeocoder()
+    
+    //variables with data
+    var polylineIndex: Int = 1
     var selectedCoordination: CLLocationCoordinate2D?
     var previosLocation: CLLocation?
     var directionsArray: [MKDirections] = []
-    var savedNameLocation: String?
-    var previousMainName: String?
     var coordinateSpanValue = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     var currentLocation = CLLocationCoordinate2D()
-    private let coredata = PlaceEntityStack.instance
     
     
+    //UI elements
     private let favouriteButton: UIButton = {
         let button = UIButton()
          button.layer.cornerRadius = 8
@@ -105,7 +94,6 @@ class MapViewController: UIViewController {
         button.configuration?.title = "Temp"
         button.titleLabel?.numberOfLines = 1
         button.layer.cornerRadius = 12
-//        button.configuration?.image = UIImage(systemName: "cloud")
         button.configuration?.imagePlacement = .leading
         button.titleLabel?.textColor = .black
         button.configuration?.imagePadding = 2
@@ -114,17 +102,6 @@ class MapViewController: UIViewController {
         return button
     }()
     
-//    private let weatherLabelButton: UIButton = {
-//        let button = UIButton(type: .system)
-////        button.setImage(UIImage(systemName: "cloud"), for: .normal)
-//        button.tintColor = .black
-//        button.backgroundColor = .systemFill
-//        button.contentMode = .scaleAspectFit
-//        button.titleLabel?.text = "Temp ℃"
-//        button.titleLabel?.font = .systemFont(ofSize: 16)
-//        button.layer.cornerRadius = 8
-//        return button
-//    }()
     //MARK: - Main View Loadings Methods
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -141,10 +118,15 @@ class MapViewController: UIViewController {
     
     
     override func viewDidLoad() {
-        
         super.viewDidLoad()
         startTrackingUserLocation()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        guard let location = locationManager.location?.coordinate else { return displayError(title: "Ошибка получения геолокации для погоды\nПопробуйте позже")}
+        setupWeatherButtonTemp(location: location)
+    }
+    
     //key func for collecting all funcs for working and showing first necessary information
     private func startTrackingUserLocation(){
         setupSubviews()
@@ -152,22 +134,8 @@ class MapViewController: UIViewController {
         setupViewsTargetsAndDelegates()
         setupDelegates()
         previosLocation = converter.getCenterLocation(for: mapView) //collect last data with latitude and longitude
-        guard let location = locationManager.location?.coordinate else { return }
-        getAPICaller(location: location)
     }
     
-    private func getAPICaller(location: CLLocationCoordinate2D){
-        WeatherModel.shared.requestWeatherAPI(coordinate: location) { [weak self] result in
-            switch result {
-                
-            case .success(let data):
-                let temp = Int(data.current.temp_c)
-                self?.weatherLabelButton.configuration?.title = "\(temp)" + " °"
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         guard let navVC = navigationController?.navigationBar.frame.size.height else { return }
@@ -241,14 +209,16 @@ class MapViewController: UIViewController {
                                             self.present(activity,animated: true)
                                         }
                                         else {
-                                            self.displayError()
+                                            self.displayError(title: "Ошибка функцией поделиться\nПопробуйте позже!")
                                         }
                                         
                                     }
                                     
                                 }),
                                 UIAction(title: "Построить маршрут",image: UIImage(systemName: "arrow.triangle.turn.up.right.diamond"), handler: { _ in
-                                    guard let userLoc = self.locationManager.location?.coordinate else { return self.displayError() }
+                                    guard let userLoc = self.locationManager.location?.coordinate else {
+                                        return self.displayError(title: "Ошибка построения маршрута\nПопробуйте включить геолокацию")
+                                    }
                                     
                                     let vc = SetDirectionViewController()
                                     vc.delegate = self
@@ -277,6 +247,9 @@ class MapViewController: UIViewController {
                                         return annotation
                                     }
                                     self.mapView.addAnnotations(annotations)
+                                }),
+                                UIAction(title: "Погода",image: UIImage(systemName: "thermometer.sun.fill"), handler: { _ in
+                                    self.didTapToWeather()
                                 }),
                                 UIAction(title: "Избранное",image: UIImage(systemName: "bookmark.fill"), handler: { _ in
                                    self.didTapToFavourite()
@@ -311,7 +284,6 @@ class MapViewController: UIViewController {
             stepper.stepValue = 0.1
             value = sender.value
         }
-        
         coordinateSpanValue = MKCoordinateSpan(latitudeDelta: value!, longitudeDelta: value!)
         let coordinate = currentLocation
         let region = MKCoordinateRegion(center: coordinate, span: coordinateSpanValue)
@@ -325,10 +297,12 @@ class MapViewController: UIViewController {
         navVc.modalPresentationStyle = .fullScreen
         present(navVc, animated: true)
     }
-    
+    //segue method to Search VC
     @objc private func didTapSearch(){
         let vc = SearchViewController()
-        guard let loc = locationManager.location else { return displayError() }
+        guard let loc = locationManager.location else {
+            return displayError(title: "Ошибка получения геолокации\nПопробуйте выключить и включить геолокацию.")
+        }
         vc.handleMapSearchDelegate = self
         vc.searchValue = SearchData(someLocation: loc, indicatorOfView: false,mapView: mapView,tagView: 10)
         let nav = UINavigationController(rootViewController: vc)
@@ -341,12 +315,10 @@ class MapViewController: UIViewController {
     
     //add annotation on map and open detail view
     @objc func addAnnotationOnLongPress(gesture: UILongPressGestureRecognizer){
-        print("pressed")
-        
         if gesture.state == .ended{
             guard let destination = converter.gestureLocation(for: gesture, mapView: mapView, annotationCustom: annotationCustom),
                   let userCoord = locationManager.location?.coordinate else {
-                return displayError()
+                return displayError(title: "Ошибка получения геолокации или данных о выбранной точке.")
             }
             mapView.removeAnnotation(annotationCustom)
             mapView.removeAnnotations(mapView.annotations)
@@ -368,33 +340,9 @@ class MapViewController: UIViewController {
         mapView.removeAnnotations(mapView.annotations)
         mapView.removeAnnotation(annotationCustom)
     }
-    //подумать нужна или нет
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for touch in touches {
-            let point = touch.location(in: mapView)
-            let location = mapView.convert(point, toCoordinateFrom: mapView)
-            selectedCoordination = location
-        }
-    }
-    
-    //function of lift up view
-    @objc func keyboardWillShow(notification: NSNotification){
-        if let keyboardsize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0 {
-                self.view.frame.origin.y -= keyboardsize.height
-            }
-        }
-    }
-    //func of lift down view after using search bar
-    @objc func keyboardWillHide(notification: NSNotification){
-        if self.view.frame.origin.y != 0 {
-            self.view.frame.origin.y = 0
-        }
-    }
     
     @objc private func didTapToWeather(){
-        setupWeather(user: locationManager)
-        
+        setupWeather(user: locationManager) 
     }
     //MARK: - setup visual elements
     //weather test
@@ -410,9 +358,8 @@ class MapViewController: UIViewController {
         present(nav, animated: true)
     }
     
-    
-    func displayError(){
-        SPAlert.present(title: "Fatal failure!\nPlease try again", preset: .error, haptic: .error)
+    func displayError(title: String?){
+        SPAlert.present(title: title ?? "Fatal failure!\nPlease try again", preset: .error, haptic: .error)
     }
  
     //add views in subview,targets and delegates
@@ -474,8 +421,23 @@ class MapViewController: UIViewController {
         let destResult = DirectionResultViewController()
         destResult.delegate = self
     }
-    //func for gesture location and for output locations data
+    
+    private func setupWeatherButtonTemp(location: CLLocationCoordinate2D){
+        WeatherModel.shared.requestWeatherAPI(coordinate: location) { [weak self] result in
+            switch result {
+            case .success(let data):
+                let temp = Int(data.current.temp_c)
+                let imageCode = data.current.condition.code
+                let image = WeatherModel.shared.setupImageCategory(image: imageCode)
+                self?.weatherLabelButton.configuration?.image = image
+                self?.weatherLabelButton.configuration?.title = "\(temp)" + " °"
+            case .failure(_):
+                self?.displayError(title: "Ошибка загрузки данных.\nПопробуйте позже")
+            }
+        }
+    }
     //MARK: - methods for adding annotation, open detail VC and setting up direction
+    //method segue for displaying full detail info about coordinate place
     public func setChoosenLocation(coordinates: CLLocationCoordinate2D,name title: String?) {
         let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
         geocoder.reverseGeocodeLocation(location) { [self] placemark, error in
@@ -490,9 +452,8 @@ class MapViewController: UIViewController {
             DispatchQueue.main.async {
                 self.mapView.setRegion(MKCoordinateRegion(center: coordinates, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)),  animated: true)
                 let vc = DetailViewController()
-                //поменять force unwrap
                 guard let coordinate = placemark.location?.coordinate else {
-                    return SPAlert.present(title: "Ошибка передачи данных.\nПопробуйте включить геолокацию в настройках", preset: .error)
+                    return self.displayError(title: "Ошибка передачи данных.\nПопробуйте включить геолокацию в настройках")
                 }
                 vc.gettingData = DetailsData(userLocation: self.locationManager,
                                              placePoint: coordinate,
@@ -514,15 +475,14 @@ class MapViewController: UIViewController {
     //MARK: - Direction Settings
     //func for starting showing direction. Func input user location and return polyline on map
     func getDirection(start location: CLLocationCoordinate2D?,final destination: CLLocationCoordinate2D,type: String?,index: Int){
-        let request = MapIntruments().createDirectionRequest(user: locationManager,
+        let request = DirectionTools().createDirectionRequest(user: locationManager,
                                                              from: location,
                                                              to: destination,
                                                              type: type)
         let directions = MKDirections(request: request)
         directions.calculate { [unowned self] response, error in
-            //output alert if error
             guard let response = response, error == nil else {
-                return
+                return self.displayError(title: "Ошибка построения маршрута\nПопробуйте позже.")
             }
             self.didTapClearDirection()
             for route in response.routes {
@@ -550,6 +510,7 @@ class MapViewController: UIViewController {
         }
     }
     //MARK: - some helpful methods
+    //getting direction and drawing polylines
     private func setDirectionRoute(data: DirectionResultStruct,index: Int) {
         let response = data.responseDirection
         for route in response.routes {
@@ -578,11 +539,11 @@ class MapViewController: UIViewController {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
         case .restricted:
-            displayError()
+            displayError(title: "")
             break
             
         case .denied:
-            displayError()
+            displayError(title: "")
             break
         @unknown default:
             fatalError()
@@ -590,34 +551,35 @@ class MapViewController: UIViewController {
     }
 }
 //MARK: - Extensions for Delegates
+//delegate method from Set Direction VC
 extension MapViewController: ReturnResultOfDirection{
     func dismissContoller(isDismissed: Bool) {
         if isDismissed == true {
             didTapClearDirection()
         }
     }
-    
+    //changing routes after choosing
     func passChoise(data: DirectionResultStruct, boolean: Bool, count choosenPolyline: Int) {
         setDirectionRoute(data: data, index: choosenPolyline)
     }
 }
-
+//Drop pin and open detail vc from favourite vc
 extension MapViewController: FavouritePlaceDelegate{
     func passCoordinates(coordinates: CLLocationCoordinate2D,name: String?){
         setChoosenLocation(coordinates: coordinates, name: name)
     }
 }
-
-extension MapViewController:  PlotInfoDelegate {
+//delete all annotations if detail vc was closed
+extension MapViewController:  DetailDelegate {
     func deleteAnnotations(boolean: Bool) {
         if boolean == true {
             mapView.removeAnnotation(annotationCustom)
             mapView.removeAnnotations(mapView.annotations)
         }
     }
-    
+//drawing routes after choosing set direction button
     func passAddressNavigation(location: CLLocationCoordinate2D) {
-        guard let userLocation = locationManager.location?.coordinate else { return SPAlert.present(preset: .error)}
+        guard let userLocation = locationManager.location?.coordinate else { return displayError(title: "Ошибка получения данных геолокации.\nПопробуйте позже")}
         getDirection(start: userLocation, final: location, type: "Автомобиль", index: 1)
     }
 }
@@ -627,12 +589,12 @@ extension MapViewController: SetDirectionProtocol {
         getDirection(start: coordinate, final: destination, type: type,index: index)
     }
 }
-
+//delegation data from search vc after searching some data
 extension MapViewController: HandleMapSearch {
     func dropCoordinate(coordinate: CLLocationCoordinate2D, requestName: String) {
         setChoosenLocation(coordinates: coordinate, name: requestName)
     }
-    
+    //summary drop places from search
     func dropSomeAnnotations(items: [MKMapItem]) {
         let annotations = items.map { location -> MKAnnotation in
             let annotation = MKPointAnnotation()
@@ -680,8 +642,6 @@ extension MapViewController: MKMapViewDelegate {
         return annView
     }
     
-
-    
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         mapView.removeAnnotation(annotationCustom)
         if let coord = view.annotation?.coordinate ,
@@ -689,7 +649,6 @@ extension MapViewController: MKMapViewDelegate {
             setChoosenLocation(coordinates: coord, name: title)
         }
    }
-
 
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let polyline = MKPolylineRenderer(overlay: overlay)
@@ -710,3 +669,26 @@ extension MapViewController: MKMapViewDelegate {
 //below two funcs which setup showing and hiding keyboard
 //        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
 //        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+//MARK: - Methods for search ,hiding and showing keyboard
+//override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//    for touch in touches {
+//        let point = touch.location(in: mapView)
+//        let location = mapView.convert(point, toCoordinateFrom: mapView)
+//        selectedCoordination = location
+//    }
+//}
+//
+////function of lift up view
+//@objc func keyboardWillShow(notification: NSNotification){
+//    if let keyboardsize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+//        if self.view.frame.origin.y == 0 {
+//            self.view.frame.origin.y -= keyboardsize.height
+//        }
+//    }
+//}
+////func of lift down view after using search bar
+//@objc func keyboardWillHide(notification: NSNotification){
+//    if self.view.frame.origin.y != 0 {
+//        self.view.frame.origin.y = 0
+//    }
+//}

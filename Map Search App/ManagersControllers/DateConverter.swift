@@ -7,7 +7,7 @@
 
 import Foundation
 
-class DateClass {
+final class DateClass {
     static func dateConverter() -> String{
         let date = Date()
         let format = DateFormatter()

@@ -19,4 +19,12 @@ struct FullAdress {
     let longitude: Double
 }
 
+struct DetailsData {
+    let userLocation: CLLocationManager
+    let placePoint: CLLocationCoordinate2D
+    let pointOfInterestName: String
+    let distanceRoute: String
+    let placemark: CLPlacemark?
+}
+
 
