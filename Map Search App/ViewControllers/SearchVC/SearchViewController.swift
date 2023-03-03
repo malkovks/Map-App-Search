@@ -3,7 +3,11 @@
 //  Map Search App
 //
 //  Created by Константин Малков on 29.01.2023.
-//
+/*
+ Class process input data in two variables
+ First is basic search location by using MKLocalSearch.Request. And displaing history
+ Second is searching location for Setting Direction VC and delegate data to previous view
+ */
 
 
 import UIKit
@@ -185,10 +189,7 @@ class SearchViewController: UIViewController {
             present(alert,animated: true)
         }
     }
-    
-    @objc private func didTapDetailButton(sender: AnyObject){
-        print(sender.tag as Any)
-    }
+
     
     @objc private func didTapToChangeSegment(){
         

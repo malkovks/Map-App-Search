@@ -91,6 +91,7 @@ class OnboardingViewController: UIViewController {
         tableViewCustom.register(UITableViewCell.self, forCellReuseIdentifier: "cellOnboarding")
         tableViewCustom.backgroundColor = .secondarySystemBackground
         tableViewCustom.separatorStyle = .none
+        tableViewCustom.allowsSelection = false
     }
 
 
@@ -104,6 +105,7 @@ extension OnboardingViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellOnboarding")
         let data = cellData[indexPath.row]
+        cell.selectionStyle = .none
         cell.backgroundColor = .secondarySystemBackground
         
         cell.textLabel?.text = data.title

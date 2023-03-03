@@ -39,7 +39,6 @@ final class WeatherModel {
     }
     
     public func getWeekdayFromDay(date: String) -> String {
-        print(date)
         let dateFormatter = DateFormatter()
         let convertDate = DateFormatter()
         var dayInWeek = String()
@@ -59,8 +58,6 @@ final class WeatherModel {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "ru_RU")
         dateFormatter.dateFormat = "MM-dd-yyyy HH:mm"
-//        let calendar = Calendar.current
-//        let components = calendar.dateComponents([.month,.day,.year,.hour,.minute], from: date)
         let returnDate = dateFormatter.date(from: date)
         return returnDate
     }

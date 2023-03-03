@@ -24,7 +24,7 @@ class DirectionResultTableViewCell: UITableViewCell {
         label.textAlignment = .left
         label.contentMode = .topLeft
         label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.text = "Place name and other"
+        label.text = "Главный лейбл"
         return label
     }()
     
@@ -34,7 +34,7 @@ class DirectionResultTableViewCell: UITableViewCell {
         label.textAlignment = .left
         label.contentMode = .topLeft
         label.font = .systemFont(ofSize: 18, weight: .thin)
-        label.text = "Place name and other"
+        label.text = "Детальный лейбл"
         return label
     }()
     

@@ -3,7 +3,10 @@
 //  Map Search App
 //
 //  Created by Константин Малков on 29.01.2023.
-//
+/*
+ Favourite view using for displaying user's saved places
+ Displaying table with main title of place. Give oportunity to show place on map
+ */
 
 import UIKit
 import CoreLocation
@@ -24,7 +27,8 @@ class FavouriteTableViewController: UIViewController, UIGestureRecognizerDelegat
     
     let tableview: UITableView = {
         let table = UITableView()
-        table.register(FavouriteTableViewCell.self, forCellReuseIdentifier: FavouriteTableViewCell.identifier)
+        table.register(UITableViewCell.self
+                       , forCellReuseIdentifier: "cellFavourite")
         return table
     }()
 
@@ -46,7 +50,7 @@ class FavouriteTableViewController: UIViewController, UIGestureRecognizerDelegat
     }
     
     func setupNavigationController(){
-        title = "Favourite Places"
+        title = "Избранные места"
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancel))
         navigationItem.leftBarButtonItem?.tintColor = .black
     }
@@ -59,7 +63,7 @@ class FavouriteTableViewController: UIViewController, UIGestureRecognizerDelegat
     }
     
     func setupAlert(){
-        let alert = SPAlertView(title: "Deleted from library", preset: .done)
+        let alert = SPAlertView(title: "Удалено!", preset: .done)
         alert.duration = 1
         alert.dismissByTap = true
         alert.present()
@@ -76,9 +80,22 @@ extension FavouriteTableViewController: UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: FavouriteTableViewCell.identifier, for: indexPath) as! FavouriteTableViewCell
         let place = coredata.vaultData[indexPath.row]
-        cell.configureCell(with: place)
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellFavourite")
+        let location = CLLocation(latitude: place.latitude, longitude: place.longitude)
+        GeocoderController.shared.geocoderReturn(location: location) { result in
+            switch result {
+            case .success(let data):
+                let info = GeocoderController.shared.infoAboutPlace(placemark: data)
+                cell.textLabel?.text = place.place
+                cell.detailTextLabel?.numberOfLines = 0
+                cell.detailTextLabel?.text = info.country + ", " + info.city + "\n" + "Сохранено: " + (place.date ?? "Без даты")
+                cell.imageView?.image = UIImage(systemName: "heart.fill")
+                cell.imageView?.tintColor = .black
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
         return cell
     }
     

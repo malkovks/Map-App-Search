@@ -3,7 +3,10 @@
 //  Map Search App
 //
 //  Created by Константин Малков on 29.01.2023.
-//
+/* Main class of map view, consist of all UI elements, funcs for setting directions route.
+    Displaying custom alerts for user.
+
+ */
 
 import UIKit
 import MapKit
@@ -25,9 +28,6 @@ class MapViewController: UIViewController {
     private let geocoder = CLGeocoder()
     
     //variables with data
-    var polylineIndex: Int = 1
-    var selectedCoordination: CLLocationCoordinate2D?
-    var previosLocation: CLLocation?
     var directionsArray: [MKDirections] = []
     var coordinateSpanValue = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     var currentLocation = CLLocationCoordinate2D()
@@ -91,7 +91,7 @@ class MapViewController: UIViewController {
     private let weatherLabelButton: UIButton = {
         let button = UIButton(type: .system)
         button.configuration = .tinted()
-        button.configuration?.title = "Temp"
+        button.configuration?.title = " 🛑 "
         button.titleLabel?.numberOfLines = 1
         button.layer.cornerRadius = 12
         button.configuration?.imagePlacement = .leading
@@ -133,14 +133,13 @@ class MapViewController: UIViewController {
         setupLocationManager()
         setupViewsTargetsAndDelegates()
         setupDelegates()
-        previosLocation = converter.getCenterLocation(for: mapView) //collect last data with latitude and longitude
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         guard let navVC = navigationController?.navigationBar.frame.size.height else { return }
         mapView.frame = view.bounds
-        weatherLabelButton.frame = CGRect(x: 10, y: view.safeAreaInsets.top+navVC, width: 80, height: 30)
+        weatherLabelButton.frame = CGRect(x: 10, y: view.safeAreaInsets.top+navVC, width: view.frame.size.width/5, height: 30)
         locationButton.frame = CGRect(x: view.frame.size.width-40, y:view.safeAreaInsets.top+navVC+locationButton.frame.size.height+40 , width: 40, height: 40)
         clearMapButton.frame = CGRect(x: view.frame.size.width-40, y: view.safeAreaInsets.top+navVC+40+locationButton.frame.size.height+40, width: 40, height: 40)
         clearMapButton.layer.cornerRadius = 0.5 * clearMapButton.bounds.size.width
@@ -269,7 +268,7 @@ class MapViewController: UIViewController {
                                 })
                         ])
         self.menuButton.menu = menu
-        self.menuButton.showsMenuAsPrimaryAction = true
+        
     }
     //method for stepper
     @objc private func updateStepper(_ sender: UIStepper){
@@ -285,7 +284,7 @@ class MapViewController: UIViewController {
             value = sender.value
         }
         coordinateSpanValue = MKCoordinateSpan(latitudeDelta: value!, longitudeDelta: value!)
-        let coordinate = currentLocation
+        guard let coordinate = locationManager.location?.coordinate else { return }
         let region = MKCoordinateRegion(center: coordinate, span: coordinateSpanValue)
         self.mapView.setRegion(region, animated: true)
     }
@@ -342,7 +341,12 @@ class MapViewController: UIViewController {
     }
     
     @objc private func didTapToWeather(){
-        setupWeather(user: locationManager) 
+        if locationManager.authorizationStatus == .authorizedAlways || locationManager.authorizationStatus == .authorizedWhenInUse {
+            setupWeather(user: locationManager)
+        } else {
+            displayError(title: "Пожалуйста включите геолокацию для получения данных о погоде!")
+        }
+        
     }
     //MARK: - setup visual elements
     //weather test
@@ -364,6 +368,7 @@ class MapViewController: UIViewController {
  
     //add views in subview,targets and delegates
     func setupViewsTargetsAndDelegates(){
+        self.menuButton.showsMenuAsPrimaryAction = true
         //targets
         let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(addAnnotationOnLongPress(gesture:)))
         locationButton.addTarget(self, action: #selector(didTapLocation), for: .touchUpInside)
@@ -405,6 +410,9 @@ class MapViewController: UIViewController {
             let span = MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
             let region = MKCoordinateRegion(center: center, span: span)
             self.mapView.setRegion(region, animated: true)
+            self.setupWeatherButtonTemp(location: location)
+        } else {
+            displayError(title: "Ошибка получения геолокации для погоды\nПопробуйте позже")
         }
     }
     //all delegates in one method
@@ -431,6 +439,13 @@ class MapViewController: UIViewController {
                 let image = WeatherModel.shared.setupImageCategory(image: imageCode)
                 self?.weatherLabelButton.configuration?.image = image
                 self?.weatherLabelButton.configuration?.title = "\(temp)" + " °"
+                let date = Date()
+                //setting up notification data for displaying and set up timer
+                for i in [1,2,3,4,5,6,7] {
+                    if let date = date.adding(days: i){
+                        WeatherNotification.shared.callNotificationCenter(data: data, current: date)
+                    }
+                }
             case .failure(_):
                 self?.displayError(title: "Ошибка загрузки данных.\nПопробуйте позже")
             }
@@ -468,7 +483,6 @@ class MapViewController: UIViewController {
                 })]
                 vc.sheetPresentationController?.prefersGrabberVisible = true
                 self.present(vc, animated: true)
-                
             }
         }
     }
@@ -523,7 +537,6 @@ class MapViewController: UIViewController {
     func resetMap(withNew directions: MKDirections) {
         mapView.removeOverlays(mapView.overlays)
         directionsArray.append(directions)
-        directionsArray.map { $0.cancel() }
     }
     //MARK: - Error debagging and if statements
 
@@ -533,17 +546,16 @@ class MapViewController: UIViewController {
         case .authorizedWhenInUse:
             mapView.showsUserLocation = true
             setupLocationManager()
-            previosLocation = converter.getCenterLocation(for: mapView)
         case .authorizedAlways:
-            break
+            mapView.showsUserLocation = true
+            setupLocationManager()
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
         case .restricted:
-            displayError(title: "")
+            displayError(title: "Error of restricted data")
             break
-            
         case .denied:
-            displayError(title: "")
+            displayError(title: "User denied own tracking of location")
             break
         @unknown default:
             fatalError()
@@ -578,12 +590,12 @@ extension MapViewController:  DetailDelegate {
         }
     }
 //drawing routes after choosing set direction button
-    func passAddressNavigation(location: CLLocationCoordinate2D) {
+    func passAddressNavigation(location: CLLocationCoordinate2D,typeOfDirection: String?) {
         guard let userLocation = locationManager.location?.coordinate else { return displayError(title: "Ошибка получения данных геолокации.\nПопробуйте позже")}
-        getDirection(start: userLocation, final: location, type: "Автомобиль", index: 1)
+        getDirection(start: userLocation, final: location, type: typeOfDirection, index: 1)
     }
 }
-
+//delegate for setting up direction route from a point to b
 extension MapViewController: SetDirectionProtocol {
     func getDataForDirection(user coordinate: CLLocationCoordinate2D, destination: CLLocationCoordinate2D, type: String,route index: Int) {
         getDirection(start: coordinate, final: destination, type: type,index: index)
@@ -647,12 +659,14 @@ extension MapViewController: MKMapViewDelegate {
         if let coord = view.annotation?.coordinate ,
            let title = view.annotation?.title{
             setChoosenLocation(coordinates: coord, name: title)
+        } else {
+            displayError(title: "Ошибка геолокации. Попробуйте позже!")
         }
    }
 
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let polyline = MKPolylineRenderer(overlay: overlay)
-        let index = polylineIndex
+        let index = 1
         if overlay is MKPolyline {
             if mapView.overlays.count == index {
                 polyline.strokeColor = .systemIndigo.withAlphaComponent(1)

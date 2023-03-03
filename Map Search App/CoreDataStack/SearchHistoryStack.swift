@@ -3,7 +3,9 @@
 //  Map Search App
 //
 //  Created by Константин Малков on 29.01.2023.
-//
+/*
+ Thic entity created for storing data about choosen places after searching in Search VC.
+ */
 
 import UIKit
 import CoreData
@@ -19,7 +21,7 @@ class SearchHistoryStack {
         do {
             historyVault = try context.fetch(SearchHistory.fetchRequest())
         } catch {
-            SPAlert.present(message: "Error loading history", haptic: .error)
+            SPAlert.present(message: "Ошибка выгрузки", haptic: .error)
         }
     }
     
@@ -32,7 +34,7 @@ class SearchHistoryStack {
             try context.save()
             loadHistoryData()
         } catch {
-            SPAlert.present(message: "Error saving", haptic: .error)
+            SPAlert.present(message: "Ошибка добавления в историю", haptic: .error)
         }
     }
     
@@ -41,7 +43,7 @@ class SearchHistoryStack {
         do {
             try context.save()
         } catch {
-            SPAlert.present(title: "Error", preset: .error)
+            SPAlert.present(title: "Ошибка удаления", preset: .error)
         }
     }
     
@@ -49,10 +51,10 @@ class SearchHistoryStack {
         let _ = data.map { context.delete($0) }
         do {
             try context.save()
-            SPAlert.present(message: "History was cleared", haptic: .success)
+            SPAlert.present(message: "Очищено", haptic: .success)
             loadHistoryData()
         } catch {
-            SPAlert.present(message: "Error Deleting", haptic: .error)
+            SPAlert.present(message: "Ошибка удаления", haptic: .error)
         }
     }
 }

@@ -3,10 +3,13 @@
 //  Map Search App
 //
 //  Created by Константин Малков on 08.02.2023.
-//
-//контроллер для отображения данных после установления маршрута
-//возможно следует использовать Floating Panel для удобства работы с двумя вью одновременно
-//или почитать про то, как добавлять два вью на один
+/*
+ Class for displaying variations of routes after setting up direction.
+ Displaying time and distance of every route
+ This view using Floating Panel for displaying map and panel
+ */
+
+
 import UIKit
 import MapKit
 import FloatingPanel

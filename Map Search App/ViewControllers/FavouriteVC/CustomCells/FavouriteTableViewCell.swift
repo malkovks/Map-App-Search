@@ -3,7 +3,9 @@
 //  Map Search App
 //
 //  Created by Константин Малков on 29.01.2023.
-//
+//  
+
+//MARK: - UNUSING
 
 import Foundation
 import UIKit
@@ -63,23 +65,10 @@ class FavouriteTableViewCell: UITableViewCell {
         super.layoutSubviews()
         titleLabel.frame = CGRect(x: 5, y: 5, width: contentView.frame.size.width-30, height: 20)
         subtitleLabel.frame = CGRect(x: 5, y: 25, width: contentView.frame.size.width-30, height: 45)
-//        detailButton.frame = CGRect(x: contentView.frame.size.width, y: 0, width: 30, height: 70)
     }
     //затестить и понять почему не работае класс наследования
     func configureCell(with model: PlaceEntity){
         let location = CLLocation(latitude: model.latitude, longitude: model.longitude)
-//        let loc = CLLocationCoordinate2D(latitude: model.latitude, longitude: model.longitude)
-//        GeocoderReturn.shared.convertFromGeocode(coordinate: loc) { [weak self] geocoder in
-//            DispatchQueue.main.async {
-//                if geocoder.areaOfInterest == "" {
-//                    self?.titleLabel.text = "\(geocoder.streetName), д. \(geocoder.appNumber)"
-//                    self?.subtitleLabel.text = "Регион: \(geocoder.administrativArea), \(geocoder.country)\nСохранено: \(model.date ?? "Без времени")"
-//                } else {
-//                    self?.titleLabel.text = "\(geocoder.areaOfInterest ?? "No date"), ул. \(geocoder.streetName), д. \(geocoder.appNumber)"
-//                    self?.subtitleLabel.text = "Регион: \(geocoder.administrativArea), \(geocoder.country).\nСохранено: \(model.date ?? "Без времени")"
-//                }
-//            }
-//        }
         geocoder.reverseGeocodeLocation(location) { [weak self] placemark, error in
             guard let placemark = placemark?.first else { return }
             let streetName = placemark.thoroughfare ?? "\n"

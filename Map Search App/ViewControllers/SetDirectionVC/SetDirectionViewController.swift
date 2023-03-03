@@ -3,7 +3,10 @@
 //  Map Search App
 //
 //  Created by Константин Малков on 03.02.2023.
-//
+/*
+ Class serves data and give possibilities to create route from A point to B.
+ There is using some text fields for searching location and choosing type of route
+ */
 
 import Foundation
 import UIKit
@@ -184,8 +187,6 @@ class SetDirectionViewController: UIViewController {
         let location = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
         let dataDest = data.destinationCoordinate
         if dataDest.latitude == location.latitude && dataDest.longitude == location.longitude {
-            //изменить филды для вводы и вывода данных
-            print("This func for new direction")
             firstTextField.text = "Укажите начало маршрута"
             secondTextField.text = "Укажите конец маршрута"
             detailsOfPlace.isHidden = true
@@ -270,7 +271,6 @@ extension SetDirectionViewController: UICollectionViewDelegate, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
-        print(indexPath.row)
         let cell = collectionView.cellForItem(at: indexPath) as! SetDirectionCollectionViewCell
         guard let userLoc = directionData?.userCoordinate,
               let destLoc = directionData?.destinationCoordinate,

@@ -3,7 +3,10 @@
 //  Map Search App
 //
 //  Created by Константин Малков on 29.01.2023.
-//
+/*
+ This class inherit data from API WeatherAPI.com
+ Basic displaying data in labels for current day and for next 7 days of week in table
+ */
 
 
 import Foundation

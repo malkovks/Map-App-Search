@@ -3,7 +3,9 @@
 //  Map Search App
 //
 //  Created by Константин Малков on 29.01.2023.
-//
+/*
+ class created for saving,loading and deleting for favourite places. This entity store and process data for Favourite places
+ */
 
 import UIKit
 import CoreData
@@ -22,7 +24,7 @@ public class PlaceEntityStack {
         do {
             vaultData = try context.fetch(PlaceEntity.fetchRequest())
         } catch {
-            SPAlert.present(title: "Error of CoreData.\nCheck it", preset: .error)
+            SPAlert.present(title: "Ошибка выгрузки\nПопробуйте позже", preset: .error)
         }
     }
     
@@ -34,9 +36,9 @@ public class PlaceEntityStack {
         placeValue.place = place
         do {
             try context.save()
-            SPAlert.present(title: "Success",message: "This place was added to Favourite Page", preset: .heart, haptic: .success)
+            SPAlert.present(title: "Успешно!",message: "Это место добавлено в избранное", preset: .heart, haptic: .success)
         } catch {
-            SPAlert.present(title: "Error of CoreData.\nCheck it", preset: .error)
+            SPAlert.present(title: "Ошибка сохранения\nПопробуйте позже", preset: .error)
             
             
         }
@@ -46,9 +48,9 @@ public class PlaceEntityStack {
         context.delete(data)
         do {
             try context.save()
-            SPAlert.present(title: "Deleted", preset: .custom(UIImage(systemName: "trash")!))
+            SPAlert.present(title: "Удалено!", preset: .custom(UIImage(systemName: "trash")!))
         } catch {
-            SPAlert.present(title: "Error of CoreData.\nCheck it", preset: .error)
+            SPAlert.present(title: "Ошибка удаления\nПопробуйте позже", preset: .error)
         }
     }
 

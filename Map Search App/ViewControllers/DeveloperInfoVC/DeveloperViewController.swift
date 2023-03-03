@@ -3,7 +3,10 @@
 //  Map Search App
 //
 //  Created by Константин Малков on 30.01.2023.
-//
+/*
+ Class for users from Developer
+ Include info about app and some possibilities to get contact with developer
+ */
 
 import Foundation
 import UIKit
@@ -58,8 +61,7 @@ class DeveloperViewController: UIViewController {
     private let developerTextView: UITextView = {
        let text = UITextView()
         text.font = .systemFont(ofSize: 18, weight: .light)
-        text.contentMode = .scaleAspectFit
-        text.textAlignment = .justified
+        text.textContainer.maximumNumberOfLines = 0
         text.isScrollEnabled = false
         return text
     }()
@@ -117,6 +119,8 @@ class DeveloperViewController: UIViewController {
         view.addSubview(telegramButton)
         developerTextView.text = textForView
         developerTextView.isEditable = false
+        developerTextView.textAlignment = .left
+        developerTextView.contentMode = .center
         
         
         view.backgroundColor = .systemBackground
@@ -140,9 +144,9 @@ extension DeveloperViewController: MFMailComposeViewControllerDelegate {
         case .cancelled:
             print("Canceled")
         case .failed:
-            SPAlert.present(title: "Error", preset: .error)
+            SPAlert.present(title: "Ошибка", preset: .error)
         case .sent:
-            SPAlert.present(title: "Mail sended successfully", preset: .done, haptic: .success)
+            SPAlert.present(title: "Письмо отправленно успешно", preset: .done, haptic: .success)
         case .saved:
             print("saved")
         @unknown default:

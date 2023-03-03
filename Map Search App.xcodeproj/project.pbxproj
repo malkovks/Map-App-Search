@@ -38,7 +38,8 @@
 		0A44477929ACF71500C78698 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44477829ACF71500C78698 /* NotificationManager.swift */; };
 		0A44477C29AD86DC00C78698 /* DirectionResultStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44477B29AD86DC00C78698 /* DirectionResultStruct.swift */; };
 		0A44477F29AD876C00C78698 /* OnboardingStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44477E29AD876C00C78698 /* OnboardingStruct.swift */; };
-		0A44478229AD87B700C78698 /* SearchViewStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44478129AD87B700C78698 /* SearchViewStruct.swift */; };
+		0A44478429AF3E9B00C78698 /* SearchStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44478329AF3E9B00C78698 /* SearchStruct.swift */; };
+		0A44478629AF53D700C78698 /* GeocoderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44478529AF53D700C78698 /* GeocoderController.swift */; };
 		0A810FDF29A2C61600227AA3 /* WeatherParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A810FDE29A2C61600227AA3 /* WeatherParsing.swift */; };
 		0A810FE129A2D0AB00227AA3 /* WeatherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A810FE029A2D0AB00227AA3 /* WeatherModel.swift */; };
 		4F96613ADD4C578851915A65 /* Pods_Map_Search_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */; };
@@ -78,13 +79,10 @@
 		0A44477829ACF71500C78698 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		0A44477B29AD86DC00C78698 /* DirectionResultStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionResultStruct.swift; sourceTree = "<group>"; };
 		0A44477E29AD876C00C78698 /* OnboardingStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingStruct.swift; sourceTree = "<group>"; };
-		0A44478129AD87B700C78698 /* SearchViewStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewStruct.swift; sourceTree = "<group>"; };
-		0A810FDC29A2C1CA00227AA3 /* Map Search App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Map Search App.entitlements"; sourceTree = "<group>"; };
+		0A44478329AF3E9B00C78698 /* SearchStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SearchStruct.swift; path = "Map Search App/ViewControllers/SearchVC/SearchViewModel/SearchStruct.swift"; sourceTree = SOURCE_ROOT; };
+		0A44478529AF53D700C78698 /* GeocoderController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocoderController.swift; sourceTree = "<group>"; };
 		0A810FDE29A2C61600227AA3 /* WeatherParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherParsing.swift; sourceTree = "<group>"; };
 		0A810FE029A2D0AB00227AA3 /* WeatherModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherModel.swift; sourceTree = "<group>"; };
-		0A810FE229A2D9D900227AA3 /* CurrentAPI.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = CurrentAPI.geojson; sourceTree = "<group>"; };
-		0A902E7329A76CB20099D436 /* ForecastAPI.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = ForecastAPI.geojson; sourceTree = "<group>"; };
-		0A902E7429AA01DF0099D436 /* ImagesCode.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = ImagesCode.geojson; sourceTree = "<group>"; };
 		3449A25C555D5F50249FCC55 /* Pods_Map_Search_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Map_Search_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B61FC16511157D3CC42CC77 /* Pods-Map Search App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.debug.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.debug.xcconfig"; sourceTree = "<group>"; };
 		CA51D5CB2C5289EBACB64F69 /* Pods-Map Search App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map Search App.release.xcconfig"; path = "Target Support Files/Pods-Map Search App/Pods-Map Search App.release.xcconfig"; sourceTree = "<group>"; };
@@ -129,8 +127,8 @@
 		0A05E9D5299B6DDE00B87C5E /* DetailVC */ = {
 			isa = PBXGroup;
 			children = (
-				0A05E9CF2993332B00B87C5E /* DetailModels */,
 				0A1B52E1298665BE00FB548D /* DetailViewController.swift */,
+				0A05E9CF2993332B00B87C5E /* DetailModels */,
 			);
 			path = DetailVC;
 			sourceTree = "<group>";
@@ -156,9 +154,9 @@
 		0A05E9D8299B6E5400B87C5E /* DirectionResultVC */ = {
 			isa = PBXGroup;
 			children = (
+				0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */,
 				0A44477A29AD86C400C78698 /* DirectionResultModel */,
 				0A05E9D9299B6E5F00B87C5E /* CustomCell */,
-				0A05E9D02993456F00B87C5E /* DirectionResultViewController.swift */,
 			);
 			path = DirectionResultVC;
 			sourceTree = "<group>";
@@ -218,7 +216,6 @@
 		0A1B52AB29865E5E00FB548D /* Map Search App */ = {
 			isa = PBXGroup;
 			children = (
-				0A810FDC29A2C1CA00227AA3 /* Map Search App.entitlements */,
 				0A1B52C7298662AD00FB548D /* CoreDataStack */,
 				0A1B52C62986626D00FB548D /* Managers */,
 				0A1B52C52986624B00FB548D /* Storyboard and assets */,
@@ -236,6 +233,7 @@
 				0A05E9D22996245C00B87C5E /* DirectionTools.swift */,
 				0A05E9CC29932F2F00B87C5E /* LocationDataConverter.swift */,
 				0A44477829ACF71500C78698 /* NotificationManager.swift */,
+				0A44478529AF53D700C78698 /* GeocoderController.swift */,
 			);
 			path = ManagersControllers;
 			sourceTree = "<group>";
@@ -302,10 +300,10 @@
 			path = OnboardingModel;
 			sourceTree = "<group>";
 		};
-		0A44478029AD87A000C78698 /* SearchViewModel */ = {
+		0A44478729B09EFA00C78698 /* SearchViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				0A44478129AD87B700C78698 /* SearchViewStruct.swift */,
+				0A44478329AF3E9B00C78698 /* SearchStruct.swift */,
 			);
 			path = SearchViewModel;
 			sourceTree = "<group>";
@@ -313,8 +311,8 @@
 		0A810FD8299F5ED300227AA3 /* SearchVC */ = {
 			isa = PBXGroup;
 			children = (
-				0A44478029AD87A000C78698 /* SearchViewModel */,
 				0A1B52E3298665CF00FB548D /* SearchViewController.swift */,
+				0A44478729B09EFA00C78698 /* SearchViewModel */,
 				0A810FD9299F5EE300227AA3 /* CustomCell */,
 			);
 			path = SearchVC;
@@ -351,9 +349,6 @@
 			children = (
 				0A810FDE29A2C61600227AA3 /* WeatherParsing.swift */,
 				0A810FE029A2D0AB00227AA3 /* WeatherModel.swift */,
-				0A810FE229A2D9D900227AA3 /* CurrentAPI.geojson */,
-				0A902E7329A76CB20099D436 /* ForecastAPI.geojson */,
-				0A902E7429AA01DF0099D436 /* ImagesCode.geojson */,
 			);
 			path = WeatherModel;
 			sourceTree = "<group>";
@@ -491,13 +486,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A05E9BC2988416400B87C5E /* DeveloperViewController.swift in Sources */,
-				0A44478229AD87B700C78698 /* SearchViewStruct.swift in Sources */,
 				0A1B52AD29865E5E00FB548D /* AppDelegate.swift in Sources */,
 				0A1B52E02986659C00FB548D /* FavouriteTableView.swift in Sources */,
 				0A05E9CD29932F2F00B87C5E /* LocationDataConverter.swift in Sources */,
 				0A1B52B729865E5E00FB548D /* Map_Search_App.xcdatamodeld in Sources */,
 				0A05E9CA298DCCDC00B87C5E /* SetDirectionData.swift in Sources */,
 				0A1B52E2298665BE00FB548D /* DetailViewController.swift in Sources */,
+				0A44478429AF3E9B00C78698 /* SearchStruct.swift in Sources */,
 				0A1B52D4298663F300FB548D /* PlaceEntityStack.swift in Sources */,
 				0A05E9DB299B6E7F00B87C5E /* DirectionResultTableViewCell.swift in Sources */,
 				0A1B52DE2986658A00FB548D /* MapViewController.swift in Sources */,
@@ -521,6 +516,7 @@
 				0A1B52DA298664CE00FB548D /* ResultCollectionViewCell.swift in Sources */,
 				0A05E9BE298D539C00B87C5E /* SetDirectionViewController.swift in Sources */,
 				0A1B52DC298664E000FB548D /* SearchResultTableViewCell.swift in Sources */,
+				0A44478629AF53D700C78698 /* GeocoderController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -666,7 +662,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Map Search App/Map Search App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2275P6FG35;
@@ -700,7 +695,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Map Search App/Map Search App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2275P6FG35;

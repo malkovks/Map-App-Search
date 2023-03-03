@@ -3,7 +3,12 @@
 //  Map Search App
 //
 //  Created by Константин Малков on 29.01.2023.
-//
+/*
+ Class for displaying all details from choosen location.
+ Include functions for set up direction route, saving place in fav.places
+ And if it necessary for user, he can segue location to Apple's Map Application
+ Displaying error with SPAlerts if they happened
+ */
 
 import UIKit
 import CoreLocation
@@ -13,18 +18,16 @@ import Contacts
 
 
 protocol DetailDelegate: AnyObject {
-    func passAddressNavigation(location: CLLocationCoordinate2D)
+    func passAddressNavigation(location: CLLocationCoordinate2D,typeOfDirection: String?)
     func deleteAnnotations(boolean: Bool)
 }
 
 class DetailViewController: UIViewController {
     
     private let coreData = PlaceEntityStack.instance
-    
     private let mapInstruments = LocationDataConverter.instance
     
     var gettingData: DetailsData?
-    
     private var dataStruct: FullAdress!
     
     private var cellData: String?
@@ -81,7 +84,7 @@ class DetailViewController: UIViewController {
         button.backgroundColor = .systemGray5
         button.titleLabel?.textAlignment = .center
         button.setTitleColor(.systemBlue, for: .normal)
-        button.setTitle(" Больше", for: .normal)
+        button.setTitle(" Еще", for: .normal)
         button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         button.imageView?.tintColor = .systemBlue
         button.layer.cornerRadius = 8
@@ -100,15 +103,6 @@ class DetailViewController: UIViewController {
         let table = UITableView()
         table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         return table
-    }()
-    
-    let tableDirectionButtonPlotView: UIButton = {
-        let button = UIButton(type: .custom)
-        button.clipsToBounds = true
-        button.setImage(UIImage(systemName: "arrow.triangle.turn.up.right.diamond"), for: .normal)
-        button.backgroundColor = .systemGray5
-        button.imageView?.tintColor = .systemBlue
-        return button
     }()
     
     let addToFavouriteCellPlotView: UIButton = {
@@ -141,10 +135,9 @@ class DetailViewController: UIViewController {
         if let data = gettingData {
             setPlotInfoByCoordinates(data: data)
         } else {
-            SPAlert.present(message: "Ошибка работы приложения.\nПопробуйте позже", haptic: .none)
+            SPAlert.present(message: "Ошибка работы приложения.\nПопробуйте позже", haptic: .error)
         }
         super.viewDidLoad()
-        
         setupPlotSubview()
         setupFirstTableView()
         buttonTargets()
@@ -162,11 +155,9 @@ class DetailViewController: UIViewController {
         directionButtonPlotView.frame = CGRect(x: 10, y: const + 30+mainTitlePlotView.frame.size.height+distanceLabelPlotView.frame.size.height, width: view.frame.size.width/2, height: 60)
         moreInfoButtonPlotView.frame = CGRect(x: 15+directionButtonPlotView.frame.size.width, y: const +  30+mainTitlePlotView.frame.size.height+distanceLabelPlotView.frame.size.height, width: view.frame.size.width/2-20, height: 60)
         plotInfoPlotView.frame = CGRect(x: 10, y:const +  15+mainTitlePlotView.frame.size.height+distanceLabelPlotView.frame.size.height*2+directionButtonPlotView.frame.size.height, width: view.frame.size.width/2, height: 30)
-        addressTableViewPlotView.frame = CGRect(x: 10, y:const +  mainTitlePlotView.frame.size.height*2+directionButtonPlotView.frame.size.height*2, width: view.frame.size.width-20, height: 320)
-        tableDirectionButtonPlotView.frame = CGRect(x: addressTableViewPlotView.frame.size.width-30, y:const +  mainTitlePlotView.frame.size.height*4+10, width: 30, height: 30)
-        tableDirectionButtonPlotView.layer.cornerRadius = 0.5 * tableDirectionButtonPlotView.bounds.size.width
-        addToFavouriteCellPlotView.frame = CGRect(x: 10, y:const +  addressTableViewPlotView.frame.size.height*2+addToFavouriteCellPlotView.frame.size.height/2-90, width: view.frame.size.width-20, height: 50)
-        deleteMarkPlotView.frame = CGRect(x: 10, y:const +  addressTableViewPlotView.frame.size.height*2+addToFavouriteCellPlotView.frame.size.height*2-100, width: view.frame.size.width-20, height: 50)
+        addressTableViewPlotView.frame = CGRect(x: 10, y:const +  mainTitlePlotView.frame.size.height*2+directionButtonPlotView.frame.size.height*2, width: view.frame.size.width-20, height: 350)
+        addToFavouriteCellPlotView.frame = CGRect(x: 10, y:const +  addressTableViewPlotView.frame.size.height*2+addToFavouriteCellPlotView.frame.size.height/2-120, width: view.frame.size.width-20, height: 50)
+        deleteMarkPlotView.frame = CGRect(x: 10, y:const +  addressTableViewPlotView.frame.size.height*2+addToFavouriteCellPlotView.frame.size.height*2-130, width: view.frame.size.width-20, height: 50)
     }
     
     //MARK: - Target Methods
@@ -176,10 +167,28 @@ class DetailViewController: UIViewController {
     
     @objc private func didTapSetDirection(){
         if let coordinates = gettingData?.placePoint {
-            delegate?.passAddressNavigation(location: coordinates)
-            self.view.window?.rootViewController?.dismiss(animated: true)
+            let menu = UIMenu(title: "", options: .displayInline, children: [
+                UIAction(title: "Пешком",image: UIImage(systemName: "figure.walk"), handler: { _ in
+                    self.delegate?.passAddressNavigation(location: coordinates, typeOfDirection: "Пешком")
+                    self.view.window?.rootViewController?.dismiss(animated: true)
+                }),
+                UIAction(title: "Автомобиль",image: UIImage(systemName: "car"), handler: { _ in
+                    self.delegate?.passAddressNavigation(location: coordinates, typeOfDirection: "Автомобиль")
+                    self.view.window?.rootViewController?.dismiss(animated: true)
+                }),
+                UIAction(title: "Велосипед",image: UIImage(systemName: "bicycle"), handler: { _ in
+                    self.delegate?.passAddressNavigation(location: coordinates, typeOfDirection: "Велосипед")
+                    self.view.window?.rootViewController?.dismiss(animated: true)
+                }),
+                UIAction(title: "Транспорт",image: UIImage(systemName: "bus"), handler: { _ in
+                    self.delegate?.passAddressNavigation(location: coordinates, typeOfDirection: "Транспорт")
+                    self.view.window?.rootViewController?.dismiss(animated: true)
+                })
+            ])
+            directionButtonPlotView.menu = menu
+            directionButtonPlotView.showsMenuAsPrimaryAction = true
         } else {
-            SPAlert.present(title: "Error setting direction\nTry again later!", preset: .error, haptic: .error)
+            SPAlert.present(title: "Ошибка установки маршрута. Попробуйте еще раз!", preset: .error, haptic: .error)
         }
     }
     
@@ -200,9 +209,6 @@ class DetailViewController: UIViewController {
                             [UIAction(title: "Закрыть",image: UIImage(systemName: "trash"),attributes: .destructive, handler: { _ in
                                 self.dismiss(animated: true)
                              }),
-                             UIAction(title: "Построить маршрут",image: UIImage(systemName: "arrow.triangle.turn.up.right.diamond.fill"), handler: { _ in
-                                self.didTapSetDirection()
-                             }),
                              UIAction(title: "Поделиться локацией",image: UIImage(systemName: "square.and.arrow.up"), handler: { _ in
                                 self.didTapToShare()
                              }),
@@ -215,8 +221,6 @@ class DetailViewController: UIViewController {
                         ])
         moreInfoButtonPlotView.showsMenuAsPrimaryAction = true
         moreInfoButtonPlotView.menu = menu
-        
-        
     }
     
     @objc private func didTapToShare(){
@@ -293,14 +297,12 @@ class DetailViewController: UIViewController {
         addressTableViewPlotView.alwaysBounceVertical = false
         addressTableViewPlotView.delegate = self
         addressTableViewPlotView.dataSource = self
-        title = "Pin Details"
         view.backgroundColor = .secondarySystemBackground
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.down"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(didTapClose))
         navigationItem.leftBarButtonItem?.tintColor = .black
     }
     
     private func buttonTargets(){
-        tableDirectionButtonPlotView.addTarget(self, action: #selector(didTapSetDirection), for: .touchUpInside)
         directionButtonPlotView.addTarget(MapViewController(), action: #selector(didTapSetDirection), for: .touchUpInside)
         addToFavouriteCellPlotView.addTarget(self, action: #selector(didTapAddToFavourite), for: .touchUpInside)
         deleteMarkPlotView.addTarget(self, action: #selector(didTapToDelete), for: .touchUpInside)
@@ -318,7 +320,6 @@ class DetailViewController: UIViewController {
         view.addSubview(moreInfoButtonPlotView)
         view.addSubview(plotInfoPlotView)
         view.addSubview(addressTableViewPlotView)
-        view.addSubview(tableDirectionButtonPlotView)
         view.addSubview(addToFavouriteCellPlotView)
         view.addSubview(deleteMarkPlotView)
     }
@@ -372,7 +373,7 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.section == 1 {
             if let coordinates = gettingData?.placePoint{
-                self.delegate?.passAddressNavigation(location: coordinates)
+                self.delegate?.passAddressNavigation(location: coordinates, typeOfDirection: "Пешком")
                 self.view.window?.rootViewController?.dismiss(animated: true)
             }
         }
@@ -380,7 +381,7 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0{
-            return 130
+            return 150
         }
         return 60
     }

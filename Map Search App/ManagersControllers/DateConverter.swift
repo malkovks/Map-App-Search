@@ -12,6 +12,7 @@ final class DateClass {
         let date = Date()
         let format = DateFormatter()
         format.dateFormat = "HH:mm:ss"
+        format.locale = Locale(identifier: "ru_RU")
         format.timeStyle = .medium
         format.dateStyle = .long
         format.timeZone = TimeZone(abbreviation: "UTC+3")
