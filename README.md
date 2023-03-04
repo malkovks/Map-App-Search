@@ -94,7 +94,7 @@ Little introduction. This application based on **Apple's Maps**, using same fram
 7. **DeveloperInfoViewController**. This view display short information about develoment, some variations of type to contact with developer.
 <img src="https://user-images.githubusercontent.com/70747233/222856834-c71353d1-cfd5-40cf-89f8-8de469430330.png" width="200">
 
-8. **PlotInfoViewController**. This view display welcome manual how to use current application and some secondary information.
+8. **OnboardingViewController**. This view display welcome manual how to use current application and some secondary information.
 <img src="https://user-images.githubusercontent.com/70747233/222857029-8bf25a09-736b-495e-a1fa-858664b8d1b9.png" width="200">
 
 9. **WeatherViewController**. Weather app using eponymous API with variations of data such as Current weather, forecast and history of some period and etc.
