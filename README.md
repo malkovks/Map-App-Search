@@ -100,9 +100,36 @@ Little introduction. This application based on **Apple's Maps**, using same fram
 9. **WeatherViewController**. Weather app using eponymous API with variations of data such as Current weather, forecast and history of some period and etc.
 <img src="https://user-images.githubusercontent.com/70747233/222857245-0d2f0d84-e4ff-437d-aa91-6dfe75703275.png" width="200">
 
-Create list with using frameworks
-Create UI elements which was used
-Future improvements
+### Frameworks were used:
+- **UIKit**;
+- **MapKit**;
+- **CoreLocationUI**;
+- **SPAlert**;
+- **FloatingPanel**;
+- **UserNotifications**;
+- **CoreData**;
+- **MessageUI**;
+
+### Personal resolved tasks in App:
+* [X] Using UserNotifications for displaying notification with current weather conditions;
+* [X] Using custom alert after some actions for simplicity using;
+* [X] Using configuration of buttons;
+* [X] Using UIMenu as application menu with different actions, objectives and setting edition;
+* [X] Using custom Collection View Cells for displaying collections of categories;
+* [X] Using custom Table View Cells for displaying custom in SearchViewController;
+* [X] Using protocol delegations for reverse data transfer;
+* [X] Using UserDefaults for saving system set ups;
+* [X] Using CoreData for storing data in two different entities;
+* [X] Using MKDirections for start displaying possible routes from first coordinates to second coordinates with different variations of routes;
+* [X] Using MKLocalSearch for start searching places by categories and names of the place;
+* [X] Using Geocoder for parsing data from location and return data about this place;
+* [X] Using Decodable and JSONDecoder for parsing data from API and return in struct.
+
+
+
+### Future improvements:
++ [ ] Add configuration to display process of start moving by route direction to final destination;
++ [ ] Integrate Tripadvisor API for detail info about every place and getting collections of images;
 
 
 ### This project is non-commercial product. All rights reserved.
